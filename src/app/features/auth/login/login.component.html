@@ -1,0 +1,94 @@
+<div class="login-page">
+
+  <div class="deco-blob blob-1" aria-hidden="true"></div>
+  <div class="deco-blob blob-2" aria-hidden="true"></div>
+  <div class="deco-blob blob-3" aria-hidden="true"></div>
+
+  <div class="login-card mat-elevation-z4">
+
+    <div class="login-brand">
+      <div class="brand-icon">
+        <mat-icon>bolt</mat-icon>
+      </div>
+      <span class="brand-name">Favly</span>
+    </div>
+
+    <div class="login-header">
+      <h2>Bem-vindo de volta!</h2>
+      <p>Faça login para continuar</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+
+      <!-- E-mail -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>E-mail</mat-label>
+        <mat-icon matPrefix>mail_outline</mat-icon>
+        <input
+          matInput
+          type="email"
+          formControlName="email"
+          placeholder="seu@email.com"
+          autocomplete="email"
+        />
+        <mat-error *ngIf="emailError">{{ emailError }}</mat-error>
+      </mat-form-field>
+
+      <!-- Senha -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Senha</mat-label>
+        <mat-icon matPrefix>lock_outline</mat-icon>
+        <input
+          matInput
+          [type]="showPassword ? 'text' : 'password'"
+          formControlName="senha"
+          placeholder="••••••••"
+          autocomplete="current-password"
+        />
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="togglePasswordVisibility()"
+          [attr.aria-label]="showPassword ? 'Ocultar senha' : 'Mostrar senha'"
+        >
+          <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="passwordError">{{ passwordError }}</mat-error>
+      </mat-form-field>
+
+      <!-- Esqueci senha -->
+      <!-- <div class="forgot-row">
+        <button mat-button type="button" class="forgot-btn" (click)="onForgotPassword()">
+          Esqueci minha senha
+        </button>
+      </div> -->
+
+      <!-- Erro geral -->
+      <div class="error-alert" *ngIf="errorMessage" role="alert">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ errorMessage }}</span>
+      </div>
+
+      <!-- Submit -->
+      <button
+        mat-raised-button
+        type="submit"
+        class="btn-submit full-width"
+        [disabled]="isLoading"
+      >
+        <mat-spinner *ngIf="isLoading" diameter="20"></mat-spinner>
+        <span *ngIf="!isLoading">Entrar</span>
+      </button>
+
+    </form>
+
+    <div class="login-footer">
+      <span>Ainda não tem conta?</span>
+      <button mat-button type="button" class="activate-btn" (click)="onActivateAccount()">
+        Crie sua conta
+      </button>
+    </div>
+
+  </div>
+</div>

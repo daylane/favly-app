@@ -1,0 +1,186 @@
+<!-- Navbar -->
+<mat-toolbar class="navbar">
+  <div class="nav-brand">
+    <div class="brand-icon"><mat-icon>bolt</mat-icon></div>
+    <span class="brand-name">Favly</span>
+  </div>
+
+  <span class="spacer"></span>
+
+  <button mat-icon-button matTooltip="Notificações" [matBadge]="totalPendentes()" matBadgeColor="warn" matBadgeSize="small">
+    <mat-icon>notifications_none</mat-icon>
+  </button>
+
+<button mat-button class="user-btn" [matMenuTriggerFor]="userMenu">
+  <mat-icon>expand_more</mat-icon>
+  <span class="user-name-toolbar">{{ usuario?.nome?.split(' ')?.[0] ?? 'Usuário' }}</span>
+  <div class="user-avatar-sm">{{ usuario?.nome?.charAt(0)?.toUpperCase() }}</div>
+</button>
+
+  <mat-menu #userMenu="matMenu">
+    <button mat-menu-item>
+      <mat-icon>person_outline</mat-icon> Meu perfil
+    </button>
+    <button mat-menu-item>
+      <mat-icon>settings</mat-icon> Configurações
+    </button>
+    <mat-divider></mat-divider>
+    <button mat-menu-item class="logout-item" (click)="logout()">
+      <mat-icon>logout</mat-icon> Sair
+    </button>
+  </mat-menu>
+</mat-toolbar>
+
+<div class="page-content">
+
+  <!-- Boas vindas + ação rápida -->
+  <div class="welcome-row">
+    <div class="welcome-text">
+     <h1>Olá, {{ usuario?.nome?.split(' ')?.[0] ?? 'Usuário' }} 👋</h1>
+      <p>Você tem <strong>{{ totalPendentes() }} tarefas pendentes</strong> hoje.</p>
+    </div>
+    <button mat-raised-button class="btn-nova-tarefa" (click)="novaTarefa()">
+      <mat-icon>add</mat-icon> Nova tarefa
+    </button>
+  </div>
+
+  <!-- Cards de resumo -->
+  <div class="summary-grid">
+
+    <mat-card class="summary-card card-total" matRipple>
+      <mat-card-content>
+        <div class="summary-icon"><mat-icon>list_alt</mat-icon></div>
+        <div class="summary-info">
+          <span class="summary-value">{{ totalTarefas() }}</span>
+          <span class="summary-label">Total</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="summary-card card-pendente" matRipple>
+      <mat-card-content>
+        <div class="summary-icon"><mat-icon>radio_button_unchecked</mat-icon></div>
+        <div class="summary-info">
+          <span class="summary-value">{{ totalPendentes() }}</span>
+          <span class="summary-label">Pendentes</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="summary-card card-andamento" matRipple>
+      <mat-card-content>
+        <div class="summary-icon"><mat-icon>timelapse</mat-icon></div>
+        <div class="summary-info">
+          <span class="summary-value">{{ totalAndamento() }}</span>
+          <span class="summary-label">Em andamento</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="summary-card card-concluida" matRipple>
+      <mat-card-content>
+        <div class="summary-icon"><mat-icon>check_circle_outline</mat-icon></div>
+        <div class="summary-info">
+          <span class="summary-value">{{ totalConcluidas() }}</span>
+          <span class="summary-label">Concluídas</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+
+  <!-- Progresso geral -->
+  <mat-card class="progress-card">
+    <mat-card-content>
+      <div class="progress-header">
+        <span class="progress-title">Progresso geral</span>
+        <span class="progress-pct">{{ progressoGeral() }}%</span>
+      </div>
+      <mat-progress-bar mode="determinate" [value]="progressoGeral()" class="progress-bar"></mat-progress-bar>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Ações rápidas -->
+  <div class="quick-actions">
+    <button mat-stroked-button class="quick-btn" (click)="novaTarefa()">
+      <mat-icon>add_task</mat-icon> Nova tarefa
+    </button>
+    <button mat-stroked-button class="quick-btn">
+      <mat-icon>folder_open</mat-icon> Projetos
+    </button>
+    <button mat-stroked-button class="quick-btn">
+      <mat-icon>bar_chart</mat-icon> Relatórios
+    </button>
+    <button mat-stroked-button class="quick-btn">
+      <mat-icon>group</mat-icon> Time
+    </button>
+  </div>
+
+  <!-- Lista de tarefas -->
+  <div class="tasks-section">
+    <div class="tasks-header">
+      <h2>Minhas tarefas</h2>
+      <mat-chip-listbox class="filter-chips" [value]="filtroAtivo()">
+        <mat-chip-option value="todas"       (click)="setFiltro('todas')">Todas</mat-chip-option>
+        <mat-chip-option value="pendente"    (click)="setFiltro('pendente')">Pendentes</mat-chip-option>
+        <mat-chip-option value="em_andamento"(click)="setFiltro('em_andamento')">Em andamento</mat-chip-option>
+        <mat-chip-option value="concluida"   (click)="setFiltro('concluida')">Concluídas</mat-chip-option>
+      </mat-chip-listbox>
+    </div>
+
+    <div class="task-list">
+      <mat-card
+        *ngFor="let tarefa of tarefasFiltradas()"
+        class="task-card"
+        [class.task-concluida]="tarefa.status === 'concluida'"
+        matRipple
+      >
+        <mat-card-content>
+          <div class="task-row">
+
+            <button
+              mat-icon-button
+              class="status-btn"
+              [matTooltip]="tarefa.status === 'concluida' ? 'Concluída' : 'Marcar como concluída'"
+              (click)="concluirTarefa(tarefa)"
+              [disabled]="tarefa.status === 'concluida'"
+            >
+              <mat-icon [class]="'status-icon status-' + tarefa.status">
+                {{ getStatusIcon(tarefa.status) }}
+              </mat-icon>
+            </button>
+
+            <div class="task-info">
+              <div class="task-titulo">{{ tarefa.titulo }}</div>
+              <div class="task-meta">
+                <mat-chip class="chip-categoria">{{ tarefa.categoria }}</mat-chip>
+                <mat-chip class="chip-prioridade chip-{{ tarefa.prioridade }}">{{ tarefa.prioridade }}</mat-chip>
+                <span class="task-prazo" [class.prazo-proximo]="isPrazoProximo(tarefa.dataPrazo)" [class.prazo-vencido]="isPrazoVencido(tarefa.dataPrazo)">
+                  <mat-icon style="font-size:13px;width:13px;height:13px;vertical-align:middle">schedule</mat-icon>
+                  {{ tarefa.dataPrazo | date:'dd/MM' }}
+                </span>
+              </div>
+            </div>
+
+            <button mat-icon-button [matMenuTriggerFor]="taskMenu" (click)="$event.stopPropagation()">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+
+            <mat-menu #taskMenu="matMenu">
+              <button mat-menu-item><mat-icon>edit</mat-icon> Editar</button>
+              <button mat-menu-item (click)="concluirTarefa(tarefa)"><mat-icon>check</mat-icon> Concluir</button>
+              <button mat-menu-item class="delete-item"><mat-icon>delete_outline</mat-icon> Excluir</button>
+            </mat-menu>
+
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <div *ngIf="tarefasFiltradas().length === 0" class="empty-state">
+        <mat-icon>inbox</mat-icon>
+        <p>Nenhuma tarefa encontrada</p>
+      </div>
+    </div>
+  </div>
+
+</div>

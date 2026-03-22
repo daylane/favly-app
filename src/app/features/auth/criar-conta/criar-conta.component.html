@@ -1,0 +1,145 @@
+<div class="page">
+
+  <div class="deco-blob blob-1" aria-hidden="true"></div>
+  <div class="deco-blob blob-2" aria-hidden="true"></div>
+  <div class="deco-blob blob-3" aria-hidden="true"></div>
+
+  <div class="card mat-elevation-z4">
+
+    <!-- Brand -->
+    <div class="brand">
+      <div class="brand-icon">
+        <mat-icon>bolt</mat-icon>
+      </div>
+      <span class="brand-name">Favly</span>
+    </div>
+
+    <div class="header">
+      <h2>Crie sua conta</h2>
+      <p>Preencha os dados para começar</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+      <!-- Avatar -->
+      <div class="avatar-section">
+        <div
+          class="avatar-wrapper"
+          (click)="avatarInput.click()"
+          matRipple
+          [matTooltip]="avatarPreview ? 'Trocar foto' : 'Adicionar foto'"
+          role="button"
+          aria-label="Selecionar foto de perfil"
+        >
+          <img *ngIf="avatarPreview" [src]="avatarPreview" class="avatar-img" alt="Avatar" />
+          <div *ngIf="!avatarPreview" class="avatar-placeholder">
+            <mat-icon>add_a_photo</mat-icon>
+            <span>Foto de perfil</span>
+          </div>
+          <div class="avatar-overlay">
+            <mat-icon>photo_camera</mat-icon>
+          </div>
+        </div>
+
+        <button
+          *ngIf="avatarPreview"
+          mat-mini-fab
+          type="button"
+          class="avatar-remove"
+          (click)="removeAvatar()"
+          matTooltip="Remover foto"
+          aria-label="Remover foto"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+
+        <input
+          #avatarInput
+          type="file"
+          accept="image/*"
+          hidden
+          (change)="onAvatarSelected($event)"
+        />
+      </div>
+
+      <!-- Nome -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nome completo</mat-label>
+        <mat-icon matPrefix>person_outline</mat-icon>
+        <input
+          matInput
+          type="text"
+          formControlName="nome"
+          placeholder="Seu nome completo"
+          autocomplete="name"
+        />
+        <mat-error *ngIf="nomeError">{{ nomeError }}</mat-error>
+      </mat-form-field>
+
+      <!-- Email -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>E-mail</mat-label>
+        <mat-icon matPrefix>mail_outline</mat-icon>
+        <input
+          matInput
+          type="email"
+          formControlName="email"
+          placeholder="seu@email.com"
+          autocomplete="email"
+        />
+        <mat-error *ngIf="emailError">{{ emailError }}</mat-error>
+      </mat-form-field>
+
+      <!-- Senha -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Senha</mat-label>
+        <mat-icon matPrefix>lock_outline</mat-icon>
+        <input
+          matInput
+          [type]="showPassword ? 'text' : 'password'"
+          formControlName="senha"
+          placeholder="••••••••"
+          autocomplete="new-password"
+        />
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="togglePasswordVisibility()"
+          [attr.aria-label]="showPassword ? 'Ocultar senha' : 'Mostrar senha'"
+          [matTooltip]="showPassword ? 'Ocultar senha' : 'Mostrar senha'"
+        >
+          <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-hint>Mínimo de 6 caracteres</mat-hint>
+        <mat-error *ngIf="senhaError">{{ senhaError }}</mat-error>
+      </mat-form-field>
+
+      <!-- Erro geral -->
+      <div class="error-alert" *ngIf="errorMessage" role="alert">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ errorMessage }}</span>
+      </div>
+
+      <!-- Submit -->
+      <button
+        mat-raised-button
+        type="submit"
+        class="btn-submit full-width"
+        [disabled]="isLoading"
+      >
+        <mat-spinner *ngIf="isLoading" diameter="20"></mat-spinner>
+        <span *ngIf="!isLoading">Criar conta</span>
+      </button>
+
+    </form>
+
+    <div class="footer">
+      <span>Já tem uma conta?</span>
+      <button mat-button type="button" class="login-btn" (click)="onLogin()">
+        Entrar
+      </button>
+    </div>
+
+  </div>
+</div>

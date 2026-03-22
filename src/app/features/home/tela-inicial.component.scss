@@ -1,0 +1,315 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap');
+
+$primary:   #FF6B6B;
+$secondary: #FF8E53;
+$accent:    #FFC107;
+$purple:    #7C4DFF;
+$text-dark: #1a1a2e;
+$text-mid:  #4a4a6a;
+$text-light:#9090b0;
+$bg:        #f5f3ff;
+$white:     #ffffff;
+
+// ── Navbar ──────────────────────────────────────────────────────────────────
+.navbar {
+  background: $white !important;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 2px 12px rgba(124,77,255,0.07) !important;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 0 1.5rem;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, $primary, $accent);
+  display: flex; align-items: center; justify-content: center;
+  mat-icon { color: white; font-size: 18px; width: 18px; height: 18px; }
+}
+
+.brand-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px; font-weight: 800;
+  color: $text-dark;
+}
+
+.spacer { flex: 1; }
+
+.user-btn {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 6px;
+  border-radius: 20px !important;
+  padding: 4px 8px !important;
+  line-height: 1 !important;
+
+  ::ng-deep .mat-mdc-button-touch-target,
+  ::ng-deep .mdc-button__label {
+    display: inline-flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 6px;
+  }
+}
+
+.user-avatar-sm {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, $primary, $secondary);
+  color: $white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.user-name-toolbar {
+  font-size: 14px;
+  font-weight: 500;
+  color: $text-dark;
+  line-height: 1;
+}
+
+.logout-item { color: #e53935 !important; }
+
+// ── Page ────────────────────────────────────────────────────────────────────
+.page-content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  font-family: 'DM Sans', sans-serif;
+}
+
+// ── Welcome ──────────────────────────────────────────────────────────────────
+.welcome-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.welcome-text {
+  h1 {
+    font-family: 'Pixelify Sans', sans-serif;
+    font-size: 26px; font-weight: 800;
+    color: $text-dark; margin: 0 0 7px;
+  }
+  p { font-size: 14px; color: $text-light; margin: 0; }
+}
+
+.btn-nova-tarefa {
+  background: linear-gradient(135deg, $primary, $secondary) !important;
+  color: white !important;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 16px rgba(255,107,107,0.3) !important;
+  font-weight: 500 !important;
+  mat-icon { margin-right: 4px; }
+}
+
+// ── Summary cards ────────────────────────────────────────────────────────────
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  @media (max-width: 600px) { grid-template-columns: repeat(2, 1fr); }
+}
+
+.summary-card {
+  border-radius: 16px !important;
+  cursor: pointer;
+
+  mat-card-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 1rem !important;
+  }
+}
+
+.summary-icon {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  mat-icon { font-size: 22px; width: 22px; height: 22px; }
+}
+
+.summary-info {
+  display: flex; flex-direction: column;
+  .summary-value { font-size: 22px; font-weight: 700; color: $text-dark; line-height: 1; }
+  .summary-label { font-size: 12px; color: $text-light; margin-top: 2px; }
+}
+
+.card-total    .summary-icon { background: rgba(124,77,255,0.1); mat-icon { color: $purple; } }
+.card-pendente .summary-icon { background: rgba(255,193,7,0.1);  mat-icon { color: $accent; } }
+.card-andamento .summary-icon { background: rgba(255,107,107,0.1); mat-icon { color: $primary; } }
+.card-concluida .summary-icon { background: rgba(0,200,83,0.1);  mat-icon { color: #00C853; } }
+
+// ── Progress ─────────────────────────────────────────────────────────────────
+.progress-card {
+  border-radius: 16px !important;
+  margin-bottom: 1rem;
+
+  mat-card-content { padding: 1rem 1.25rem !important; }
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.progress-title { font-size: 14px; font-weight: 500; color: $text-mid; }
+.progress-pct   { font-size: 14px; font-weight: 700; color: $primary; }
+
+.progress-bar {
+  border-radius: 8px;
+  height: 8px !important;
+
+  ::ng-deep .mdc-linear-progress__bar-inner {
+    border-color: $primary !important;
+  }
+  ::ng-deep .mdc-linear-progress__track-rect {
+    background: rgba(255,107,107,0.15) !important;
+  }
+}
+
+// ── Quick actions ─────────────────────────────────────────────────────────────
+.quick-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+}
+
+.quick-btn {
+  border-radius: 10px !important;
+  border-color: rgba(124,77,255,0.2) !important;
+  color: $text-mid !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  gap: 4px;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; color: $purple; }
+
+  &:hover {
+    background: rgba(124,77,255,0.05) !important;
+    border-color: $purple !important;
+    color: $purple !important;
+  }
+}
+
+// ── Tasks ─────────────────────────────────────────────────────────────────────
+.tasks-section h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px; font-weight: 700;
+  color: $text-dark; margin: 0;
+}
+
+.tasks-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.filter-chips {
+  ::ng-deep .mat-mdc-chip-option.mat-mdc-chip-selected {
+    background: linear-gradient(135deg, $primary, $secondary) !important;
+    color: white !important;
+  }
+}
+
+.task-list { display: flex; flex-direction: column; gap: 0.6rem; }
+
+.task-card {
+  border-radius: 14px !important;
+  transition: box-shadow 0.2s, transform 0.15s;
+
+  &:hover { box-shadow: 0 4px 20px rgba(124,77,255,0.1) !important; transform: translateY(-1px); }
+
+  mat-card-content { padding: 0.75rem 1rem !important; }
+}
+
+.task-concluida {
+  opacity: 0.6;
+  .task-titulo { text-decoration: line-through; }
+}
+
+.task-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-btn { flex-shrink: 0; }
+
+.status-icon {
+  &.status-concluida    { color: #00C853; }
+  &.status-em_andamento { color: $primary; }
+  &.status-pendente     { color: $text-light; }
+}
+
+.task-info { flex: 1; min-width: 0; }
+
+.task-titulo {
+  font-size: 14px; font-weight: 500;
+  color: $text-dark;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-bottom: 4px;
+}
+
+.task-meta {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+}
+
+.chip-categoria {
+  font-size: 11px !important; height: 20px !important;
+  background: rgba(124,77,255,0.08) !important;
+  color: $purple !important;
+}
+
+.chip-prioridade {
+  font-size: 11px !important; height: 20px !important;
+  &.chip-alta   { background: rgba(255,107,107,0.1) !important; color: $primary !important; }
+  &.chip-media  { background: rgba(255,193,7,0.1) !important;   color: #B8860B !important; }
+  &.chip-baixa  { background: rgba(0,200,83,0.1) !important;    color: #00A040 !important; }
+}
+
+.task-prazo {
+  font-size: 11px; color: $text-light;
+  display: flex; align-items: center; gap: 2px;
+
+  &.prazo-proximo { color: $accent; font-weight: 500; }
+  &.prazo-vencido { color: $primary; font-weight: 500; }
+}
+
+.delete-item { color: #e53935 !important; }
+
+// ── Empty state ───────────────────────────────────────────────────────────────
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: $text-light;
+  mat-icon { font-size: 48px; width: 48px; height: 48px; opacity: 0.4; }
+  p { margin-top: 8px; font-size: 14px; }
+}

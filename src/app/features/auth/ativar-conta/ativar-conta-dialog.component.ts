@@ -75,7 +75,7 @@ export class AtivarContaDialogComponent {
 
     const body = { codigo: this.codigoControl.value };
 
-    this.http.post(`${environment.apiUrl}/usuarios/email/ativar`, body)
+    this.http.post(`${environment.apiUrl}/usuarios/${this.data.email}/ativar`, body)
       .subscribe({
         next: () => {
           this.snackBar.open('Conta ativada com sucesso! Faça login.', 'Fechar', { duration: 4000 });
@@ -94,7 +94,7 @@ export class AtivarContaDialogComponent {
     this.isResending.set(true);
     this.errorMessage.set('');
 
-    this.http.post(`${environment.apiUrl}/usuarios/email/reenviar-codigo`, { email: this.data.email })
+    this.http.post(`${environment.apiUrl}/usuarios/reenviar-ativacao`, { email: this.data.email })
       .subscribe({
         next: () => {
           this.isResending.set(false);

@@ -254,6 +254,37 @@ $danger:     #e53935;
   }
 }
 
+/* Adicione isso no login.component.scss */
+
+.error-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.btn-ativar-inline {
+  align-self: flex-start;
+  font-size: 12px !important;
+  color: #e53935 !important;
+  border-color: rgba(229, 57, 53, 0.4) !important;
+  border-radius: 6px !important;
+  padding: 0 10px !important;
+  height: 30px !important;
+  line-height: 30px !important;
+
+  mat-icon {
+    font-size: 14px !important;
+    width: 14px !important;
+    height: 14px !important;
+    margin-right: 4px;
+  }
+
+  &:hover {
+    background: rgba(229, 57, 53, 0.06) !important;
+  }
+}
+
 // ── Responsivo ────────────────────────────────────────────────────────────────
 @media (max-width: 480px) {
   .login-card {

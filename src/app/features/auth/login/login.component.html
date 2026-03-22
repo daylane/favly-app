@@ -7,9 +7,7 @@
   <div class="login-card mat-elevation-z4">
 
     <div class="login-brand">
-      <div class="brand-icon">
-        <mat-icon>bolt</mat-icon>
-      </div>
+      <div class="brand-icon"><mat-icon>bolt</mat-icon></div>
       <span class="brand-name">Favly</span>
     </div>
 
@@ -20,21 +18,13 @@
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
 
-      <!-- E-mail -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>E-mail</mat-label>
         <mat-icon matPrefix>mail_outline</mat-icon>
-        <input
-          matInput
-          type="email"
-          formControlName="email"
-          placeholder="seu@email.com"
-          autocomplete="email"
-        />
+        <input matInput type="email" formControlName="email" placeholder="seu@email.com" autocomplete="email" />
         <mat-error *ngIf="emailError">{{ emailError }}</mat-error>
       </mat-form-field>
 
-      <!-- Senha -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Senha</mat-label>
         <mat-icon matPrefix>lock_outline</mat-icon>
@@ -45,38 +35,38 @@
           placeholder="••••••••"
           autocomplete="current-password"
         />
-        <button
-          mat-icon-button
-          matSuffix
-          type="button"
-          (click)="togglePasswordVisibility()"
-          [attr.aria-label]="showPassword ? 'Ocultar senha' : 'Mostrar senha'"
-        >
+        <button mat-icon-button matSuffix type="button" (click)="togglePasswordVisibility()">
           <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
         <mat-error *ngIf="passwordError">{{ passwordError }}</mat-error>
       </mat-form-field>
 
-      <!-- Esqueci senha -->
-      <!-- <div class="forgot-row">
+      <div class="forgot-row">
         <button mat-button type="button" class="forgot-btn" (click)="onForgotPassword()">
           Esqueci minha senha
         </button>
-      </div> -->
+      </div>
 
       <!-- Erro geral -->
       <div class="error-alert" *ngIf="errorMessage" role="alert">
         <mat-icon>error_outline</mat-icon>
-        <span>{{ errorMessage }}</span>
+        <div class="error-content">
+          <span>{{ errorMessage }}</span>
+          <!-- Botão de ativar conta aparece só quando necessário -->
+          <button
+            *ngIf="contaNaoAtivada"
+            mat-stroked-button
+            type="button"
+            class="btn-ativar-inline"
+            (click)="abrirDialogAtivacao()"
+          >
+            <mat-icon>vpn_key</mat-icon>
+            Inserir código de ativação
+          </button>
+        </div>
       </div>
 
-      <!-- Submit -->
-      <button
-        mat-raised-button
-        type="submit"
-        class="btn-submit full-width"
-        [disabled]="isLoading"
-      >
+      <button mat-raised-button type="submit" class="btn-submit full-width" [disabled]="isLoading">
         <mat-spinner *ngIf="isLoading" diameter="20"></mat-spinner>
         <span *ngIf="!isLoading">Entrar</span>
       </button>
@@ -85,7 +75,7 @@
 
     <div class="login-footer">
       <span>Ainda não tem conta?</span>
-      <button mat-button type="button" class="activate-btn" (click)="onActivateAccount()">
+      <button mat-button type="button" class="activate-btn" (click)="onCreateAccount()">
         Crie sua conta
       </button>
     </div>

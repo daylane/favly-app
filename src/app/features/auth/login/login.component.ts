@@ -128,7 +128,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
  
   onForgotPassword(): void {
-    this.router.navigate(['/auth/forgot-password']);
+    this.router.navigate(['/auth/esquecer-senha']);
   }
  
   onCreateAccount(): void {

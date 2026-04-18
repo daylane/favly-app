@@ -1,0 +1,103 @@
+<div class="page">
+  <div class="deco-blob blob-1" aria-hidden="true"></div>
+  <div class="deco-blob blob-2" aria-hidden="true"></div>
+
+  <div class="card mat-elevation-z4">
+
+    <div class="brand">
+      <div class="brand-icon"><mat-icon>bolt</mat-icon></div>
+      <span class="brand-name">Favly</span>
+    </div>
+
+    <div class="header">
+      <div class="header-icon">
+        <mat-icon>vpn_key</mat-icon>
+      </div>
+      <h2>Redefinir senha</h2>
+      <p>Insira o token recebido por e-mail e defina sua nova senha.</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+      <!-- Token -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Token de redefinição</mat-label>
+        <mat-icon matPrefix>tag</mat-icon>
+        <input
+          matInput
+          formControlName="token"
+          placeholder="Cole o token recebido por e-mail"
+          autocomplete="off"
+        />
+        <mat-error *ngIf="tokenError">{{ tokenError }}</mat-error>
+      </mat-form-field>
+
+    
+      <!-- <mat-divider class="divider"></mat-divider> -->
+
+      <!-- Nova senha -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nova senha</mat-label>
+        <mat-icon matPrefix>lock_outline</mat-icon>
+        <input
+          matInput
+          [type]="showNovaSenha() ? 'text' : 'password'"
+          formControlName="novaSenha"
+          placeholder="••••••••"
+          autocomplete="new-password"
+        />
+        <button mat-icon-button matSuffix type="button"
+          (click)="showNovaSenha.set(!showNovaSenha())"
+          [attr.aria-label]="showNovaSenha() ? 'Ocultar' : 'Mostrar'">
+          <mat-icon>{{ showNovaSenha() ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-hint>Mínimo de 6 caracteres</mat-hint>
+        <mat-error *ngIf="novaSenhaError">{{ novaSenhaError }}</mat-error>
+      </mat-form-field>
+
+      <!-- Confirmação -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Confirmar nova senha</mat-label>
+        <mat-icon matPrefix>lock_outline</mat-icon>
+        <input
+          matInput
+          [type]="showConfirmacao() ? 'text' : 'password'"
+          formControlName="confirmacaoSenha"
+          placeholder="••••••••"
+          autocomplete="new-password"
+        />
+        <button mat-icon-button matSuffix type="button"
+          (click)="showConfirmacao.set(!showConfirmacao())"
+          [attr.aria-label]="showConfirmacao() ? 'Ocultar' : 'Mostrar'">
+          <mat-icon>{{ showConfirmacao() ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="confirmacaoError">{{ confirmacaoError }}</mat-error>
+      </mat-form-field>
+
+      <!-- Erro geral -->
+      <div class="error-alert" *ngIf="errorMessage()">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ errorMessage() }}</span>
+      </div>
+
+      <button
+        mat-raised-button
+        type="submit"
+        class="btn-submit full-width"
+        [disabled]="isLoading()"
+      >
+        <mat-spinner *ngIf="isLoading()" diameter="20"></mat-spinner>
+        <span *ngIf="!isLoading()">Redefinir senha</span>
+      </button>
+
+    </form>
+
+    <div class="footer">
+      <button mat-button type="button" class="btn-voltar" (click)="onVoltar()">
+        <mat-icon>arrow_back</mat-icon>
+        Voltar
+      </button>
+    </div>
+
+  </div>
+</div>

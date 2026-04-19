@@ -36,4 +36,113 @@ body {
   margin: 0;
   height: 100%;
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Favly — tema global
+// Cole este conteúdo no seu src/styles.scss
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ── Tokens: modo claro (padrão) ───────────────────────────────────────────────
+:root {
+  --bg-page:       #f5f3ff;
+  --bg-surface:    #ffffff;
+  --bg-surface-2:  rgba(0, 0, 0, 0.03);
+  --border-color:  rgba(0, 0, 0, 0.06);
+  --border-soft:   rgba(0, 0, 0, 0.05);
+  --text-dark:     #1a1a2e;
+  --text-mid:      #4a4a6a;
+  --text-light:    #9090b0;
+  --shadow-card:   rgba(186, 117, 23, 0.12);
+  --navbar-shadow: rgba(124, 77, 255, 0.07);
+}
+
+// ── Tokens: modo escuro ───────────────────────────────────────────────────────
+body.favly-dark {
+  color-scheme: dark;
+  background: #0f0f1a;
+  transition: background 0.25s ease;
+
+  --bg-page:       #0f0f1a;
+  --bg-surface:    #1a1a2e;
+  --bg-surface-2:  rgba(255, 255, 255, 0.06);
+  --border-color:  rgba(255, 255, 255, 0.08);
+  --border-soft:   rgba(255, 255, 255, 0.06);
+  --text-dark:     #e8e6f0;
+  --text-mid:      #a09ab8;
+  --text-light:    #6a647e;
+  --shadow-card:   rgba(0, 0, 0, 0.4);
+  --navbar-shadow: rgba(0, 0, 0, 0.3);
+
+  // ── Angular Material: overrides globais ──────────────────────────────────
+
+  // Toolbar / Navbar
+  .mat-toolbar {
+    background: #1a1a2e !important;
+    color: var(--text-dark) !important;
+  }
+
+  // Cards
+  .mat-mdc-card {
+    background: #1f1f35 !important;
+    color: var(--text-dark) !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
+  }
+
+  // Menus
+  .mat-mdc-menu-panel {
+    background: #252540 !important;
+  }
+  .mat-mdc-menu-item {
+    color: var(--text-dark) !important;
+  }
+  .mat-mdc-menu-item:hover:not([disabled]) {
+    background: rgba(255, 255, 255, 0.06) !important;
+  }
+
+  // Chips
+  .mat-mdc-chip.mat-mdc-standard-chip {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: var(--text-dark) !important;
+  }
+  .mat-mdc-chip-option {
+    background: rgba(255, 255, 255, 0.06) !important;
+    color: var(--text-mid) !important;
+  }
+
+  // Botões
+  .mat-mdc-outlined-button:not([disabled]) {
+    border-color: var(--border-color) !important;
+    color: var(--text-mid) !important;
+  }
+  .mat-mdc-icon-button:not([disabled]) {
+    color: var(--text-mid) !important;
+  }
+  .mat-mdc-button:not([disabled]),
+  .mat-mdc-text-button:not([disabled]) {
+    color: var(--text-mid) !important;
+  }
+
+  // Divider
+  .mat-divider {
+    border-color: var(--border-color) !important;
+  }
+
+  // Snackbar
+  .mat-mdc-snack-bar-container {
+    background: #2a2a45 !important;
+    color: var(--text-dark) !important;
+  }
+
+  // Tooltip
+  .mat-mdc-tooltip {
+    background: #333355 !important;
+    color: var(--text-dark) !important;
+  }
+
+  // ── Favly: summary icon backgrounds no dark ──────────────────────────────
+  .card-categorias .summary-icon { background: rgba(124, 77,  255, 0.2)  !important; }
+  .card-produtos   .summary-icon { background: rgba(15,  110,  86, 0.25) !important; }
+  .card-valor      .summary-icon { background: rgba(24,   95, 165, 0.25) !important; }
+  .card-critico    .summary-icon { background: rgba(226,  75,  74, 0.2)  !important; }
+}
 /* You can add global styles to this file, and also import other style files */

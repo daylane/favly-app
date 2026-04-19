@@ -14,4 +14,6 @@ export interface AuthResponse {
   nome: string;
   email: string;
   expiracao: string;
+  grupoId: string;
+  grupoNome: string;
 }

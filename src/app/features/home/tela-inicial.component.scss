@@ -1,21 +1,30 @@
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap');
 
-$primary:   #FF6B6B;
-$secondary: #FF8E53;
-$accent:    #FFC107;
-$purple:    #7C4DFF;
-$text-dark: #1a1a2e;
-$text-mid:  #4a4a6a;
-$text-light:#9090b0;
-$bg:        #f5f3ff;
-$white:     #ffffff;
+// Tokens CSS definidos globalmente em src/styles.scss (favly-theme.styles.scss)
 
-// ── Navbar ──────────────────────────────────────────────────────────────────
+$primary:    #FF6B6B;
+$secondary:  #FF8E53;
+$accent:     #FFC107;
+$purple:     #7C4DFF;
+$amber:      #BA7517;
+$amber-bg:   rgba(186, 117, 23, 0.1);
+$teal:       #0F6E56;
+$teal-bg:    rgba(15, 110, 86, 0.1);
+$danger:     #E24B4A;
+$danger-bg:  rgba(226, 75, 74, 0.1);
+$blue:       #185FA5;
+$blue-bg:    rgba(24, 95, 165, 0.1);
+$text-dark:  #1a1a2e;
+$text-mid:   #4a4a6a;
+$text-light: #9090b0;
+$bg:         #f5f3ff;
+$white:      #ffffff;
+
+// ── Navbar ───────────────────────────────────────────────────────────────────
 .navbar {
-  background: $white !important;
-  border-bottom: 1px solid rgba(0,0,0,0.06);
-  box-shadow: 0 2px 12px rgba(124,77,255,0.07) !important;
+  background: var(--bg-surface) !important;
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 2px 12px var(--navbar-shadow) !important;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -31,7 +40,7 @@ $white:     #ffffff;
 .brand-icon {
   width: 32px; height: 32px;
   border-radius: 8px;
-  background: linear-gradient(135deg, $primary, $accent);
+  background: linear-gradient(135deg, $amber, $secondary);
   display: flex; align-items: center; justify-content: center;
   mat-icon { color: white; font-size: 18px; width: 18px; height: 18px; }
 }
@@ -39,7 +48,7 @@ $white:     #ffffff;
 .brand-name {
   font-family: 'Syne', sans-serif;
   font-size: 18px; font-weight: 800;
-  color: $text-dark;
+  color: var(--text-dark);
 }
 
 .spacer { flex: 1; }
@@ -63,34 +72,36 @@ $white:     #ffffff;
 }
 
 .user-avatar-sm {
-  width: 30px;
-  height: 30px;
+  width: 30px; height: 30px;
   border-radius: 50%;
-  background: linear-gradient(135deg, $primary, $secondary);
+  background: linear-gradient(135deg, $amber, $secondary);
   color: $white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: 600;
-  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600; flex-shrink: 0;
 }
 
 .user-name-toolbar {
-  font-size: 14px;
-  font-weight: 500;
-  color: $text-dark;
-  line-height: 1;
+  font-size: 14px; font-weight: 500;
+  color: var(--text-dark); line-height: 1;
 }
 
 .logout-item { color: #e53935 !important; }
 
-// ── Page ────────────────────────────────────────────────────────────────────
+.theme-btn {
+  color: var(--text-mid) !important;
+  transition: color 0.2s;
+  &:hover { color: $amber !important; }
+}
+
+// ── Page ─────────────────────────────────────────────────────────────────────
 .page-content {
   max-width: 900px;
   margin: 0 auto;
   padding: 2rem 1.5rem;
   font-family: 'DM Sans', sans-serif;
+  background: var(--bg-page);
+  min-height: calc(100vh - 64px);
+  transition: background 0.25s ease;
 }
 
 // ── Welcome ──────────────────────────────────────────────────────────────────
@@ -105,23 +116,24 @@ $white:     #ffffff;
 
 .welcome-text {
   h1 {
-    font-family: 'Pixelify Sans', sans-serif;
+    font-family: 'Syne', sans-serif;
     font-size: 26px; font-weight: 800;
-    color: $text-dark; margin: 0 0 7px;
+    color: var(--text-dark); margin: 0 0 6px;
   }
-  p { font-size: 14px; color: $text-light; margin: 0; }
+  p { font-size: 14px; color: var(--text-light); margin: 0; }
+  strong { color: $danger; font-weight: 600; }
 }
 
-.btn-nova-tarefa {
-  background: linear-gradient(135deg, $primary, $secondary) !important;
+.btn-cadastrar-produto {
+  background: linear-gradient(135deg, $amber, $secondary) !important;
   color: white !important;
   border-radius: 10px !important;
-  box-shadow: 0 4px 16px rgba(255,107,107,0.3) !important;
+  box-shadow: 0 4px 16px rgba(186,117,23,0.3) !important;
   font-weight: 500 !important;
   mat-icon { margin-right: 4px; }
 }
 
-// ── Summary cards ────────────────────────────────────────────────────────────
+// ── Summary cards ─────────────────────────────────────────────────────────────
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -152,63 +164,52 @@ $white:     #ffffff;
 
 .summary-info {
   display: flex; flex-direction: column;
-  .summary-value { font-size: 22px; font-weight: 700; color: $text-dark; line-height: 1; }
-  .summary-label { font-size: 12px; color: $text-light; margin-top: 2px; }
+  .summary-value { font-size: 20px; font-weight: 700; color: var(--text-dark); line-height: 1; }
+  .summary-label { font-size: 12px; color: var(--text-light); margin-top: 2px; }
 }
 
-.card-total    .summary-icon { background: rgba(124,77,255,0.1); mat-icon { color: $purple; } }
-.card-pendente .summary-icon { background: rgba(255,193,7,0.1);  mat-icon { color: $accent; } }
-.card-andamento .summary-icon { background: rgba(255,107,107,0.1); mat-icon { color: $primary; } }
-.card-concluida .summary-icon { background: rgba(0,200,83,0.1);  mat-icon { color: #00C853; } }
-
-// ── Progress ─────────────────────────────────────────────────────────────────
-.progress-card {
-  border-radius: 16px !important;
-  margin-bottom: 1rem;
-
-  mat-card-content { padding: 1rem 1.25rem !important; }
-}
-
-.progress-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.progress-title { font-size: 14px; font-weight: 500; color: $text-mid; }
-.progress-pct   { font-size: 14px; font-weight: 700; color: $primary; }
-
-.progress-bar {
-  border-radius: 8px;
-  height: 8px !important;
-
-  ::ng-deep .mdc-linear-progress__bar-inner {
-    border-color: $primary !important;
-  }
-  ::ng-deep .mdc-linear-progress__track-rect {
-    background: rgba(255,107,107,0.15) !important;
-  }
-}
+.card-categorias .summary-icon { background: rgba(124,77,255,0.1); mat-icon { color: $purple; } }
+.card-produtos   .summary-icon { background: $teal-bg;             mat-icon { color: $teal;   } }
+.card-valor      .summary-icon { background: $blue-bg;             mat-icon { color: $blue;   } }
+.card-critico    .summary-icon { background: $danger-bg;           mat-icon { color: $danger; } }
 
 // ── Quick actions ─────────────────────────────────────────────────────────────
 .quick-actions {
   display: flex;
   gap: 0.75rem;
-  margin-bottom: 1.75rem;
+  margin-bottom: 1.5rem;
   flex-wrap: wrap;
 }
 
 .quick-btn {
   border-radius: 10px !important;
-  border-color: rgba(124,77,255,0.2) !important;
-  color: $text-mid !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-mid) !important;
   font-size: 13px !important;
   font-weight: 500 !important;
   gap: 4px;
 
-  mat-icon { font-size: 18px; width: 18px; height: 18px; color: $purple; }
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
 
+  &.quick-entrada {
+    border-color: $teal-bg !important;
+    mat-icon { color: $teal; }
+    &:hover { background: $teal-bg !important; color: $teal !important; }
+  }
+
+  &.quick-saida {
+    border-color: $danger-bg !important;
+    mat-icon { color: $danger; }
+    &:hover { background: $danger-bg !important; color: $danger !important; }
+  }
+
+  &.quick-compra {
+    border-color: $amber-bg !important;
+    mat-icon { color: $amber; }
+    &:hover { background: $amber-bg !important; color: $amber !important; }
+  }
+
+  mat-icon { color: $purple; }
   &:hover {
     background: rgba(124,77,255,0.05) !important;
     border-color: $purple !important;
@@ -216,14 +217,187 @@ $white:     #ffffff;
   }
 }
 
-// ── Tasks ─────────────────────────────────────────────────────────────────────
-.tasks-section h2 {
-  font-family: 'Syne', sans-serif;
-  font-size: 18px; font-weight: 700;
-  color: $text-dark; margin: 0;
+// ── Two columns grid ──────────────────────────────────────────────────────────
+.two-col-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  @media (max-width: 680px) { grid-template-columns: 1fr; }
 }
 
-.tasks-header {
+// ── Panel cards ───────────────────────────────────────────────────────────────
+.panel-card {
+  border-radius: 16px !important;
+  background: var(--bg-surface) !important;
+  transition: background 0.25s ease;
+
+  mat-card-content { padding: 1.25rem !important; }
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px; font-weight: 700;
+    color: var(--text-dark); margin: 0;
+  }
+}
+
+.btn-ver-todas {
+  font-size: 12px !important;
+  color: $amber !important;
+  padding: 0 8px !important;
+  min-width: auto !important;
+  height: 28px !important;
+}
+
+// ── Movimentações ─────────────────────────────────────────────────────────────
+.mov-list { display: flex; flex-direction: column; }
+
+.mov-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-soft);
+
+  &:last-child { border-bottom: none; padding-bottom: 0; }
+}
+
+.mov-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%; flex-shrink: 0;
+
+  &.entrada { background: #1D9E75; }
+  &.saida   { background: $danger; }
+}
+
+.mov-info {
+  flex: 1; min-width: 0;
+  display: flex; flex-direction: column;
+}
+
+.mov-nome {
+  font-size: 13px; font-weight: 500; color: var(--text-dark);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.mov-cat { font-size: 11px; color: var(--text-light); }
+
+.mov-qty {
+  font-size: 12px; font-weight: 500;
+  padding: 2px 7px; border-radius: 20px; white-space: nowrap;
+
+  &.entrada { background: $teal-bg;   color: $teal;   }
+  &.saida   { background: $danger-bg; color: $danger; }
+}
+
+.mov-data {
+  font-size: 11px; color: var(--text-light);
+  min-width: 36px; text-align: right;
+}
+
+// ── Estoque baixo ─────────────────────────────────────────────────────────────
+.low-list { display: flex; flex-direction: column; }
+
+.low-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-soft);
+
+  &:last-child { border-bottom: none; }
+}
+
+.low-info {
+  min-width: 0;
+  width: 110px;
+  flex-shrink: 0;
+}
+
+.low-nome {
+  display: block;
+  font-size: 12px; font-weight: 500; color: var(--text-dark);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.low-cat { font-size: 11px; color: var(--text-light); display: block; }
+
+.low-bar-wrap { flex: 1; }
+
+.low-bar-bg {
+  background: var(--bg-surface-2);
+  border-radius: 4px; height: 5px; overflow: hidden;
+}
+
+.low-bar-fill {
+  height: 5px; border-radius: 4px;
+  transition: width 0.4s ease;
+
+  &.critico { background: $danger; }
+  &.atencao { background: $accent; }
+  background: #1D9E75;
+}
+
+.low-qty {
+  font-size: 11px; color: var(--text-light);
+  text-align: right; min-width: 52px;
+}
+
+// ── Categorias ────────────────────────────────────────────────────────────────
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+
+  @media (max-width: 600px) { grid-template-columns: repeat(3, 1fr); }
+}
+
+.cat-card {
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 12px 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+
+  &:hover {
+    background: $amber-bg;
+    border-color: rgba(186,117,23,0.2);
+  }
+}
+
+.cat-emoji { font-size: 22px; display: block; margin-bottom: 4px; }
+.cat-count { font-size: 14px; font-weight: 700; color: var(--text-dark); display: block; }
+.cat-nome  { font-size: 11px; color: var(--text-light); display: block; margin-top: 1px; }
+
+.cat-nova {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  border-style: dashed;
+  mat-icon { font-size: 20px; width: 20px; height: 20px; color: var(--text-light); margin-bottom: 4px; }
+}
+
+// ── Products section ──────────────────────────────────────────────────────────
+.products-section {
+  margin-top: 1.5rem;
+
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px; font-weight: 700;
+    color: var(--text-dark); margin: 0;
+  }
+}
+
+.products-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -234,82 +408,91 @@ $white:     #ffffff;
 
 .filter-chips {
   ::ng-deep .mat-mdc-chip-option.mat-mdc-chip-selected {
-    background: linear-gradient(135deg, $primary, $secondary) !important;
+    background: linear-gradient(135deg, $amber, $secondary) !important;
     color: white !important;
   }
 }
 
-.task-list { display: flex; flex-direction: column; gap: 0.6rem; }
+.product-list { display: flex; flex-direction: column; gap: 0.6rem; }
 
-.task-card {
+.product-card {
   border-radius: 14px !important;
-  transition: box-shadow 0.2s, transform 0.15s;
+  background: var(--bg-surface) !important;
+  transition: box-shadow 0.2s, transform 0.15s, background 0.25s ease;
 
-  &:hover { box-shadow: 0 4px 20px rgba(124,77,255,0.1) !important; transform: translateY(-1px); }
+  &:hover { box-shadow: 0 4px 20px var(--shadow-card) !important; transform: translateY(-1px); }
 
   mat-card-content { padding: 0.75rem 1rem !important; }
 }
 
-.task-concluida {
-  opacity: 0.6;
-  .task-titulo { text-decoration: line-through; }
+.produto-critico {
+  border-left: 3px solid $danger !important;
 }
 
-.task-row {
+.product-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
-.status-btn { flex-shrink: 0; }
-
-.status-icon {
-  &.status-concluida    { color: #00C853; }
-  &.status-em_andamento { color: $primary; }
-  &.status-pendente     { color: $text-light; }
+.product-icon-wrap {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: $amber-bg;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
 }
 
-.task-info { flex: 1; min-width: 0; }
+.product-icon { color: $amber; font-size: 18px; width: 18px; height: 18px; }
 
-.task-titulo {
+.product-info { flex: 1; min-width: 0; }
+
+.product-nome {
   font-size: 14px; font-weight: 500;
-  color: $text-dark;
+  color: var(--text-dark);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   margin-bottom: 4px;
 }
 
-.task-meta {
-  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+.product-meta {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
 }
 
 .chip-categoria {
   font-size: 11px !important; height: 20px !important;
-  background: rgba(124,77,255,0.08) !important;
+  background: rgba(124,77,255,0.12) !important;
   color: $purple !important;
 }
 
-.chip-prioridade {
-  font-size: 11px !important; height: 20px !important;
-  &.chip-alta   { background: rgba(255,107,107,0.1) !important; color: $primary !important; }
-  &.chip-media  { background: rgba(255,193,7,0.1) !important;   color: #B8860B !important; }
-  &.chip-baixa  { background: rgba(0,200,83,0.1) !important;    color: #00A040 !important; }
-}
-
-.task-prazo {
-  font-size: 11px; color: $text-light;
+.product-quantidade {
+  font-size: 11px; color: var(--text-light);
   display: flex; align-items: center; gap: 2px;
 
-  &.prazo-proximo { color: $accent; font-weight: 500; }
-  &.prazo-vencido { color: $primary; font-weight: 500; }
+  &.qtd-critica { color: $danger; font-weight: 600; }
+}
+
+.product-preco {
+  font-size: 11px; color: var(--text-light);
+  display: flex; align-items: center; gap: 2px;
 }
 
 .delete-item { color: #e53935 !important; }
 
-// ── Empty state ───────────────────────────────────────────────────────────────
+// ── Empty states ──────────────────────────────────────────────────────────────
 .empty-state {
   text-align: center;
   padding: 3rem;
-  color: $text-light;
+  color: var(--text-light);
   mat-icon { font-size: 48px; width: 48px; height: 48px; opacity: 0.4; }
   p { margin-top: 8px; font-size: 14px; }
 }
+
+.empty-state-small {
+  text-align: center;
+  padding: 1.5rem;
+  color: var(--text-light);
+  mat-icon { font-size: 28px; width: 28px; height: 28px; opacity: 0.4; }
+  p { margin-top: 4px; font-size: 12px; }
+}
+
+// Overrides do Angular Material para dark mode estão em src/styles.scss

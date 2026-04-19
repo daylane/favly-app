@@ -1,21 +1,37 @@
 <!-- Navbar -->
 <mat-toolbar class="navbar">
   <div class="nav-brand">
-    <div class="brand-icon"><mat-icon>bolt</mat-icon></div>
+    <div class="brand-icon"><mat-icon>home</mat-icon></div>
     <span class="brand-name">Favly</span>
   </div>
 
   <span class="spacer"></span>
 
-  <button mat-icon-button matTooltip="Notificações" [matBadge]="totalPendentes()" matBadgeColor="warn" matBadgeSize="small">
+  <button
+    mat-icon-button
+    [matTooltip]="darkMode() ? 'Modo claro' : 'Modo escuro'"
+    (click)="toggleDarkMode()"
+    class="theme-btn"
+  >
+    <mat-icon>{{ darkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+  </button>
+
+  <button
+    mat-icon-button
+    matTooltip="Alertas de estoque"
+    [matBadge]="totalCriticos()"
+    matBadgeColor="warn"
+    matBadgeSize="small"
+    [matBadgeHidden]="totalCriticos() === 0"
+  >
     <mat-icon>notifications_none</mat-icon>
   </button>
 
-<button mat-button class="user-btn" [matMenuTriggerFor]="userMenu">
-  <mat-icon>expand_more</mat-icon>
-  <span class="user-name-toolbar">{{ usuario?.nome?.split(' ')?.[0] ?? 'Usuário' }}</span>
-  <div class="user-avatar-sm">{{ usuario?.nome?.charAt(0)?.toUpperCase() }}</div>
-</button>
+  <button mat-button class="user-btn" [matMenuTriggerFor]="userMenu">
+    <mat-icon>expand_more</mat-icon>
+    <span class="user-name-toolbar">{{ usuario?.nome?.split(' ')?.[0] ?? 'Usuário' }}</span>
+    <div class="user-avatar-sm">{{ usuario?.nome?.charAt(0)?.toUpperCase() }}</div>
+  </button>
 
   <mat-menu #userMenu="matMenu">
     <button mat-menu-item>
@@ -33,152 +49,253 @@
 
 <div class="page-content">
 
-  <!-- Boas vindas + ação rápida -->
+  <!-- Boas vindas -->
   <div class="welcome-row">
     <div class="welcome-text">
-     <h1>Olá, {{ usuario?.nome?.split(' ')?.[0] ?? 'Usuário' }} 👋</h1>
-      <p>Você tem <strong>{{ totalPendentes() }} tarefas pendentes</strong> hoje.</p>
+      <h1>Olá, {{ usuario?.nome?.split(' ')?.[0] ?? 'Usuário' }} 👋</h1>
+      <p *ngIf="totalCriticos() > 0">
+        Você tem <strong>{{ totalCriticos() }} {{ totalCriticos() === 1 ? 'produto' : 'produtos' }} com estoque crítico</strong>.
+      </p>
+      <p *ngIf="totalCriticos() === 0">Seu estoque está em dia. Tudo certo por aqui!</p>
     </div>
-    <button mat-raised-button class="btn-nova-tarefa" (click)="novaTarefa()">
-      <mat-icon>add</mat-icon> Nova tarefa
+    <button mat-raised-button class="btn-cadastrar-produto" (click)="cadastrarProduto()">
+      <mat-icon>add</mat-icon> Cadastrar produto
     </button>
   </div>
 
   <!-- Cards de resumo -->
   <div class="summary-grid">
 
-    <mat-card class="summary-card card-total" matRipple>
+    <mat-card class="summary-card card-categorias" matRipple>
       <mat-card-content>
-        <div class="summary-icon"><mat-icon>list_alt</mat-icon></div>
+        <div class="summary-icon"><mat-icon>category</mat-icon></div>
         <div class="summary-info">
-          <span class="summary-value">{{ totalTarefas() }}</span>
-          <span class="summary-label">Total</span>
+          <span class="summary-value">{{ totalCategorias() }}</span>
+          <span class="summary-label">Categorias</span>
         </div>
       </mat-card-content>
     </mat-card>
 
-    <mat-card class="summary-card card-pendente" matRipple>
+    <mat-card class="summary-card card-produtos" matRipple>
       <mat-card-content>
-        <div class="summary-icon"><mat-icon>radio_button_unchecked</mat-icon></div>
+        <div class="summary-icon"><mat-icon>inventory_2</mat-icon></div>
         <div class="summary-info">
-          <span class="summary-value">{{ totalPendentes() }}</span>
-          <span class="summary-label">Pendentes</span>
+          <span class="summary-value">{{ totalProdutos() }}</span>
+          <span class="summary-label">Produtos</span>
         </div>
       </mat-card-content>
     </mat-card>
 
-    <mat-card class="summary-card card-andamento" matRipple>
+    <mat-card class="summary-card card-valor" matRipple>
       <mat-card-content>
-        <div class="summary-icon"><mat-icon>timelapse</mat-icon></div>
+        <div class="summary-icon"><mat-icon>payments</mat-icon></div>
         <div class="summary-info">
-          <span class="summary-value">{{ totalAndamento() }}</span>
-          <span class="summary-label">Em andamento</span>
+          <span class="summary-value">{{ valorTotalEstoque() | currency:'BRL':'symbol':'1.0-0' }}</span>
+          <span class="summary-label">Valor em estoque</span>
         </div>
       </mat-card-content>
     </mat-card>
 
-    <mat-card class="summary-card card-concluida" matRipple>
+    <mat-card class="summary-card card-critico" matRipple>
       <mat-card-content>
-        <div class="summary-icon"><mat-icon>check_circle_outline</mat-icon></div>
+        <div class="summary-icon"><mat-icon>warning_amber</mat-icon></div>
         <div class="summary-info">
-          <span class="summary-value">{{ totalConcluidas() }}</span>
-          <span class="summary-label">Concluídas</span>
+          <span class="summary-value">{{ totalCriticos() }}</span>
+          <span class="summary-label">Estoque crítico</span>
         </div>
       </mat-card-content>
     </mat-card>
 
   </div>
-
-  <!-- Progresso geral -->
-  <mat-card class="progress-card">
-    <mat-card-content>
-      <div class="progress-header">
-        <span class="progress-title">Progresso geral</span>
-        <span class="progress-pct">{{ progressoGeral() }}%</span>
-      </div>
-      <mat-progress-bar mode="determinate" [value]="progressoGeral()" class="progress-bar"></mat-progress-bar>
-    </mat-card-content>
-  </mat-card>
 
   <!-- Ações rápidas -->
   <div class="quick-actions">
-    <button mat-stroked-button class="quick-btn" (click)="novaTarefa()">
-      <mat-icon>add_task</mat-icon> Nova tarefa
+    <button mat-stroked-button class="quick-btn quick-entrada" (click)="registrarEntrada()">
+      <mat-icon>add_circle_outline</mat-icon> Nova entrada
+    </button>
+    <button mat-stroked-button class="quick-btn quick-saida" (click)="registrarSaida()">
+      <mat-icon>remove_circle_outline</mat-icon> Registrar saída
+    </button>
+    <button mat-stroked-button class="quick-btn quick-compra" (click)="registrarCompra()">
+      <mat-icon>shopping_cart</mat-icon> Registrar compra
     </button>
     <button mat-stroked-button class="quick-btn">
-      <mat-icon>folder_open</mat-icon> Projetos
-    </button>
-    <button mat-stroked-button class="quick-btn">
-      <mat-icon>bar_chart</mat-icon> Relatórios
-    </button>
-    <button mat-stroked-button class="quick-btn">
-      <mat-icon>group</mat-icon> Time
+      <mat-icon>bar_chart</mat-icon> Relatório
     </button>
   </div>
 
-  <!-- Lista de tarefas -->
-  <div class="tasks-section">
-    <div class="tasks-header">
-      <h2>Minhas tarefas</h2>
-      <mat-chip-listbox class="filter-chips" [value]="filtroAtivo()">
-        <mat-chip-option value="todas"       (click)="setFiltro('todas')">Todas</mat-chip-option>
-        <mat-chip-option value="pendente"    (click)="setFiltro('pendente')">Pendentes</mat-chip-option>
-        <mat-chip-option value="em_andamento"(click)="setFiltro('em_andamento')">Em andamento</mat-chip-option>
-        <mat-chip-option value="concluida"   (click)="setFiltro('concluida')">Concluídas</mat-chip-option>
+  <!-- Movimentações + Estoque baixo -->
+  <div class="two-col-grid">
+
+    <!-- Movimentações recentes -->
+    <mat-card class="panel-card">
+      <mat-card-content>
+        <div class="panel-header">
+          <h2>Movimentações recentes</h2>
+          <button mat-button class="btn-ver-todas">Ver todas</button>
+        </div>
+
+        <div class="mov-list">
+          <div
+            *ngFor="let mov of movimentacoesRecentes()"
+            class="mov-item"
+          >
+            <div class="mov-dot" [class.entrada]="mov.tipo === 'entrada'" [class.saida]="mov.tipo === 'saida'"></div>
+            <div class="mov-info">
+              <span class="mov-nome">{{ mov.produto }}</span>
+              <span class="mov-cat">{{ mov.categoria }}</span>
+            </div>
+            <span class="mov-qty" [class.entrada]="mov.tipo === 'entrada'" [class.saida]="mov.tipo === 'saida'">
+              {{ mov.tipo === 'entrada' ? '+' : '-' }}{{ mov.quantidade }} {{ mov.unidade }}
+            </span>
+            <span class="mov-data">{{ mov.data | date:'dd/MM' }}</span>
+          </div>
+
+          <div *ngIf="movimentacoesRecentes().length === 0" class="empty-state-small">
+            <mat-icon>swap_vert</mat-icon>
+            <p>Nenhuma movimentação ainda</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Estoque baixo -->
+    <mat-card class="panel-card">
+      <mat-card-content>
+        <div class="panel-header">
+          <h2>Estoque baixo</h2>
+          <button mat-button class="btn-ver-todas">Comprar</button>
+        </div>
+
+        <div class="low-list">
+          <div *ngFor="let p of produtosBaixoEstoque()" class="low-item">
+            <div class="low-info">
+              <span class="low-nome">{{ p.nome }}</span>
+              <span class="low-cat">{{ p.categoria }}</span>
+            </div>
+            <div class="low-bar-wrap">
+              <div class="low-bar-bg">
+                <div
+                  class="low-bar-fill"
+                  [class.critico]="getNivelEstoque(p) < 20"
+                  [class.atencao]="getNivelEstoque(p) >= 20 && getNivelEstoque(p) < 40"
+                  [style.width.%]="getNivelEstoque(p)"
+                ></div>
+              </div>
+            </div>
+            <span class="low-qty">{{ p.quantidadeAtual }}/{{ p.quantidadeMinima }} {{ p.unidade }}</span>
+          </div>
+
+          <div *ngIf="produtosBaixoEstoque().length === 0" class="empty-state-small">
+            <mat-icon>check_circle_outline</mat-icon>
+            <p>Estoque dentro do esperado</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+
+  <!-- Categorias -->
+  <mat-card class="panel-card">
+    <mat-card-content>
+      <div class="panel-header">
+        <h2>Categorias</h2>
+        <button mat-button class="btn-ver-todas" (click)="gerenciarCategorias()">Gerenciar</button>
+      </div>
+
+      <div class="cat-grid">
+        <div
+          *ngFor="let cat of categorias()"
+          class="cat-card"
+          matRipple
+          (click)="filtrarPorCategoria(cat)"
+        >
+          <span class="cat-emoji">{{ cat.icone }}</span>
+          <span class="cat-count">{{ cat.totalProdutos }}</span>
+          <span class="cat-nome">{{ cat.nome }}</span>
+        </div>
+
+        <div class="cat-card cat-nova" matRipple (click)="novaCategorias()">
+          <mat-icon>add</mat-icon>
+          <span class="cat-nome">Nova</span>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Lista de produtos -->
+  <div class="products-section">
+    <div class="products-header">
+      <h2>Produtos</h2>
+      <mat-chip-listbox class="filter-chips" [value]="filtroCategoriaAtivo()">
+        <mat-chip-option value="todos" (click)="setFiltroCategoria('todos')">Todos</mat-chip-option>
+        <mat-chip-option
+          *ngFor="let cat of categorias()"
+          [value]="cat.nome"
+          (click)="setFiltroCategoria(cat.nome)"
+        >
+          {{ cat.nome }}
+        </mat-chip-option>
       </mat-chip-listbox>
     </div>
 
-    <div class="task-list">
+    <div class="product-list">
       <mat-card
-        *ngFor="let tarefa of tarefasFiltradas()"
-        class="task-card"
-        [class.task-concluida]="tarefa.status === 'concluida'"
+        *ngFor="let produto of produtosFiltrados()"
+        class="product-card"
+        [class.produto-critico]="produto.quantidadeAtual <= produto.quantidadeMinima"
         matRipple
       >
         <mat-card-content>
-          <div class="task-row">
+          <div class="product-row">
 
-            <button
-              mat-icon-button
-              class="status-btn"
-              [matTooltip]="tarefa.status === 'concluida' ? 'Concluída' : 'Marcar como concluída'"
-              (click)="concluirTarefa(tarefa)"
-              [disabled]="tarefa.status === 'concluida'"
-            >
-              <mat-icon [class]="'status-icon status-' + tarefa.status">
-                {{ getStatusIcon(tarefa.status) }}
-              </mat-icon>
-            </button>
+            <div class="product-icon-wrap">
+              <mat-icon class="product-icon">inventory_2</mat-icon>
+            </div>
 
-            <div class="task-info">
-              <div class="task-titulo">{{ tarefa.titulo }}</div>
-              <div class="task-meta">
-                <mat-chip class="chip-categoria">{{ tarefa.categoria }}</mat-chip>
-                <mat-chip class="chip-prioridade chip-{{ tarefa.prioridade }}">{{ tarefa.prioridade }}</mat-chip>
-                <span class="task-prazo" [class.prazo-proximo]="isPrazoProximo(tarefa.dataPrazo)" [class.prazo-vencido]="isPrazoVencido(tarefa.dataPrazo)">
-                  <mat-icon style="font-size:13px;width:13px;height:13px;vertical-align:middle">schedule</mat-icon>
-                  {{ tarefa.dataPrazo | date:'dd/MM' }}
+            <div class="product-info">
+              <div class="product-nome">{{ produto.nome }}</div>
+              <div class="product-meta">
+                <mat-chip class="chip-categoria">{{ produto.categoria }}</mat-chip>
+                <span class="product-quantidade" [class.qtd-critica]="produto.quantidadeAtual <= produto.quantidadeMinima">
+                  <mat-icon style="font-size:13px;width:13px;height:13px;vertical-align:middle">inventory</mat-icon>
+                  {{ produto.quantidadeAtual }} {{ produto.unidade }}
+                </span>
+                <span class="product-preco">
+                  <mat-icon style="font-size:13px;width:13px;height:13px;vertical-align:middle">sell</mat-icon>
+                  {{ produto.precoUnitario | currency:'BRL' }}
                 </span>
               </div>
             </div>
 
-            <button mat-icon-button [matMenuTriggerFor]="taskMenu" (click)="$event.stopPropagation()">
+            <button mat-icon-button [matMenuTriggerFor]="productMenu" (click)="$event.stopPropagation()">
               <mat-icon>more_vert</mat-icon>
             </button>
 
-            <mat-menu #taskMenu="matMenu">
-              <button mat-menu-item><mat-icon>edit</mat-icon> Editar</button>
-              <button mat-menu-item (click)="concluirTarefa(tarefa)"><mat-icon>check</mat-icon> Concluir</button>
-              <button mat-menu-item class="delete-item"><mat-icon>delete_outline</mat-icon> Excluir</button>
+            <mat-menu #productMenu="matMenu">
+              <button mat-menu-item (click)="registrarEntradaProduto(produto)">
+                <mat-icon>add_circle_outline</mat-icon> Entrada
+              </button>
+              <button mat-menu-item (click)="registrarSaidaProduto(produto)">
+                <mat-icon>remove_circle_outline</mat-icon> Saída
+              </button>
+              <button mat-menu-item>
+                <mat-icon>edit</mat-icon> Editar
+              </button>
+              <mat-divider></mat-divider>
+              <button mat-menu-item class="delete-item">
+                <mat-icon>delete_outline</mat-icon> Excluir
+              </button>
             </mat-menu>
 
           </div>
         </mat-card-content>
       </mat-card>
 
-      <div *ngIf="tarefasFiltradas().length === 0" class="empty-state">
-        <mat-icon>inbox</mat-icon>
-        <p>Nenhuma tarefa encontrada</p>
+      <div *ngIf="produtosFiltrados().length === 0" class="empty-state">
+        <mat-icon>inventory_2</mat-icon>
+        <p>Nenhum produto encontrado</p>
       </div>
     </div>
   </div>

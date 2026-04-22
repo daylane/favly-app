@@ -1,0 +1,69 @@
+<div class="dialog-wrap">
+
+  <div class="dialog-icon-top">
+    <span class="emoji-preview">{{ emojiSelecionado() }}</span>
+  </div>
+
+  <h2 mat-dialog-title>{{ isEdicao ? 'Editar categoria' : 'Nova categoria' }}</h2>
+
+  <mat-dialog-content>
+
+    <!-- Nome -->
+    <form [formGroup]="form" novalidate>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nome da categoria</mat-label>
+        <mat-icon matPrefix>label_outline</mat-icon>
+        <input
+          matInput
+          formControlName="nome"
+          placeholder="Ex: Alimentos, Limpeza..."
+          autocomplete="off"
+        />
+        <mat-hint align="end">{{ nomeControl.value?.length ?? 0 }}/40</mat-hint>
+        <mat-error *ngIf="nomeError">{{ nomeError }}</mat-error>
+      </mat-form-field>
+    </form>
+
+    <!-- Seletor de emoji -->
+    <div class="emoji-section">
+      <p class="emoji-label">Ícone</p>
+      <div class="emoji-grid">
+        <button
+          *ngFor="let emoji of emojis"
+          type="button"
+          class="emoji-btn"
+          [class.selected]="emojiSelecionado() === emoji"
+          matRipple
+          [matTooltip]="emoji"
+          (click)="selecionarEmoji(emoji)"
+        >
+          {{ emoji }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Erro -->
+    <div class="error-alert" *ngIf="errorMessage()">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ errorMessage() }}</span>
+    </div>
+
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" (click)="onCancelar()" [disabled]="isLoading()">
+      Cancelar
+    </button>
+    <button
+      mat-raised-button
+      class="btn-salvar"
+      type="button"
+      (click)="onSalvar()"
+      [disabled]="isLoading()"
+    >
+      <mat-spinner *ngIf="isLoading()" diameter="18"></mat-spinner>
+      <span *ngIf="!isLoading()">{{ isEdicao ? 'Salvar alterações' : 'Criar categoria' }}</span>
+    </button>
+  </mat-dialog-actions>
+
+</div>

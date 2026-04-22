@@ -1,0 +1,119 @@
+<div class="drawer-container">
+
+  <!-- Header -->
+  <div class="drawer-header">
+    <div class="drawer-title">
+      <div class="drawer-icon">
+        <mat-icon>inventory_2</mat-icon>
+      </div>
+      <div>
+        <h2>{{ produto ? 'Editar produto' : 'Novo produto' }}</h2>
+        <p>{{ produto ? 'Atualize as informações do produto' : 'Preencha os dados para cadastrar' }}</p>
+      </div>
+    </div>
+    <button mat-icon-button (click)="onFechar()" matTooltip="Fechar" class="btn-fechar">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <!-- Formulário -->
+  <div class="drawer-body">
+    <form [formGroup]="form" (ngSubmit)="onSalvar()" novalidate>
+
+      <!-- Nome -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nome do produto</mat-label>
+        <mat-icon matPrefix>label_outline</mat-icon>
+        <input
+          matInput
+          formControlName="nome"
+          placeholder="Ex: Arroz Tio João 5kg"
+          autocomplete="off"
+        />
+       <!-- <mat-hint align="end">{{ nomeControls }}/100</mat-hint> -->
+        <mat-error *ngIf="nomeError">{{ nomeError }}</mat-error>
+      </mat-form-field>
+
+      <!-- Marca -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Marca <span class="optional">(opcional)</span></mat-label>
+        <mat-icon matPrefix>storefront</mat-icon>
+        <input
+          matInput
+          formControlName="marca"
+          placeholder="Ex: Tio João, Ypê..."
+          autocomplete="off"
+        />
+      </mat-form-field>
+
+      <!-- Categoria -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Categoria</mat-label>
+        <mat-icon matPrefix>category</mat-icon>
+        <mat-select formControlName="categoriaId" placeholder="Selecione...">
+          <mat-option *ngFor="let cat of categorias" [value]="cat.id">
+            {{ cat.icone }} {{ cat.nome }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="categoriaError">{{ categoriaError }}</mat-error>
+      </mat-form-field>
+
+      <!-- Unidade + Qtd mínima lado a lado -->
+      <div class="row-two">
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Unidade</mat-label>
+          <mat-icon matPrefix>straighten</mat-icon>
+          <mat-select formControlName="unidade">
+            <mat-option *ngFor="let u of unidades" [value]="u.valor">
+              {{ u.label }} ({{ u.sigla }})
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Qtd. mínima</mat-label>
+          <mat-icon matPrefix>warning_amber</mat-icon>
+          <input
+            matInput
+            type="number"
+            formControlName="quantidadeMinima"
+            placeholder="0"
+            min="0"
+          />
+          <mat-hint>Alerta de estoque baixo</mat-hint>
+          <mat-error *ngIf="quantidadeMinimaError">{{ quantidadeMinimaError }}</mat-error>
+        </mat-form-field>
+
+      </div>
+
+      <!-- Erro geral -->
+      <div class="error-alert" *ngIf="errorMessage()">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ errorMessage() }}</span>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Footer fixo -->
+  <div class="drawer-footer">
+    <button mat-stroked-button type="button" (click)="onFechar()" [disabled]="isLoading()">
+      Cancelar
+    </button>
+    <button
+      mat-raised-button
+      class="btn-salvar"
+      type="button"
+      (click)="onSalvar()"
+      [disabled]="isLoading()"
+    >
+      <mat-spinner *ngIf="isLoading()" diameter="18"></mat-spinner>
+      <mat-icon *ngIf="!isLoading()">{{ produto ? 'save' : 'add' }}</mat-icon>
+      <span>{{ produto ? 'Salvar alterações' : 'Cadastrar produto' }}</span>
+    </button>
+  </div>
+
+</div>

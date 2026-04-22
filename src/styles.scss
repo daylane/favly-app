@@ -145,4 +145,89 @@ body.favly-dark {
   .card-valor      .summary-icon { background: rgba(24,   95, 165, 0.25) !important; }
   .card-critico    .summary-icon { background: rgba(226,  75,  74, 0.2)  !important; }
 }
-/* You can add global styles to this file, and also import other style files */
+// ── Dialog (modal) ───────────────────────────────────────────────────────────
+.mat-mdc-dialog-container {
+  --mdc-dialog-container-color: #1f1f35 !important;
+}
+
+.mat-mdc-dialog-surface {
+  background: #1f1f35 !important;
+}
+
+// Título do dialog
+.mdc-dialog__title,
+[mat-dialog-title] {
+  color: #e8e6f0 !important;
+}
+
+// Conteúdo do dialog
+.mat-mdc-dialog-content {
+  color: #a09ab8 !important;
+}
+
+// Form fields dentro do dialog
+.mat-mdc-dialog-container {
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-color: rgba(255, 255, 255, 0.15) !important;
+  }
+
+  .mat-mdc-floating-label,
+  .mdc-floating-label {
+    color: #a09ab8 !important;
+  }
+
+  .mat-mdc-input-element,
+  input.mat-mdc-input-element {
+    color: #e8e6f0 !important;
+    caret-color: #FF6B6B !important;
+  }
+
+  .mat-mdc-form-field-icon-prefix mat-icon {
+    color: #6a647e !important;
+  }
+
+  .mat-mdc-form-hint,
+  .mat-mdc-form-field-hint {
+    color: #6a647e !important;
+  }
+}
+
+// Ações do dialog (botões)
+.mat-mdc-dialog-actions {
+  .mat-mdc-button:not([disabled]) {
+    color: #a09ab8 !important;
+  }
+}
+
+ 
+body.favly-dark {
+ /* Sidenav / Drawer */
+.mat-drawer {
+  background: #1a1a2e !important;
+  border-left: 1px solid rgba(255,255,255,0.08) !important;
+}
+ 
+.mat-drawer-container {
+  background: transparent !important;
+}
+ 
+.mat-drawer-backdrop.mat-drawer-shown {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+}
+ 
+/* Select panel */
+.mat-mdc-select-panel {
+  background: #252540 !important;
+}
+ 
+.mat-mdc-option {
+  color: var(--text-dark) !important;
+}
+ 
+.mat-mdc-option:hover:not(.mdc-list-item--disabled) {
+  background: rgba(255,255,255,0.06) !important;
+}
+}
+ 

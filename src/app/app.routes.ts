@@ -7,9 +7,14 @@ export const routes: Routes = [
     path: 'auth',
     loadChildren: () => import('./features/auth/auth.routes').then(r => r.AUTH_ROUTES)
   },
-   {
+  {
     path: 'grupos',
     loadComponent: () => import('./features/grupos/grupos.component').then(c => c.GruposComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'gerenciar-grupos',
+    loadComponent: () => import('./features/gerenciar-grupo/gerenciar-grupo.component').then(c => c.GerenciarGrupoComponent),
     canActivate: [authGuard]
   },
   {

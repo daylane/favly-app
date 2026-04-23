@@ -302,6 +302,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   registrarSaidaProduto(produto: Produto): void { this.snackBar.open(`Saída de "${produto.nome}"`, 'Ok', { duration: 2000 }); }
   logout(): void { this.authService.logout(); }
   voltarGrupos(): void { this.router.navigate(['/grupos']); }
+  
+  gerenciarGrupo(): void {
+  this.router.navigate(['/gerenciar-grupos']);
+}
 
   private safeLocalStorage(action: 'get' | 'set', key: string, value?: string): string | null {
     try {

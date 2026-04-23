@@ -1,0 +1,82 @@
+.convidar-dialog {
+  width: 380px;
+  max-width: 100%;
+  font-family: 'DM Sans', sans-serif;
+}
+
+// ── Header ──────────────────────────────────────────────────────────────────
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 20px 0;
+}
+
+.dialog-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.close-btn {
+  width: 32px !important;
+  height: 32px !important;
+  line-height: 32px !important;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: var(--text-light);
+  }
+}
+
+// ── Body ─────────────────────────────────────────────────────────────────────
+.dialog-body {
+  padding: 16px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-light);
+  margin-bottom: 4px;
+}
+
+.email-field {
+  width: 100%;
+}
+
+.hint-text {
+  font-size: 12px;
+  color: #3b82f6;
+  margin: 2px 0 12px;
+}
+
+.error-msg {
+  font-size: 12px;
+  color: #e53935;
+  margin: 0 0 8px;
+}
+
+// ── Botão ────────────────────────────────────────────────────────────────────
+.btn-enviar {
+  width: 100%;
+  height: 48px !important;
+  border-radius: 12px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  background: #a3e635 !important; // verde limão — igual ao protótipo
+  color: #1a1a2e !important;
+  box-shadow: none !important;
+  margin-top: 4px;
+}
+
+.btn-spinner {
+  display: inline-block;
+}

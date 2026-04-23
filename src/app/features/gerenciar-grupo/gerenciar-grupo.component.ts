@@ -37,7 +37,7 @@ export class GerenciarGrupoComponent implements OnInit, OnDestroy {
     nomeGrupo = signal<string>('carregando...');
     codigoGrupo = signal<string>('FAVLY-**-***');
     isLoadingMembros = signal<boolean>(false);
-    membros = signal<GrupoMembros[]>([]);
+    membros = signal<Membro[]>([]);
 
     ngOnInit(): void {
         const id = this.authService.getGrupoId();
@@ -66,12 +66,12 @@ export class GerenciarGrupoComponent implements OnInit, OnDestroy {
 
         this.grupoService.listarMembros(id)
             .subscribe({
-                next: (res: GrupoMembros[]) => { // Agora o TS aceitará se o service retornar Array
-                    const listaMapeada: GrupoMembros[] = res.map(m => ({
+                next: (res: GrupoMembros[]) => {
+                    const listaMapeada: Membro[] = res.map(m => ({
                         id: m.id,
-                        nome: m.apelido || m.nome, // Use o campo correto vindo do C#
+                        nome: m.apelido || m.nome,
                         apelido: m.apelido,
-                        papel: m.role.toString().toLowerCase() === 'admin' ? 'admin' : 'membro',
+                        papel: m.role.toLowerCase() === 'admin' ? 'admin' : 'membro',
                         cor: this.getCorPorNome(m.apelido || m.nome)
                     }));
 

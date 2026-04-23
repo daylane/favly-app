@@ -1,3 +1,14 @@
+export interface MovimentacaoItem {
+  id: string;
+  produtoId: string;
+  produto: string;
+  categoria: string;
+  tipo: 'entrada' | 'saida';
+  quantidade: number;
+  unidade: string;
+  data: string;
+}
+
 export interface EntradaPayload {
   produtoId: string;
   membroId: string;

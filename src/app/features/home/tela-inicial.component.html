@@ -1,325 +1,567 @@
 <mat-sidenav-container class="sidenav-container" autosize>
 
-  <!-- Drawer lateral de produto (direita) -->
-  <mat-sidenav
-    class="produto-drawer-panel"
-    mode="over"
-    position="end"
-    [opened]="drawerAberto()"
-    (closedStart)="fecharDrawer()"
-  >
-    <app-produto-drawer
-      *ngIf="drawerAberto()"
-      [categorias]="categorias()"
-      [produto]="produtoEditando() ?? undefined"
-      (salvo)="onProdutoSalvo($event)"
-      (fechado)="fecharDrawer()"
-    ></app-produto-drawer>
+  <!-- ── Produto Drawer ──────────────────────────────────────────────────────── -->
+  <mat-sidenav class="produto-drawer-panel" mode="over" position="end"
+    [opened]="drawerAberto()" (closedStart)="fecharDrawer()">
+    @if (drawerAberto()) {
+      <app-produto-drawer
+        [categorias]="categorias()"
+        [produto]="produtoEditando() ?? undefined"
+        (salvo)="onProdutoSalvo($event)"
+        (fechado)="fecharDrawer()" />
+    }
   </mat-sidenav>
 
   <mat-sidenav-content>
     <div class="app-shell">
 
-      <!-- ══ SIDEBAR ══ -->
-      <aside class="sidebar">
+      <!-- ── Desktop Sidebar ─────────────────────────────────────────────────── -->
+      <aside class="desktop-sidebar">
 
-        <!-- Logo -->
-        <div class="sidebar-logo">
-          <div class="logo-mark">
+        <div class="sb-brand">
+          <div class="logo-mark sm">
             <span class="logo-brick b1"></span><span class="logo-brick b2"></span>
             <span class="logo-brick b3"></span><span class="logo-brick b4"></span>
           </div>
-          <span class="logo-word">favly</span>
+          <span class="logo-word sm">favly</span>
         </div>
 
-        <!-- Grupo ativo -->
-        <button class="grupo-btn" (click)="voltarGrupos()">
-          <span class="grupo-icon">◈</span>
-          <span class="grupo-nome">{{ grupoNome ?? 'meu grupo' }}</span>
-          <mat-icon class="grupo-troca">swap_horiz</mat-icon>
-        </button>
+        <div class="sb-grupo">
+          <span class="sb-grupo-emoji">▲</span>
+          <span class="sb-grupo-main">
+            <span class="sb-grupo-nome">{{ grupoNome ?? 'Meu grupo' }}</span>
+            <span class="sb-grupo-meta">grupo ativo</span>
+          </span>
+        </div>
 
-        <!-- Nav principal -->
-        <nav class="sidebar-nav">
-          <div class="nav-section-lbl">menu</div>
-          <button class="nav-item nav-active">
-            <mat-icon>home</mat-icon> início
+        <nav class="sb-nav">
+          <button class="sb-nav-btn" [class.active]="tab()==='inicio' && !maisTela()"
+            (click)="setTab('inicio')">
+            <span class="sb-nav-icon">◉</span><span>início</span>
           </button>
-          <button class="nav-item">
-            <mat-icon>inventory_2</mat-icon> despensa
+          <button class="sb-nav-btn" [class.active]="tab()==='despensa' && !maisTela()"
+            (click)="setTab('despensa')">
+            <span class="sb-nav-icon">▣</span><span>despensa</span>
           </button>
-          <button class="nav-item">
-            <mat-icon>bar_chart</mat-icon> relatórios
+          <button class="sb-nav-btn" [class.active]="tab()==='relatorio' && !maisTela()"
+            (click)="setTab('relatorio')">
+            <span class="sb-nav-icon">▤</span><span>relatórios</span>
           </button>
-          <button class="nav-item" (click)="gerenciarGrupo()">
-            <mat-icon>group</mat-icon> membros
+          <button class="sb-nav-btn" [class.active]="tab()==='membros' && !maisTela()"
+            (click)="setTab('membros')">
+            <span class="sb-nav-icon">✦</span><span>membros</span>
+          </button>
+          <div class="sb-nav-sep"></div>
+          <button class="sb-nav-btn" [class.active]="maisTela()==='categorias'"
+            (click)="abrirSubtela('categorias')">
+            <span class="sb-nav-icon">◈</span><span>categorias</span>
           </button>
         </nav>
 
-        <!-- Nav cadastros -->
-        <nav class="sidebar-nav">
-          <div class="nav-section-lbl">cadastros</div>
-          <button class="nav-item" (click)="cadastrarProduto()">
-            <mat-icon>add_box</mat-icon> produtos
-          </button>
-          <button class="nav-item" (click)="abrirDialogCategoria()">
-            <mat-icon>label</mat-icon> categorias
-          </button>
-          <button class="nav-item">
-            <mat-icon>store</mat-icon> mercados
-          </button>
-        </nav>
-
-        <!-- Bottom: user + ações -->
-        <div class="sidebar-footer">
-          <button class="footer-icon-btn" [title]="darkMode() ? 'modo claro' : 'modo escuro'" (click)="toggleDarkMode()">
-            <mat-icon>{{ darkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
-          </button>
-          <div class="footer-user">
-            <div class="user-avatar">{{ usuario?.nome?.charAt(0)?.toUpperCase() }}</div>
-            <div class="user-details">
-              <span class="user-nome">{{ usuario?.nome?.split(' ')?.[0] ?? 'usuário' }}</span>
-              <span class="user-email">{{ usuario?.email }}</span>
-            </div>
+        <div class="sb-user">
+          <div class="sb-avatar" [style.background]="getAvatarColor(usuario?.nome ?? 'U')">
+            {{ (usuario?.nome ?? 'U').charAt(0).toUpperCase() }}
           </div>
-          <button class="footer-logout-btn" (click)="logout()" title="sair">
+          <div class="sb-user-main">
+            <div class="sb-user-nome">{{ (usuario?.nome ?? 'Usuário').split(' ')[0] }}</div>
+            <div class="sb-user-meta">{{ usuario?.email }}</div>
+          </div>
+          <button class="sb-icon-btn" matTooltip="Sair" (click)="logout()">
             <mat-icon>logout</mat-icon>
           </button>
         </div>
 
       </aside>
 
-      <!-- ══ CONTEÚDO PRINCIPAL ══ -->
-      <main class="main-area">
+      <!-- ── Desktop Main ──────────────────────────────────────────────────────── -->
+      <main class="desktop-main">
+        <div class="phone-frame">
 
-        <!-- Topbar mobile -->
-        <header class="topbar-mobile">
-          <div class="topbar-brand">
-            <div class="logo-mark sm">
-              <span class="logo-brick b1"></span><span class="logo-brick b2"></span>
-              <span class="logo-brick b3"></span><span class="logo-brick b4"></span>
+          <!-- Mobile topbar (hidden on desktop) -->
+          <header class="topbar mobile-only">
+            <div class="topbar-brand">
+              <div class="logo-mark sm">
+                <span class="logo-brick b1"></span><span class="logo-brick b2"></span>
+                <span class="logo-brick b3"></span><span class="logo-brick b4"></span>
+              </div>
+              <span class="logo-word sm">favly</span>
+              @if (grupoNome) { <span class="grupo-badge">{{ grupoNome }}</span> }
             </div>
-            <span class="logo-word sm">favly</span>
-          </div>
-          <span class="spacer"></span>
-          <button class="icon-btn" [title]="darkMode() ? 'modo claro' : 'modo escuro'" (click)="toggleDarkMode()">
-            <mat-icon>{{ darkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
-          </button>
-          <button class="icon-btn"
-            [matBadge]="totalCriticos()" matBadgeColor="warn" matBadgeSize="small"
-            [matBadgeHidden]="totalCriticos() === 0">
-            <mat-icon>notifications_none</mat-icon>
-          </button>
-          <button class="user-btn" [matMenuTriggerFor]="mobileMenu">
-            <div class="user-avatar sm">{{ usuario?.nome?.charAt(0)?.toUpperCase() }}</div>
-            <mat-icon>expand_more</mat-icon>
-          </button>
-          <mat-menu #mobileMenu="matMenu">
-            <button mat-menu-item (click)="voltarGrupos()"><mat-icon>swap_horiz</mat-icon> trocar grupo</button>
-            <mat-divider></mat-divider>
-            <button mat-menu-item (click)="logout()"><mat-icon>logout</mat-icon> sair</button>
-          </mat-menu>
-        </header>
+            <span class="spacer"></span>
+            <button class="icon-btn" (click)="toggleDarkMode()">
+              <mat-icon>{{ darkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+            </button>
+            <button class="icon-btn" [matMenuTriggerFor]="userMenuMobile">
+              <div class="topbar-avatar">{{ (usuario?.nome ?? 'U').charAt(0).toUpperCase() }}</div>
+            </button>
+            <mat-menu #userMenuMobile="matMenu">
+              <button mat-menu-item><mat-icon>person_outline</mat-icon> Meu perfil</button>
+              <mat-divider />
+              <button mat-menu-item (click)="logout()"><mat-icon>logout</mat-icon> Sair</button>
+            </mat-menu>
+          </header>
 
-        <div class="page-content">
+          <!-- ── Phone Body ──────────────────────────────────────────────────────── -->
+          <div class="phone-body">
 
-          <!-- Título -->
-          <div class="page-title">
-            <h1>olá, {{ usuario?.nome?.split(' ')?.[0]?.toLowerCase() ?? 'usuário' }}</h1>
-            <p *ngIf="totalCriticos() > 0" class="page-warn">
-              {{ totalCriticos() }} {{ totalCriticos() === 1 ? 'produto' : 'produtos' }} com estoque crítico
-            </p>
-            <p *ngIf="totalCriticos() === 0" class="page-ok">seu estoque está em dia ✓</p>
-          </div>
-
-          <!-- Cards de resumo -->
-          <div class="stat-row">
-            <div class="stat-card">
-              <div class="stat-val">{{ totalCategorias() }}</div>
-              <div class="stat-lbl">categorias</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-val">{{ totalProdutos() }}</div>
-              <div class="stat-lbl">produtos</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-val mono">{{ valorTotalEstoque() | currency:'BRL':'symbol':'1.0-0' }}</div>
-              <div class="stat-lbl">em estoque</div>
-            </div>
-            <div class="stat-card stat-card-warn">
-              <div class="stat-val coral">{{ totalCriticos() }}</div>
-              <div class="stat-lbl">estoque crítico</div>
-            </div>
-          </div>
-
-          <!-- Ações rápidas -->
-          <div class="section">
-            <div class="section-head"><span>ações rápidas</span></div>
-            <div class="quick-actions">
-              <button class="btn btn-entrada" (click)="registrarEntrada()">＋ entrada</button>
-              <button class="btn btn-saida" (click)="registrarSaida()">− saída</button>
-              <button class="btn btn-ghost" (click)="registrarCompra()">◎ compra</button>
-              <button class="btn btn-ghost" (click)="cadastrarProduto()">▣ produto</button>
-            </div>
-          </div>
-
-          <!-- Estoque baixo -->
-          <div class="section" *ngIf="produtosBaixoEstoque().length > 0">
-            <div class="section-head">
-              <span>estoque baixo <span class="section-badge">{{ produtosBaixoEstoque().length }}</span></span>
-            </div>
-            <div class="baixo-list">
-              <div *ngFor="let p of produtosBaixoEstoque()" class="baixo-item" (click)="abrirDrawerEditarProduto(p, $event)">
-                <div class="item-icon" [style.background]="'var(--accent-amarelo)'">▣</div>
-                <div class="item-body">
-                  <div class="item-top">
-                    <span class="item-nome">{{ p.nome }}</span>
-                    <span class="item-qtd warn">{{ p.quantidadeAtual }} {{ getUnidadeLabel(p.unidade) }}</span>
-                  </div>
-                  <div class="stockbar" [style.--cells]="p.quantidadeMinima || 10">
-                    <span *ngFor="let cell of getStockCells(p)" class="stockbar-cell"
-                      [class.filled]="cell.filled"
-                      [class.critical]="cell.critical && cell.filled">
-                    </span>
-                  </div>
-                  <div class="item-foot">
-                    <span>{{ getNomeCategoria(p.categoriaId) }}</span>
-                    <span>mín: {{ p.quantidadeMinima }} {{ getUnidadeLabel(p.unidade) }}</span>
-                  </div>
-                </div>
-                <button class="item-action-btn" (click)="registrarEntradaProduto(p); $event.stopPropagation()" title="registrar entrada">
+            <!-- ── Subtela: Categorias ──────────────────────────────────────────── -->
+            @if (maisTela() === 'categorias') {
+              <header class="topbar">
+                <button class="icon-btn" (click)="voltarSubtela()">
+                  <mat-icon>arrow_back</mat-icon>
+                </button>
+                <div class="topbar-title"><span>categorias</span></div>
+                <button class="icon-btn" (click)="abrirDialogCategoria()">
                   <mat-icon>add</mat-icon>
                 </button>
-              </div>
-            </div>
-          </div>
+              </header>
 
-          <!-- Atividade recente -->
-          <div class="section" *ngIf="movimentacoesRecentes().length > 0">
-            <div class="section-head"><span>atividade recente</span></div>
-            <div class="activity-list">
-              <div *ngFor="let mov of movimentacoesRecentes()" class="activity-row">
-                <div class="activity-tag" [class.entrada]="mov.tipo === 'entrada'" [class.saida]="mov.tipo === 'saida'">
-                  {{ mov.tipo === 'entrada' ? '+' : '−' }}
+              <div class="page-title">
+                <h1>categorias</h1>
+                <p>organizar tipos de produto</p>
+              </div>
+
+              @if (isLoadingCategorias()) {
+                <div class="loading-center"><mat-spinner diameter="32" /></div>
+              } @else if (categorias().length === 0) {
+                <div class="empty">
+                  <div class="empty-emoji">◈</div>
+                  <div class="empty-title">nenhuma categoria</div>
+                  <div class="empty-sub">crie uma para organizar seus produtos</div>
+                  <button class="btn" style="margin-top:14px" (click)="abrirDialogCategoria()">+ nova categoria</button>
                 </div>
-                <div class="activity-main">
-                  <div class="activity-text">
-                    {{ mov.tipo === 'entrada' ? 'entrada' : 'saída' }} de
-                    <strong>{{ mov.quantidade }} {{ mov.unidade }}</strong> · {{ mov.produto }}
+              } @else {
+                <div class="cat-list">
+                  @for (cat of categorias(); track cat.id) {
+                    <div class="cat-row">
+                      <div class="cat-avatar">{{ cat.icone }}</div>
+                      <div class="cat-main">
+                        <div class="cat-nome">{{ cat.nome }}</div>
+                        <div class="cat-count">{{ cat.totalProdutos }} produto(s)</div>
+                      </div>
+                      <button class="icon-btn small" matTooltip="Editar" (click)="abrirDialogCategoria(cat)">
+                        <mat-icon>edit</mat-icon>
+                      </button>
+                      <button class="icon-btn small delete-btn" matTooltip="Excluir"
+                        (click)="excluirCategoria(cat, $event)">
+                        <mat-icon>delete_outline</mat-icon>
+                      </button>
+                    </div>
+                  }
+                </div>
+              }
+
+            } @else {
+
+              <!-- ──────────────────────────────────────────────────────────────── -->
+              <!-- TAB: INÍCIO                                                     -->
+              <!-- ──────────────────────────────────────────────────────────────── -->
+              @if (tab() === 'inicio') {
+                <div class="page-title">
+                  <h1>olá, {{ (usuario?.nome ?? 'Usuário').split(' ')[0] }} 👋</h1>
+                  <p>
+                    @if (totalCriticos() > 0) {
+                      <strong>{{ totalCriticos() }} {{ totalCriticos() === 1 ? 'produto' : 'produtos' }} com estoque crítico.</strong>
+                    } @else { Estoque em dia. Tudo certo! }
+                  </p>
+                </div>
+
+                <div class="stat-row">
+                  <div class="stat-card">
+                    <div class="stat-val">{{ totalCategorias() }}</div>
+                    <div class="stat-lbl">categorias</div>
                   </div>
-                  <div class="activity-meta">{{ mov.data | date:'dd/MM/yyyy' }} · {{ mov.categoria }}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Categorias -->
-          <div class="section">
-            <div class="section-head">
-              <span>categorias <span class="section-badge">{{ totalCategorias() }}</span></span>
-              <button class="section-link" (click)="abrirDialogCategoria()">+ nova</button>
-            </div>
-
-            <div *ngIf="isLoadingCategorias()" class="loading-wrap">
-              <mat-spinner diameter="28"></mat-spinner>
-            </div>
-
-            <div *ngIf="!isLoadingCategorias()" class="cat-grid">
-              <div *ngFor="let cat of categorias()" class="cat-card" (click)="filtrarPorCategoria(cat)">
-                <div class="cat-actions">
-                  <button class="cat-action-btn" title="editar"
-                    (click)="abrirDialogCategoria(cat); $event.stopPropagation()">✎</button>
-                  <button class="cat-action-btn cat-delete-btn" title="excluir"
-                    (click)="excluirCategoria(cat, $event)">✕</button>
-                </div>
-                <span class="cat-emoji">{{ cat.icone }}</span>
-                <span class="cat-count-num">{{ cat.totalProdutos }}</span>
-                <span class="cat-nome">{{ cat.nome }}</span>
-              </div>
-              <div class="cat-card cat-nova" (click)="abrirDialogCategoria()">
-                <span class="cat-nova-plus">+</span>
-                <span class="cat-nome">nova</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Produtos -->
-          <div class="section produtos-section">
-            <div class="section-head">
-              <span>produtos <span class="section-badge">{{ produtosFiltrados().length }}</span></span>
-              <button class="section-link" (click)="cadastrarProduto()">+ novo</button>
-            </div>
-
-            <div class="chip-row">
-              <button class="chip" [class.chip-active]="filtroCategoriaAtivo() === 'todos'"
-                (click)="setFiltroCategoria('todos')">todos</button>
-              <button *ngFor="let cat of categorias()" class="chip"
-                [class.chip-active]="filtroCategoriaAtivo() === cat.nome"
-                (click)="setFiltroCategoria(cat.nome)">
-                {{ cat.icone }} {{ cat.nome }}
-              </button>
-            </div>
-
-            <div *ngIf="isLoadingProdutos()" class="loading-wrap">
-              <mat-spinner diameter="28"></mat-spinner>
-            </div>
-
-            <div *ngIf="!isLoadingProdutos()" class="produto-list">
-
-              <div *ngFor="let produto of produtosFiltrados()" class="produto-row"
-                [class.is-baixo]="produto.estoqueAbaixoDoMinimo">
-
-                <div class="item-icon amarelo">{{ getCategoriaIcone(produto.categoriaId) }}</div>
-
-                <div class="produto-body">
-                  <div class="produto-head">
-                    <span class="produto-nome">{{ produto.nome }}</span>
-                    <span class="produto-qtd" [class.warn]="produto.estoqueAbaixoDoMinimo">
-                      {{ produto.quantidadeAtual }} {{ getUnidadeLabel(produto.unidade) }}
-                    </span>
+                  <div class="stat-card">
+                    <div class="stat-val">{{ totalProdutos() }}</div>
+                    <div class="stat-lbl">produtos</div>
                   </div>
-                  <div class="produto-foot">
-                    <span>{{ getNomeCategoria(produto.categoriaId) }}</span>
-                    <span *ngIf="produto.marca">{{ produto.marca }}</span>
-                    <span *ngIf="produto.ultimoPreco">{{ produto.ultimoPreco | currency:'BRL' }}</span>
+                  <div class="stat-card">
+                    <div class="stat-val mono">{{ valorTotalEstoque() | currency:'BRL':'symbol':'1.0-0' }}</div>
+                    <div class="stat-lbl">valor em estoque</div>
+                  </div>
+                  <div class="stat-card">
+                    <div class="stat-val coral">{{ totalCriticos() }}</div>
+                    <div class="stat-lbl">estoque crítico</div>
                   </div>
                 </div>
 
-                <button class="produto-menu-btn" [matMenuTriggerFor]="productMenu" (click)="$event.stopPropagation()">
-                  <mat-icon>more_vert</mat-icon>
-                </button>
+                <div class="section">
+                  <div class="section-head"><span>ações rápidas</span></div>
+                  <div class="quick-row">
+                    <button class="btn btn-small" (click)="registrarEntrada()">+ nova entrada</button>
+                    <button class="btn btn-ghost btn-small" (click)="setTab('relatorio')">▤ relatório</button>
+                    <button class="btn btn-ghost btn-small" (click)="abrirDrawerNovoProduto()">+ novo produto</button>
+                  </div>
+                </div>
 
-                <mat-menu #productMenu="matMenu">
-                  <button mat-menu-item (click)="registrarEntradaProduto(produto)">
-                    <mat-icon>add_circle_outline</mat-icon> entrada
+                <div class="section">
+                  <div class="section-head">
+                    <span>estoque baixo <span class="section-count">{{ totalCriticos() }}</span></span>
+                    <button class="section-link" (click)="setTab('despensa')">ver tudo</button>
+                  </div>
+                  @if (isLoadingBaixoEstoque()) {
+                    <div class="loading-center"><mat-spinner diameter="24" /></div>
+                  } @else if (produtosBaixoEstoque().length === 0) {
+                    <div class="empty">
+                      <div class="empty-emoji">✓</div>
+                      <div class="empty-title">estoque em dia</div>
+                    </div>
+                  } @else {
+                    <div class="baixo-list">
+                      @for (p of produtosBaixoEstoque().slice(0,5); track p.id) {
+                        <div class="baixo-item" (click)="registrarEntradaProduto(p)">
+                          <div class="baixo-cat">
+                            {{ categorias().find(c => c.id === p.categoriaId)?.icone ?? '📦' }}
+                          </div>
+                          <div class="baixo-main">
+                            <div class="baixo-top">
+                              <span class="baixo-nome">{{ p.nome }}</span>
+                              <span class="baixo-qtd">{{ p.quantidadeAtual }}/{{ p.quantidadeMinima }} {{ getUnidadeLabel(p.unidade) }}</span>
+                            </div>
+                            <div class="stockbar" style="--cells:10">
+                              @for (cell of [0,1,2,3,4,5,6,7,8,9]; track cell) {
+                                <span class="stockbar-cell"
+                                  [style.background]="cell < (getNivelEstoque(p) / 10) ? 'var(--accent-coral)' : 'transparent'">
+                                </span>
+                              }
+                            </div>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+
+                <div class="section">
+                  <div class="section-head"><span>atividade recente</span></div>
+                  @if (isLoadingMovimentacoes()) {
+                    <div class="loading-center"><mat-spinner diameter="24" /></div>
+                  } @else if (movimentacoesRecentes().length === 0) {
+                    <div class="empty">
+                      <div class="empty-emoji">↕</div>
+                      <div class="empty-title">nenhuma movimentação ainda</div>
+                    </div>
+                  } @else {
+                    <div class="activity-list">
+                      @for (mov of movimentacoesRecentes(); track mov.id) {
+                        <div class="activity-row">
+                          <div class="activity-tag"
+                            [class.entrada]="mov.tipo==='entrada'"
+                            [class.saida]="mov.tipo==='saida'">
+                            {{ mov.tipo === 'entrada' ? '+' : '−' }}
+                          </div>
+                          <div class="activity-main">
+                            <div class="activity-text">
+                              <strong>{{ mov.produto }}</strong> · {{ mov.tipo === 'entrada' ? '+' : '−' }}{{ mov.quantidade }} {{ mov.unidade }}
+                            </div>
+                            <div class="activity-meta mono">{{ mov.data | date:'dd/MM/yy' }} · {{ mov.categoria }}</div>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+
+              <!-- ──────────────────────────────────────────────────────────────── -->
+              <!-- TAB: DESPENSA                                                   -->
+              <!-- ──────────────────────────────────────────────────────────────── -->
+              @if (tab() === 'despensa') {
+                <div class="page-title">
+                  <h1>despensa</h1>
+                  <p>{{ totalProdutos() }} produtos cadastrados</p>
+                </div>
+
+                <div class="search-bar">
+                  <span class="search-icon">🔍</span>
+                  <input placeholder="buscar produto..."
+                    [value]="searchQuery()" (input)="searchQuery.set($any($event.target).value)">
+                </div>
+
+                <div class="chip-row">
+                  <button class="chip" [class.chip-active]="filtroCategoriaAtivo()==='todos'"
+                    (click)="setFiltroCategoria('todos')">todos</button>
+                  @for (cat of categorias(); track cat.id) {
+                    <button class="chip" [class.chip-active]="filtroCategoriaAtivo()===cat.nome"
+                      (click)="setFiltroCategoria(cat.nome)">{{ cat.icone }} {{ cat.nome }}</button>
+                  }
+                </div>
+
+                <div class="sort-row">
+                  <span class="sort-label">ordenar:</span>
+                  <button class="sort-btn" [class.active]="sortBy()==='nome'" (click)="setSortBy('nome')">nome</button>
+                  <button class="sort-btn" [class.active]="sortBy()==='quantidade'" (click)="setSortBy('quantidade')">qtd</button>
+                  <button class="sort-btn" [class.active]="sortBy()==='preco'" (click)="setSortBy('preco')">preço</button>
+                </div>
+
+                @if (isLoadingProdutos()) {
+                  <div class="loading-center"><mat-spinner diameter="32" /></div>
+                } @else if (produtosFiltrados().length === 0) {
+                  <div class="empty">
+                    <div class="empty-emoji">▣</div>
+                    <div class="empty-title">nenhum produto encontrado</div>
+                    <div class="empty-sub">ajuste o filtro ou cadastre um novo</div>
+                    <button class="btn btn-small" style="margin-top:14px" (click)="abrirDrawerNovoProduto()">+ novo produto</button>
+                  </div>
+                } @else {
+                  <div class="produto-list">
+                    @for (produto of produtosFiltrados(); track produto.id) {
+                      <div class="produto-row" [class.is-baixo]="produto.estoqueAbaixoDoMinimo">
+                        <div class="produto-cat">
+                          {{ categorias().find(c => c.id === produto.categoriaId)?.icone ?? '📦' }}
+                        </div>
+                        <div class="produto-main">
+                          <div class="produto-head">
+                            <span class="produto-nome">{{ produto.nome }}</span>
+                            <span class="produto-qtd"
+                              [style.color]="produto.estoqueAbaixoDoMinimo ? 'var(--accent-coral)' : 'var(--ink)'">
+                              {{ produto.quantidadeAtual }} {{ getUnidadeLabel(produto.unidade) }}
+                            </span>
+                          </div>
+                          <div class="produto-foot">
+                            <span>{{ getNomeCategoria(produto.categoriaId) }}</span>
+                            @if (produto.ultimoPreco) {
+                              <span class="mono">{{ produto.ultimoPreco | currency:'BRL' }}</span>
+                            }
+                          </div>
+                        </div>
+                        <button class="icon-btn small" [matMenuTriggerFor]="productMenu"
+                          (click)="$event.stopPropagation()">
+                          <mat-icon>more_vert</mat-icon>
+                        </button>
+                        <mat-menu #productMenu="matMenu">
+                          <button mat-menu-item (click)="registrarEntradaProduto(produto)">
+                            <mat-icon>add_circle_outline</mat-icon> Entrada
+                          </button>
+                          <button mat-menu-item (click)="abrirDrawerEditarProduto(produto, $event)">
+                            <mat-icon>edit</mat-icon> Editar
+                          </button>
+                          <mat-divider />
+                          <button mat-menu-item class="delete-item" (click)="excluirProduto(produto, $event)">
+                            <mat-icon>delete_outline</mat-icon> Excluir
+                          </button>
+                        </mat-menu>
+                      </div>
+                    }
+                  </div>
+                  <div class="fab-wrap">
+                    <button class="fab" (click)="abrirDrawerNovoProduto()">
+                      <span class="fab-plus">+</span> novo produto
+                    </button>
+                  </div>
+                }
+              }
+
+              <!-- ──────────────────────────────────────────────────────────────── -->
+              <!-- TAB: RELATÓRIO                                                  -->
+              <!-- ──────────────────────────────────────────────────────────────── -->
+              @if (tab() === 'relatorio') {
+                <div class="page-title">
+                  <h1>relatórios</h1>
+                  <p>valor atual em estoque</p>
+                </div>
+
+                <div class="rel-total">
+                  <div class="rel-total-label">total em estoque</div>
+                  <div class="rel-total-val mono">{{ valorTotalEstoque() | currency:'BRL' }}</div>
+                </div>
+
+                <div class="section">
+                  <div class="section-head"><span>por categoria</span></div>
+                  @if (relatorioCategoria().length === 0) {
+                    <div class="empty">
+                      <div class="empty-emoji">▤</div>
+                      <div class="empty-title">nenhum dado disponível</div>
+                    </div>
+                  } @else {
+                    <div class="rel-cats">
+                      @for (cat of relatorioCategoria(); track cat.id) {
+                        <div class="rel-cat">
+                          <div class="rel-cat-head">
+                            <span>{{ cat.icone }} {{ cat.nome }}</span>
+                            <strong class="mono">{{ cat.valor | currency:'BRL' }}</strong>
+                          </div>
+                          <div class="rel-cat-track">
+                            <div class="rel-cat-fill" [style.width.%]="cat.pct"></div>
+                          </div>
+                          <span class="rel-cat-pct">{{ cat.pct }}%</span>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+
+                @if (produtosBaixoEstoque().length > 0) {
+                  <div class="section">
+                    <div class="section-head">
+                      <span>precisam de reposição <span class="section-count">{{ produtosBaixoEstoque().length }}</span></span>
+                    </div>
+                    <div class="rel-cats">
+                      @for (p of produtosBaixoEstoque(); track p.id) {
+                        <div class="rel-cat">
+                          <div class="rel-cat-head">
+                            <span>{{ p.nome }}</span>
+                            <span class="mono" style="color:var(--accent-coral)">
+                              {{ p.quantidadeAtual }}/{{ p.quantidadeMinima }} {{ getUnidadeLabel(p.unidade) }}
+                            </span>
+                          </div>
+                          <button class="btn btn-small btn-ghost" style="margin-top:6px"
+                            (click)="registrarEntradaProduto(p)">repor</button>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+              }
+
+              <!-- ──────────────────────────────────────────────────────────────── -->
+              <!-- TAB: MEMBROS                                                    -->
+              <!-- ──────────────────────────────────────────────────────────────── -->
+              @if (tab() === 'membros') {
+                <div class="page-title">
+                  <h1>pessoas no grupo</h1>
+                  <p>todos veem o mesmo estoque em tempo real</p>
+                </div>
+
+                @if (isLoadingMembros()) {
+                  <div class="loading-center"><mat-spinner diameter="32" /></div>
+                } @else {
+                  <div class="membros-list">
+                    @for (membro of membros(); track membro.id) {
+                      <div class="membro-row">
+                        <div class="membro-avatar" [style.background]="getAvatarColor(membro.nome)">
+                          {{ membro.nome.charAt(0).toUpperCase() }}
+                        </div>
+                        <div class="membro-main">
+                          <div class="membro-nome">{{ membro.nome }}</div>
+                          <div class="membro-meta">
+                            @if (membro.isAdmin && isCurrentUser(membro)) { admin · você }
+                            @else if (membro.isAdmin)                     { admin }
+                            @else if (isCurrentUser(membro))              { você }
+                            @else                                         { membro }
+                          </div>
+                        </div>
+                        @if (membro.isAdmin) {
+                          <div class="membro-badge" matTooltip="Administrador">★</div>
+                        }
+                        @if (!membro.isAdmin && !isCurrentUser(membro)) {
+                          <button class="icon-btn small delete-btn" matTooltip="Remover do grupo"
+                            (click)="removerMembro(membro)">
+                            <mat-icon>person_remove</mat-icon>
+                          </button>
+                        }
+                      </div>
+                    }
+                    @if (membros().length === 0) {
+                      <div class="empty">
+                        <div class="empty-emoji">✦</div>
+                        <div class="empty-title">nenhum membro encontrado</div>
+                      </div>
+                    }
+                  </div>
+
+                  <!-- Convites pendentes -->
+                  @if (isLoadingConvites()) {
+                    <div class="loading-center" style="padding:12px 20px">
+                      <mat-spinner diameter="20" />
+                    </div>
+                  } @else if (convitesPendentes().length > 0) {
+                    <div class="section" style="margin-top:4px">
+                      <div class="section-head">
+                        <span>convites pendentes <span class="section-count">{{ convitesPendentes().length }}</span></span>
+                      </div>
+                      <div class="convites-list">
+                        @for (convite of convitesPendentes(); track convite.id) {
+                          <div class="convite-row">
+                            <div class="convite-icon">✉</div>
+                            <div class="convite-main">
+                              <div class="convite-email">{{ convite.emailConvidado }}</div>
+                              <div class="convite-meta mono">
+                                expira {{ convite.dataExpiracao | date:'dd/MM/yy' }}
+                              </div>
+                            </div>
+                            <div class="convite-status">pendente</div>
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  }
+
+                  <div class="section" style="margin-top:8px">
+                    <div class="section-head"><span>código do grupo</span></div>
+                    <div class="codigo-card">
+                      @if (isLoadingGrupo()) {
+                        <mat-spinner diameter="20" />
+                      } @else if (grupoCodigo()) {
+                        <span class="codigo-val mono">{{ grupoCodigo() }}</span>
+                        <button class="btn btn-ghost btn-small" (click)="copiarCodigo()">copiar</button>
+                      } @else {
+                        <span style="color:var(--ink-soft); font-size:13px">código não disponível</span>
+                      }
+                    </div>
+                    <p class="helper-text">qualquer um com esse código pode entrar no grupo</p>
+                  </div>
+
+                  <div class="section-cta">
+                    <button class="btn btn-block" (click)="abrirConvidarDialog()">
+                      convidar por e-mail
+                    </button>
+                  </div>
+                }
+              }
+
+              <!-- ──────────────────────────────────────────────────────────────── -->
+              <!-- TAB: MAIS (mobile — sidebar has these links on desktop)         -->
+              <!-- ──────────────────────────────────────────────────────────────── -->
+              @if (tab() === 'mais') {
+                <div class="page-title">
+                  <h1>mais</h1>
+                  <p>ajustes do grupo</p>
+                </div>
+                <div class="cat-list">
+                  <button class="cat-row" (click)="abrirSubtela('categorias')">
+                    <div class="cat-avatar" style="background:var(--accent-rosa)">◈</div>
+                    <div class="cat-main">
+                      <div class="cat-nome">categorias</div>
+                      <div class="cat-count">organizar tipos de produto</div>
+                    </div>
+                    <span style="color:var(--ink-soft)">›</span>
                   </button>
-                  <button mat-menu-item (click)="registrarSaidaProduto(produto)">
-                    <mat-icon>remove_circle_outline</mat-icon> saída
-                  </button>
-                  <button mat-menu-item (click)="abrirDrawerEditarProduto(produto, $event)">
-                    <mat-icon>edit</mat-icon> editar
-                  </button>
-                  <mat-divider></mat-divider>
-                  <button mat-menu-item class="delete-item" (click)="excluirProduto(produto, $event)">
-                    <mat-icon>delete_outline</mat-icon> excluir
-                  </button>
-                </mat-menu>
+                </div>
+              }
 
-              </div>
+            }<!-- end @else !maisTela -->
 
-              <div *ngIf="produtosFiltrados().length === 0 && !isLoadingProdutos()" class="empty">
-                <div class="empty-emoji">▣</div>
-                <div class="empty-title">nenhum produto</div>
-                <div class="empty-sub">cadastre o primeiro produto da despensa</div>
-                <button class="btn btn-ghost" style="margin-top: 14px" (click)="cadastrarProduto()">+ cadastrar produto</button>
-              </div>
+          </div><!-- .phone-body -->
 
-            </div>
-          </div>
+          <!-- ── Tab bar (hidden on desktop ≥ 900px) ──────────────────────────── -->
+          <nav class="tabbar">
+            <button class="tabbar-btn" [class.active]="tab()==='inicio' && !maisTela()"
+              (click)="setTab('inicio')">
+              <span class="tb-icon">◉</span><span>início</span>
+            </button>
+            <button class="tabbar-btn" [class.active]="tab()==='despensa' && !maisTela()"
+              (click)="setTab('despensa')">
+              <span class="tb-icon">▣</span><span>despensa</span>
+            </button>
+            <button class="tabbar-btn" [class.active]="tab()==='relatorio' && !maisTela()"
+              (click)="setTab('relatorio')">
+              <span class="tb-icon">▤</span><span>relatórios</span>
+            </button>
+            <button class="tabbar-btn" [class.active]="tab()==='membros' && !maisTela()"
+              (click)="setTab('membros')">
+              <span class="tb-icon">✦</span><span>membros</span>
+            </button>
+            <button class="tabbar-btn" [class.active]="tab()==='mais' || !!maisTela()"
+              (click)="setTab('mais')">
+              <span class="tb-icon">⋯</span><span>mais</span>
+            </button>
+          </nav>
 
-        </div>
+        </div><!-- .phone-frame -->
       </main>
 
-    </div>
+    </div><!-- .app-shell -->
   </mat-sidenav-content>
+
 </mat-sidenav-container>

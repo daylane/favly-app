@@ -8,6 +8,12 @@ export const routes: Routes = [
     loadChildren: () => import('./features/auth/auth.routes').then(r => r.AUTH_ROUTES)
   },
   {
+    // Rota pública — sem authGuard. Link enviado por e-mail: /convite/{codigo}
+    path: 'convite/:codigo',
+    loadComponent: () =>
+      import('./features/convite/convite-aceite.component').then(c => c.ConviteAceiteComponent),
+  },
+  {
     path: 'grupos',
     loadComponent: () => import('./features/grupos/grupos.component').then(c => c.GruposComponent),
     canActivate: [authGuard]

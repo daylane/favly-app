@@ -23,8 +23,8 @@ export class GrupoService {
         return this.http.get<Grupo[]>(this.baseUrl);
     }
 
-    listarMembros(grupoId: string): Observable<GrupoMembros> {
-        return this.http.get<GrupoMembros>(`${this.baseUrl}/${grupoId}/membros`);
+    listarMembros(grupoId: string): Observable<GrupoMembros[]> {
+        return this.http.get<GrupoMembros[]>(`${this.baseUrl}/${grupoId}/membros`);
     }
 
 }

@@ -95,7 +95,7 @@ export class EntradaDialogComponent implements OnInit {
     this.isLoading.set(true);
     this.errorMessage.set('');
 
-    const membroId = this.authService.getUsuario()?.email ?? '';
+    const membroId = this.authService.getUserId() ?? '';
     const { produtoId, quantidade, preco, mercadoId, observacao } = this.form.value;
 
     const payload = {

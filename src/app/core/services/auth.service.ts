@@ -11,11 +11,12 @@ import { environment } from '../../../environments/environment';
 })
 export class AuthService {
 
-  private readonly TOKEN_KEY = 'auth_token';
-  private readonly NOME_KEY = 'user_nome';
-  private readonly EMAIL_KEY = 'user_email';
+  private readonly TOKEN_KEY      = 'auth_token';
+  private readonly NOME_KEY       = 'user_nome';
+  private readonly EMAIL_KEY      = 'user_email';
   private readonly GRUPO_NOME_KEY = 'grupo_nome';
-  private readonly GRUPO_KEY = 'grupo_key';
+  private readonly GRUPO_KEY      = 'grupo_key';
+  private readonly USER_ID_KEY    = 'user_id';
 
   private http = inject(HttpClient);
   private router = inject(Router);
@@ -34,6 +35,7 @@ export class AuthService {
           localStorage.setItem(this.EMAIL_KEY, response.email);
           localStorage.setItem(this.GRUPO_KEY, response.grupoId);
           localStorage.setItem(this.GRUPO_NOME_KEY, response.grupoNome);
+          if (response.userId) localStorage.setItem(this.USER_ID_KEY, response.userId);
         }
       })
     );
@@ -51,6 +53,10 @@ export class AuthService {
     return this.isBrowser ? localStorage.getItem(this.GRUPO_KEY) : null;
   }
 
+  getUserId(): string | null {
+    return this.isBrowser ? localStorage.getItem(this.USER_ID_KEY) : null;
+  }
+
   getGrupoNome(): string | null {
     return this.isBrowser ? localStorage.getItem(this.GRUPO_NOME_KEY) : null;
   }
@@ -62,8 +68,20 @@ export class AuthService {
       localStorage.removeItem(this.EMAIL_KEY);
       localStorage.removeItem(this.GRUPO_KEY);
       localStorage.removeItem(this.GRUPO_NOME_KEY);
+      localStorage.removeItem(this.USER_ID_KEY);
     }
     this.router.navigate(['/auth/login']);
+  }
+
+  /** Persiste uma sessão já obtida (ex: retorno de registrar-e-aceitar) */
+  salvarSessao(response: AuthResponse): void {
+    if (!this.isBrowser) return;
+    localStorage.setItem(this.TOKEN_KEY,      response.token);
+    localStorage.setItem(this.NOME_KEY,       response.nome);
+    localStorage.setItem(this.EMAIL_KEY,      response.email);
+    localStorage.setItem(this.GRUPO_KEY,      response.grupoId);
+    localStorage.setItem(this.GRUPO_NOME_KEY, response.grupoNome);
+    if (response.userId) localStorage.setItem(this.USER_ID_KEY, response.userId);
   }
 
   getToken(): string | null {

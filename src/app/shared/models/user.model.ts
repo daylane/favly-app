@@ -16,4 +16,5 @@ export interface AuthResponse {
   expiracao: string;
   grupoId: string;
   grupoNome: string;
+  userId?: string; // retornado pelo backend, usado como membroId em movimentações
 }

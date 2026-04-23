@@ -1,0 +1,179 @@
+<div class="convite-shell">
+  <div class="convite-card">
+
+    <!-- ── Logo ──────────────────────────────────────────────────────────────── -->
+    <div class="convite-logo">
+      <div class="logo-mark">
+        <span class="logo-brick b1"></span><span class="logo-brick b2"></span>
+        <span class="logo-brick b3"></span><span class="logo-brick b4"></span>
+      </div>
+      <span class="logo-word">favly</span>
+    </div>
+
+    <!-- ── CARREGANDO ─────────────────────────────────────────────────────────── -->
+    @if (estado() === 'carregando') {
+      <div class="convite-loading">
+        <mat-spinner diameter="36" />
+        <p>verificando convite…</p>
+      </div>
+    }
+
+    <!-- ── ERRO ───────────────────────────────────────────────────────────────── -->
+    @if (estado() === 'erro') {
+      <div class="convite-state">
+        <div class="state-emoji">✗</div>
+        <h2>convite inválido</h2>
+        <p class="state-sub">{{ erroMsg() || 'Este link expirou ou já foi utilizado.' }}</p>
+        <a class="btn btn-ghost btn-block" routerLink="/auth/login">ir para o login</a>
+      </div>
+    }
+
+    <!-- ── SUCESSO ────────────────────────────────────────────────────────────── -->
+    @if (estado() === 'sucesso') {
+      <div class="convite-state">
+        <div class="state-emoji success">✓</div>
+        <h2>bem-vindo ao grupo!</h2>
+        @if (conviteInfo()) {
+          <p class="state-sub">você entrou em <strong>{{ conviteInfo()!.grupoNome }}</strong>.</p>
+        }
+        <p class="state-sub muted">redirecionando…</p>
+      </div>
+    }
+
+    <!-- ── INFO DO GRUPO (cabeçalho comum) ───────────────────────────────────── -->
+    @if (estado() === 'novo-usuario' || estado() === 'login' || estado() === 'logado') {
+      @if (conviteInfo()) {
+        <div class="convite-grupo-info">
+          <div class="grupo-badge-icon">▲</div>
+          <div>
+            <div class="grupo-nome">{{ conviteInfo()!.grupoNome }}</div>
+            <div class="grupo-meta">convite para {{ conviteInfo()!.emailConvidado }}</div>
+          </div>
+        </div>
+      }
+    }
+
+    <!-- ── CASO 1: NOVO USUÁRIO ───────────────────────────────────────────────── -->
+    @if (estado() === 'novo-usuario') {
+      <div class="convite-section">
+        <h2 class="convite-title">criar sua conta</h2>
+        <p class="convite-sub">sua conta já sairá ativada — o e-mail foi verificado ao clicar no link.</p>
+      </div>
+
+      <form [formGroup]="formNovo" (ngSubmit)="onRegistrar()" class="convite-form">
+
+        <div class="field">
+          <label class="field-label">nome completo</label>
+          <div class="field-input" [class.has-error]="erroNome">
+            <input formControlName="nome" placeholder="ex: Ana Lima" autocomplete="name">
+          </div>
+          @if (erroNome) { <span class="field-error">{{ erroNome }}</span> }
+        </div>
+
+        <div class="field">
+          <label class="field-label">apelido no grupo</label>
+          <div class="field-input" [class.has-error]="erroApelido">
+            <input formControlName="apelido" placeholder="como quer ser chamado(a)">
+          </div>
+          @if (erroApelido) { <span class="field-error">{{ erroApelido }}</span> }
+          <span class="field-hint">como você aparece para os outros membros</span>
+        </div>
+
+        <div class="field">
+          <label class="field-label">senha</label>
+          <div class="field-input" [class.has-error]="erroSenhaNova">
+            <input [type]="showSenha() ? 'text' : 'password'" formControlName="senha"
+              placeholder="mínimo 6 caracteres" autocomplete="new-password">
+            <button type="button" class="field-icon-btn" (click)="showSenha.update(v => !v)">
+              <mat-icon>{{ showSenha() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </div>
+          @if (erroSenhaNova) { <span class="field-error">{{ erroSenhaNova }}</span> }
+        </div>
+
+        <div class="field">
+          <label class="field-label">confirmar senha</label>
+          <div class="field-input" [class.has-error]="erroConfirmarSenha">
+            <input [type]="showConfirm() ? 'text' : 'password'" formControlName="confirmarSenha"
+              placeholder="repita a senha" autocomplete="new-password">
+            <button type="button" class="field-icon-btn" (click)="showConfirm.update(v => !v)">
+              <mat-icon>{{ showConfirm() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </div>
+          @if (erroConfirmarSenha) { <span class="field-error">{{ erroConfirmarSenha }}</span> }
+        </div>
+
+        @if (erroMsg()) {
+          <div class="convite-erro">{{ erroMsg() }}</div>
+        }
+
+        <button type="submit" class="btn btn-block" [disabled]="isLoading()">
+          @if (isLoading()) { <mat-spinner diameter="18" /> }
+          @else { criar conta e entrar no grupo }
+        </button>
+
+      </form>
+    }
+
+    <!-- ── CASO 2: USUÁRIO EXISTENTE NÃO LOGADO ───────────────────────────────── -->
+    @if (estado() === 'login') {
+      <div class="convite-section">
+        <h2 class="convite-title">entrar com sua conta</h2>
+        <p class="convite-sub">você já tem uma conta. faça login para entrar no grupo.</p>
+      </div>
+
+      <form [formGroup]="formLogin" (ngSubmit)="onLogin()" class="convite-form">
+
+        <div class="field">
+          <label class="field-label">e-mail</label>
+          <div class="field-input" [class.has-error]="erroEmailLogin">
+            <input formControlName="email" type="email" placeholder="seu@email.com" autocomplete="email">
+          </div>
+          @if (erroEmailLogin) { <span class="field-error">{{ erroEmailLogin }}</span> }
+        </div>
+
+        <div class="field">
+          <label class="field-label">senha</label>
+          <div class="field-input" [class.has-error]="erroSenhaLogin">
+            <input [type]="showLoginPwd() ? 'text' : 'password'" formControlName="senha"
+              placeholder="sua senha" autocomplete="current-password">
+            <button type="button" class="field-icon-btn" (click)="showLoginPwd.update(v => !v)">
+              <mat-icon>{{ showLoginPwd() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </div>
+          @if (erroSenhaLogin) { <span class="field-error">{{ erroSenhaLogin }}</span> }
+        </div>
+
+        @if (erroMsg()) {
+          <div class="convite-erro">{{ erroMsg() }}</div>
+        }
+
+        <button type="submit" class="btn btn-block" [disabled]="isLoading()">
+          @if (isLoading()) { <mat-spinner diameter="18" /> }
+          @else { entrar e aceitar convite }
+        </button>
+
+      </form>
+    }
+
+    <!-- ── CASO 3: JÁ LOGADO ──────────────────────────────────────────────────── -->
+    @if (estado() === 'logado') {
+      <div class="convite-section">
+        <h2 class="convite-title">você foi convidado!</h2>
+        <p class="convite-sub">clique abaixo para entrar no grupo.</p>
+      </div>
+
+      @if (erroMsg()) {
+        <div class="convite-erro">{{ erroMsg() }}</div>
+      }
+
+      <div class="convite-form">
+        <button class="btn btn-block" [disabled]="isLoading()" (click)="onEntrarNoGrupo()">
+          @if (isLoading()) { <mat-spinner diameter="18" /> }
+          @else { entrar no grupo }
+        </button>
+      </div>
+    }
+
+  </div>
+</div>

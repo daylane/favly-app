@@ -1,83 +1,77 @@
-<div class="login-page">
+<div class="auth-page">
 
-  <div class="deco-blob blob-1" aria-hidden="true"></div>
-  <div class="deco-blob blob-2" aria-hidden="true"></div>
-  <div class="deco-blob blob-3" aria-hidden="true"></div>
+  <div class="auth-wrap">
 
-  <div class="login-card mat-elevation-z4">
-
-    <div class="login-brand">
-      <div class="brand-icon"><mat-icon>bolt</mat-icon></div>
-      <span class="brand-name">Favly</span>
-    </div>
-
-    <div class="login-header">
-      <h2>Bem-vindo de volta!</h2>
-      <p>Faça login para continuar</p>
-    </div>
-
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
-
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>E-mail</mat-label>
-        <mat-icon matPrefix>mail_outline</mat-icon>
-        <input matInput type="email" formControlName="email" placeholder="seu@email.com" autocomplete="email" />
-        <mat-error *ngIf="emailError">{{ emailError }}</mat-error>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Senha</mat-label>
-        <mat-icon matPrefix>lock_outline</mat-icon>
-        <input
-          matInput
-          [type]="showPassword ? 'text' : 'password'"
-          formControlName="senha"
-          placeholder="••••••••"
-          autocomplete="current-password"
-        />
-        <button mat-icon-button matSuffix type="button" (click)="togglePasswordVisibility()">
-          <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
-        </button>
-        <mat-error *ngIf="passwordError">{{ passwordError }}</mat-error>
-      </mat-form-field>
-
-      <div class="forgot-row">
-        <button mat-button type="button" class="forgot-btn" (click)="onForgotPassword()">
-          Esqueci minha senha
-        </button>
-      </div>
-
-      <!-- Erro geral -->
-      <div class="error-alert" *ngIf="errorMessage" role="alert">
-        <mat-icon>error_outline</mat-icon>
-        <div class="error-content">
-          <span>{{ errorMessage }}</span>
-          <!-- Botão de ativar conta aparece só quando necessário -->
-          <button
-            *ngIf="contaNaoAtivada"
-            mat-stroked-button
-            type="button"
-            class="btn-ativar-inline"
-            (click)="abrirDialogAtivacao()"
-          >
-            <mat-icon>vpn_key</mat-icon>
-            Inserir código de ativação
-          </button>
+    <!-- Logo -->
+    <div class="auth-hero">
+      <div class="auth-logo">
+        <div class="logo-mark">
+          <span class="logo-brick b1"></span><span class="logo-brick b2"></span>
+          <span class="logo-brick b3"></span><span class="logo-brick b4"></span>
         </div>
+        <span class="logo-word">favly</span>
+      </div>
+      <p class="auth-tag">despensa compartilhada</p>
+    </div>
+
+    <!-- Card -->
+    <div class="auth-card">
+
+      <!-- Tabs login / cadastro -->
+      <div class="auth-tabs">
+        <button class="auth-tab auth-tab-active" type="button">entrar</button>
+        <button class="auth-tab" type="button" (click)="onCreateAccount()">cadastrar</button>
       </div>
 
-      <button mat-raised-button type="submit" class="btn-submit full-width" [disabled]="isLoading">
-        <mat-spinner *ngIf="isLoading" diameter="20"></mat-spinner>
-        <span *ngIf="!isLoading">Entrar</span>
-      </button>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate class="auth-form">
 
-    </form>
+        <label class="field">
+          <span class="field-label">e-mail</span>
+          <div class="field-input">
+            <input type="email" formControlName="email" placeholder="seu@email.com" autocomplete="email" />
+          </div>
+          <span class="field-error" *ngIf="emailError">{{ emailError }}</span>
+        </label>
 
-    <div class="login-footer">
-      <span>Ainda não tem conta?</span>
-      <button mat-button type="button" class="activate-btn" (click)="onCreateAccount()">
-        Crie sua conta
-      </button>
+        <label class="field">
+          <span class="field-label">senha</span>
+          <div class="field-input">
+            <input [type]="showPassword ? 'text' : 'password'" formControlName="senha"
+              placeholder="••••••••" autocomplete="current-password" />
+            <button type="button" class="field-eye" (click)="togglePasswordVisibility()">
+              <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </div>
+          <span class="field-error" *ngIf="passwordError">{{ passwordError }}</span>
+        </label>
+
+        <div class="forgot-row">
+          <button type="button" class="forgot-btn" (click)="onForgotPassword()">esqueci minha senha</button>
+        </div>
+
+        <!-- Erro geral -->
+        <div class="error-alert" *ngIf="errorMessage" role="alert">
+          <mat-icon>error_outline</mat-icon>
+          <div class="error-content">
+            <span>{{ errorMessage }}</span>
+            <button *ngIf="contaNaoAtivada" type="button" class="btn-ativar-inline" (click)="abrirDialogAtivacao()">
+              inserir código de ativação
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-block" [disabled]="isLoading">
+          <mat-spinner *ngIf="isLoading" diameter="18"></mat-spinner>
+          <span *ngIf="!isLoading">entrar</span>
+        </button>
+
+      </form>
+
+      <div class="auth-foot">
+        <span>ainda não tem conta?</span>
+        <button type="button" class="link-btn" (click)="onCreateAccount()">crie sua conta</button>
+      </div>
+
     </div>
 
   </div>

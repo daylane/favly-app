@@ -1,85 +1,67 @@
-<div class="page">
-  <div class="deco-blob blob-1" aria-hidden="true"></div>
-  <div class="deco-blob blob-2" aria-hidden="true"></div>
+<div class="auth-page">
+  <div class="auth-wrap">
 
-  <div class="card mat-elevation-z4">
-
-    <!-- Brand -->
-    <div class="brand">
-      <div class="brand-icon"><mat-icon>bolt</mat-icon></div>
-      <span class="brand-name">Favly</span>
+    <!-- Logo -->
+    <div class="auth-hero">
+      <div class="auth-logo">
+        <div class="logo-mark">
+          <span class="logo-brick b1"></span><span class="logo-brick b2"></span>
+          <span class="logo-brick b3"></span><span class="logo-brick b4"></span>
+        </div>
+        <span class="logo-word">favly</span>
+      </div>
     </div>
 
-    <!-- Estado: aguardando envio -->
-    <ng-container *ngIf="!enviado()">
+    <!-- Card -->
+    <div class="auth-card">
 
-      <div class="header">
-        <div class="header-icon">
-          <mat-icon>lock_reset</mat-icon>
+      <!-- Estado: aguardando envio -->
+      <ng-container *ngIf="!enviado()">
+
+        <div class="card-header">
+          <div class="card-icon">◎</div>
+          <h2>esqueceu a senha?</h2>
+          <p>informe seu e-mail e enviaremos um link para redefinir sua senha.</p>
         </div>
-        <h2>Esqueceu a senha?</h2>
-        <p>Informe seu e-mail e enviaremos um link para redefinir sua senha.</p>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="auth-form">
+
+          <label class="field">
+            <span class="field-label">e-mail</span>
+            <div class="field-input">
+              <input type="email" formControlName="email" placeholder="seu@email.com" autocomplete="email" />
+            </div>
+            <span class="field-error" *ngIf="emailError">{{ emailError }}</span>
+          </label>
+
+          <div class="error-alert" *ngIf="errorMessage()" role="alert">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{ errorMessage() }}</span>
+          </div>
+
+          <button type="submit" class="btn btn-block" [disabled]="isLoading()">
+            <mat-spinner *ngIf="isLoading()" diameter="18"></mat-spinner>
+            <span *ngIf="!isLoading()">enviar link de redefinição</span>
+          </button>
+
+        </form>
+
+      </ng-container>
+
+      <!-- Estado: e-mail enviado -->
+      <ng-container *ngIf="enviado()">
+        <div class="success-state">
+          <div class="success-icon">✉</div>
+          <h2>e-mail enviado!</h2>
+          <p>verifique sua caixa de entrada e siga as instruções. o link expira em <strong>30 minutos</strong>.</p>
+          <button class="btn btn-block" type="button" (click)="irParaRedefinir()">já tenho o token</button>
+        </div>
+      </ng-container>
+
+      <div class="auth-foot">
+        <button type="button" class="back-btn" (click)="onVoltar()">‹ voltar para o login</button>
       </div>
 
-      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
-
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>E-mail</mat-label>
-          <mat-icon matPrefix>mail_outline</mat-icon>
-          <input
-            matInput
-            type="email"
-            formControlName="email"
-            placeholder="seu@email.com"
-            autocomplete="email"
-          />
-          <mat-error *ngIf="emailError">{{ emailError }}</mat-error>
-        </mat-form-field>
-
-        <div class="error-alert" *ngIf="errorMessage()">
-          <mat-icon>error_outline</mat-icon>
-          <span>{{ errorMessage() }}</span>
-        </div>
-
-        <button
-          mat-raised-button
-          type="submit"
-          class="btn-submit full-width"
-          [disabled]="isLoading()"
-        >
-          <mat-spinner *ngIf="isLoading()" diameter="20"></mat-spinner>
-          <span *ngIf="!isLoading()">Enviar link de redefinição</span>
-        </button>
-
-      </form>
-
-    </ng-container>
-
-    <!-- Estado: e-mail enviado com sucesso -->
-    <ng-container *ngIf="enviado()">
-      <div class="success-state">
-        <div class="success-icon">
-          <mat-icon>mark_email_read</mat-icon>
-        </div>
-        <h2>E-mail enviado!</h2>
-        <p>
-          Verifique sua caixa de entrada e siga as instruções para redefinir sua senha.
-          O link expira em <strong>30 minutos</strong>.
-        </p>
-        <button mat-raised-button class="btn-submit" (click)="irParaRedefinir()">
-          <mat-icon>vpn_key</mat-icon>
-          Já tenho o token
-        </button>
-      </div>
-    </ng-container>
-
-    <!-- Voltar -->
-    <div class="footer">
-      <button mat-button type="button" class="btn-voltar" (click)="onVoltar()">
-        <mat-icon>arrow_back</mat-icon>
-        Voltar para o login
-      </button>
     </div>
-
   </div>
 </div>

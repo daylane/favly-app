@@ -1,0 +1,72 @@
+<div class="grupos-page">
+
+  <div class="grupos-wrap">
+
+    <!-- Logo -->
+    <div class="auth-hero">
+      <div class="auth-logo">
+        <div class="logo-mark">
+          <span class="logo-brick b1"></span><span class="logo-brick b2"></span>
+          <span class="logo-brick b3"></span><span class="logo-brick b4"></span>
+        </div>
+        <span class="logo-word">favly</span>
+      </div>
+      <p class="auth-tag">despensa compartilhada</p>
+    </div>
+
+    <!-- Saudação -->
+    <div class="greeting">
+      <span class="greeting-hi">olá, <strong>{{ usuario?.nome ?? 'você' }}</strong></span>
+      <span class="greeting-sub">selecione ou entre em um grupo</span>
+    </div>
+
+    <!-- Grupo atual -->
+    <div *ngIf="grupoAtual()" class="section-label">meu grupo</div>
+    <div *ngIf="grupoAtual()" class="grupo-card" (click)="selecionarGrupo(grupoAtual()!)">
+      <div class="grupo-icon">◈</div>
+      <div class="grupo-info">
+        <span class="grupo-nome">{{ grupoAtual()!.nome }}</span>
+        <span class="grupo-hint">toque para entrar</span>
+      </div>
+      <div class="grupo-arrow">→</div>
+    </div>
+
+    <!-- Divisor -->
+    <div class="divider">
+      <span>ou</span>
+    </div>
+
+    <!-- Entrar com código -->
+    <div class="section-label">entrar em outro grupo</div>
+    <div class="code-card">
+      <div class="field">
+        <span class="field-label">código de convite</span>
+        <div class="field-input">
+          <input
+            type="text"
+            [ngModel]="codigoConvite()"
+            (ngModelChange)="codigoConvite.set($event)"
+            placeholder="ex: ABC-123"
+            autocomplete="off"
+            style="text-transform: uppercase"
+          />
+        </div>
+      </div>
+      <button
+        type="button"
+        class="btn btn-block"
+        [disabled]="!codigoConvite().trim() || isLoadingEntrar()"
+        (click)="entrarNoGrupo()"
+      >
+        <mat-spinner *ngIf="isLoadingEntrar()" diameter="16"></mat-spinner>
+        <span *ngIf="!isLoadingEntrar()">entrar no grupo</span>
+      </button>
+    </div>
+
+    <!-- Logout -->
+    <div class="grupos-foot">
+      <button type="button" class="link-btn" (click)="logout()">sair da conta</button>
+    </div>
+
+  </div>
+</div>

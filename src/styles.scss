@@ -1,8 +1,3 @@
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
 
 html {
@@ -10,224 +5,224 @@ html {
   @include mat.theme(
     (
       color: (
-        primary: mat.$azure-palette,
-        tertiary: mat.$blue-palette,
+        primary: mat.$green-palette,
+        tertiary: mat.$yellow-palette,
       ),
-      typography: Roboto,
+      typography: 'Pixelify Sans',
       density: 0,
     )
   );
 }
 
-body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
-  color-scheme: light;
-
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
-  font: var(--mat-sys-body-medium);
-
-  // Reset the user agent margin.
-  margin: 0;
-  height: 100%;
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Favly — tema global
-// Cole este conteúdo no seu src/styles.scss
-// ─────────────────────────────────────────────────────────────────────────────
-
-// ── Tokens: modo claro (padrão) ───────────────────────────────────────────────
+// ── Favly Design Tokens ───────────────────────────────────────────────────────
 :root {
-  --bg-page:       #f5f3ff;
-  --bg-surface:    #ffffff;
-  --bg-surface-2:  rgba(0, 0, 0, 0.03);
-  --border-color:  rgba(0, 0, 0, 0.06);
-  --border-soft:   rgba(0, 0, 0, 0.05);
-  --text-dark:     #1a1a2e;
-  --text-mid:      #4a4a6a;
-  --text-light:    #9090b0;
-  --shadow-card:   rgba(186, 117, 23, 0.12);
-  --navbar-shadow: rgba(124, 77, 255, 0.07);
+  --font-pixel: "Pixelify Sans", "Courier New", monospace;
+  --font-mono:  "JetBrains Mono", ui-monospace, monospace;
+
+  --bg:        #f4ede0;
+  --bg-2:      #efe6d3;
+  --surface:   #fffaef;
+  --surface-2: #fff5e4;
+
+  --ink:      #1c1a15;
+  --ink-2:    #3a362d;
+  --ink-soft: #7a7363;
+  --line:     #1c1a15;
+  --line-soft:#d9cfb8;
+
+  --accent-verde:   oklch(0.85 0.16 130);
+  --accent-coral:   oklch(0.75 0.16 35);
+  --accent-azul:    oklch(0.80 0.12 230);
+  --accent-roxo:    oklch(0.78 0.12 300);
+  --accent-amarelo: oklch(0.90 0.14 90);
+  --accent-rosa:    oklch(0.82 0.12 350);
+  --accent-marrom:  oklch(0.65 0.08 60);
+
+  --radius:    14px;
+  --radius-sm: 8px;
+
+  --shadow:    4px 4px 0 var(--line);
+  --shadow-sm: 2px 2px 0 var(--line);
+
+  // compat aliases (para não quebrar referências antigas)
+  --bg-page:      var(--bg);
+  --bg-surface:   var(--surface);
+  --bg-surface-2: var(--surface-2);
+  --border-color: var(--line-soft);
+  --border-soft:  var(--line-soft);
+  --text-dark:    var(--ink);
+  --text-mid:     var(--ink-2);
+  --text-light:   var(--ink-soft);
+  --shadow-card:  var(--shadow);
+  --navbar-shadow: 0 0 0 transparent;
 }
 
-// ── Tokens: modo escuro ───────────────────────────────────────────────────────
-body.favly-dark {
-  color-scheme: dark;
-  background: #0f0f1a;
-  transition: background 0.25s ease;
+// ── Reset base ────────────────────────────────────────────────────────────────
+*, *::before, *::after { box-sizing: border-box; }
 
-  --bg-page:       #0f0f1a;
-  --bg-surface:    #1a1a2e;
-  --bg-surface-2:  rgba(255, 255, 255, 0.06);
-  --border-color:  rgba(255, 255, 255, 0.08);
-  --border-soft:   rgba(255, 255, 255, 0.06);
-  --text-dark:     #e8e6f0;
-  --text-mid:      #a09ab8;
-  --text-light:    #6a647e;
-  --shadow-card:   rgba(0, 0, 0, 0.4);
-  --navbar-shadow: rgba(0, 0, 0, 0.3);
+html, body { margin: 0; padding: 0; height: 100%; }
 
-  // ── Angular Material: overrides globais ──────────────────────────────────
-
-  // Toolbar / Navbar
-  .mat-toolbar {
-    background: #1a1a2e !important;
-    color: var(--text-dark) !important;
-  }
-
-  // Cards
-  .mat-mdc-card {
-    background: #1f1f35 !important;
-    color: var(--text-dark) !important;
-    border-color: rgba(255, 255, 255, 0.06) !important;
-  }
-
-  // Menus
-  .mat-mdc-menu-panel {
-    background: #252540 !important;
-  }
-  .mat-mdc-menu-item {
-    color: var(--text-dark) !important;
-  }
-  .mat-mdc-menu-item:hover:not([disabled]) {
-    background: rgba(255, 255, 255, 0.06) !important;
-  }
-
-  // Chips
-  .mat-mdc-chip.mat-mdc-standard-chip {
-    background: rgba(255, 255, 255, 0.08) !important;
-    color: var(--text-dark) !important;
-  }
-  .mat-mdc-chip-option {
-    background: rgba(255, 255, 255, 0.06) !important;
-    color: var(--text-mid) !important;
-  }
-
-  // Botões
-  .mat-mdc-outlined-button:not([disabled]) {
-    border-color: var(--border-color) !important;
-    color: var(--text-mid) !important;
-  }
-  .mat-mdc-icon-button:not([disabled]) {
-    color: var(--text-mid) !important;
-  }
-  .mat-mdc-button:not([disabled]),
-  .mat-mdc-text-button:not([disabled]) {
-    color: var(--text-mid) !important;
-  }
-
-  // Divider
-  .mat-divider {
-    border-color: var(--border-color) !important;
-  }
-
-  // Snackbar
-  .mat-mdc-snack-bar-container {
-    background: #2a2a45 !important;
-    color: var(--text-dark) !important;
-  }
-
-  // Tooltip
-  .mat-mdc-tooltip {
-    background: #333355 !important;
-    color: var(--text-dark) !important;
-  }
-
-  // ── Favly: summary icon backgrounds no dark ──────────────────────────────
-  .card-categorias .summary-icon { background: rgba(124, 77,  255, 0.2)  !important; }
-  .card-produtos   .summary-icon { background: rgba(15,  110,  86, 0.25) !important; }
-  .card-valor      .summary-icon { background: rgba(24,   95, 165, 0.25) !important; }
-  .card-critico    .summary-icon { background: rgba(226,  75,  74, 0.2)  !important; }
-}
-// ── Dialog (modal) ───────────────────────────────────────────────────────────
-.mat-mdc-dialog-container {
-  --mdc-dialog-container-color: #1f1f35 !important;
+body {
+  color-scheme: light;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-pixel);
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
-.mat-mdc-dialog-surface {
-  background: #1f1f35 !important;
+button { font-family: var(--font-pixel); }
+input, select, textarea { font-family: var(--font-pixel); font-size: inherit; }
+
+// ── Angular Material global overrides ─────────────────────────────────────────
+
+// Remove Material elevation shadows
+.mat-mdc-card {
+  box-shadow: var(--shadow-sm) !important;
+  border: 2px solid var(--line) !important;
+  border-radius: var(--radius) !important;
+  background: var(--surface) !important;
+  color: var(--ink) !important;
 }
 
-// Título do dialog
-.mdc-dialog__title,
-[mat-dialog-title] {
-  color: #e8e6f0 !important;
+// Toolbar
+.mat-toolbar {
+  background: var(--surface) !important;
+  color: var(--ink) !important;
+  border-bottom: 2px solid var(--line) !important;
+  box-shadow: none !important;
+  font-family: var(--font-pixel) !important;
 }
 
-// Conteúdo do dialog
-.mat-mdc-dialog-content {
-  color: #a09ab8 !important;
+// Form fields — outline style to match Favly
+.mat-mdc-form-field {
+  font-family: var(--font-pixel) !important;
 }
 
-// Form fields dentro do dialog
-.mat-mdc-dialog-container {
-  .mdc-notched-outline__leading,
-  .mdc-notched-outline__notch,
-  .mdc-notched-outline__trailing {
-    border-color: rgba(255, 255, 255, 0.15) !important;
-  }
-
-  .mat-mdc-floating-label,
-  .mdc-floating-label {
-    color: #a09ab8 !important;
-  }
-
-  .mat-mdc-input-element,
-  input.mat-mdc-input-element {
-    color: #e8e6f0 !important;
-    caret-color: #FF6B6B !important;
-  }
-
-  .mat-mdc-form-field-icon-prefix mat-icon {
-    color: #6a647e !important;
-  }
-
-  .mat-mdc-form-hint,
-  .mat-mdc-form-field-hint {
-    color: #6a647e !important;
-  }
+.mdc-notched-outline__leading,
+.mdc-notched-outline__notch,
+.mdc-notched-outline__trailing {
+  border-color: var(--line) !important;
+  border-width: 2px !important;
 }
 
-// Ações do dialog (botões)
-.mat-mdc-dialog-actions {
-  .mat-mdc-button:not([disabled]) {
-    color: #a09ab8 !important;
-  }
+.mdc-notched-outline__leading  { border-radius: var(--radius-sm) 0 0 var(--radius-sm) !important; }
+.mdc-notched-outline__trailing { border-radius: 0 var(--radius-sm) var(--radius-sm) 0 !important; }
+
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+.mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+  border-color: var(--ink) !important;
+  border-width: 2px !important;
 }
 
- 
-body.favly-dark {
- /* Sidenav / Drawer */
-.mat-drawer {
-  background: #1a1a2e !important;
-  border-left: 1px solid rgba(255,255,255,0.08) !important;
+.mat-mdc-floating-label, .mdc-floating-label {
+  color: var(--ink-soft) !important;
+  font-family: var(--font-pixel) !important;
 }
- 
-.mat-drawer-container {
-  background: transparent !important;
+
+.mat-mdc-form-field.mat-focused .mat-mdc-floating-label {
+  color: var(--ink) !important;
 }
- 
-.mat-drawer-backdrop.mat-drawer-shown {
-  background-color: rgba(0, 0, 0, 0.6) !important;
+
+.mat-mdc-input-element, input.mat-mdc-input-element {
+  color: var(--ink) !important;
+  font-family: var(--font-pixel) !important;
 }
- 
-/* Select panel */
-.mat-mdc-select-panel {
-  background: #252540 !important;
+
+.mat-mdc-form-field-icon-prefix mat-icon,
+.mat-mdc-form-field .mat-mdc-form-field-icon-prefix mat-icon {
+  color: var(--ink-soft) !important;
+  padding-right: 8px;
 }
- 
-.mat-mdc-option {
-  color: var(--text-dark) !important;
+
+.mat-mdc-form-field-hint { color: var(--ink-soft) !important; font-size: 12px !important; }
+.mat-mdc-form-field-error { font-size: 12px !important; }
+
+// Select
+.mat-mdc-select-value { color: var(--ink) !important; font-family: var(--font-pixel) !important; }
+.mat-mdc-select-arrow { color: var(--ink-soft) !important; }
+.mat-mdc-select-panel { background: var(--surface) !important; border: 2px solid var(--line) !important; box-shadow: var(--shadow) !important; border-radius: var(--radius-sm) !important; }
+.mat-mdc-option { color: var(--ink) !important; font-family: var(--font-pixel) !important; }
+.mat-mdc-option:hover:not(.mdc-list-item--disabled) { background: var(--bg-2) !important; }
+.mat-mdc-option.mdc-list-item--selected { background: var(--accent-amarelo) !important; }
+
+// Buttons
+.mat-mdc-raised-button, .mdc-button--raised {
+  font-family: var(--font-pixel) !important;
+  border-radius: var(--radius-sm) !important;
+  box-shadow: var(--shadow-sm) !important;
+  border: 2px solid var(--line) !important;
+  font-weight: 600 !important;
 }
- 
-.mat-mdc-option:hover:not(.mdc-list-item--disabled) {
-  background: rgba(255,255,255,0.06) !important;
+
+.mat-mdc-stroked-button, .mdc-button--outlined {
+  font-family: var(--font-pixel) !important;
+  border-radius: var(--radius-sm) !important;
+  border: 2px solid var(--line) !important;
+  color: var(--ink) !important;
+  font-weight: 600 !important;
+  box-shadow: var(--shadow-sm) !important;
 }
+
+.mat-mdc-button, .mdc-button {
+  font-family: var(--font-pixel) !important;
+  color: var(--ink-soft) !important;
 }
- 
+
+.mat-mdc-icon-button {
+  color: var(--ink-soft) !important;
+}
+
+// Menu
+.mat-mdc-menu-panel {
+  background: var(--surface) !important;
+  border: 2px solid var(--line) !important;
+  box-shadow: var(--shadow) !important;
+  border-radius: var(--radius-sm) !important;
+}
+.mat-mdc-menu-item { color: var(--ink) !important; font-family: var(--font-pixel) !important; }
+.mat-mdc-menu-item:hover:not([disabled]) { background: var(--bg) !important; }
+.mat-mdc-menu-item mat-icon { color: var(--ink-soft) !important; }
+
+// Divider
+.mat-divider { border-color: var(--line-soft) !important; }
+
+// Chips
+.mat-mdc-chip.mat-mdc-standard-chip { background: var(--surface) !important; border: 2px solid var(--line) !important; border-radius: 999px !important; color: var(--ink) !important; font-family: var(--font-pixel) !important; box-shadow: var(--shadow-sm) !important; }
+.mat-mdc-chip-option.mdc-evolution-chip--selected { background: var(--ink) !important; color: var(--bg) !important; }
+
+// Snackbar
+.mat-mdc-snack-bar-container { background: var(--ink) !important; color: var(--bg) !important; border-radius: var(--radius-sm) !important; border: 2px solid var(--line) !important; box-shadow: var(--shadow) !important; font-family: var(--font-pixel) !important; }
+
+// Tooltip
+.mat-mdc-tooltip { background: var(--ink) !important; color: var(--bg) !important; font-family: var(--font-pixel) !important; font-size: 12px !important; border-radius: var(--radius-sm) !important; }
+
+// Dialog
+.mat-mdc-dialog-container { --mdc-dialog-container-color: var(--surface) !important; }
+.mat-mdc-dialog-surface { background: var(--surface) !important; border: 2px solid var(--line) !important; border-radius: var(--radius) !important; box-shadow: var(--shadow) !important; }
+.mdc-dialog__title, [mat-dialog-title] { color: var(--ink) !important; font-family: var(--font-pixel) !important; font-size: 18px !important; font-weight: 700 !important; }
+.mat-mdc-dialog-content { color: var(--ink-2) !important; font-family: var(--font-pixel) !important; }
+.mat-mdc-dialog-actions .mat-mdc-button:not([disabled]) { color: var(--ink-soft) !important; }
+
+// Progress spinner
+.mat-mdc-progress-spinner circle { stroke: var(--ink) !important; }
+.btn-salvar .mat-mdc-progress-spinner circle,
+.btn-submit .mat-mdc-progress-spinner circle,
+.btn-confirmar .mat-mdc-progress-spinner circle,
+.btn-ativar .mat-mdc-progress-spinner circle { stroke: var(--ink) !important; }
+
+// Sidenav / Drawer
+.mat-drawer { background: var(--surface) !important; border-left: 2px solid var(--line) !important; }
+.mat-drawer-container { background: transparent !important; }
+.mat-drawer-backdrop.mat-drawer-shown { background-color: rgba(28, 26, 21, 0.45) !important; }
+
+// Badge
+.mat-badge-content { background: var(--accent-coral) !important; color: var(--ink) !important; font-family: var(--font-mono) !important; border: 1px solid var(--line) !important; }
+
+// Ripple
+.mat-ripple-element { background: rgba(28, 26, 21, 0.08) !important; }
+
+// Utility
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }

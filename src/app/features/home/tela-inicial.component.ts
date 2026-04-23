@@ -79,6 +79,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   private platformId = inject(PLATFORM_ID);
 
   usuario = this.authService.getUsuario();
+  grupoNome = this.authService.getGrupoNome();
 
   darkMode = signal<boolean>(false);
   filtroCategoriaAtivo = signal<string>('todos');
@@ -236,6 +237,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     return this.categorias().find(c => c.id === categoriaId)?.nome ?? '—';
   }
 
+  getCategoriaIcone(categoriaId: string): string {
+    return this.categorias().find(c => c.id === categoriaId)?.icone ?? '▣';
+  }
+
   getUnidadeLabel(unidade: number): string {
     return UNIDADES.find(u => u.valor === unidade)?.sigla ?? 'un';
   }
@@ -243,6 +248,16 @@ export class HomeComponent implements OnInit, OnDestroy {
   getNivelEstoque(produto: Produto): number {
     if (produto.quantidadeMinima === 0) return 100;
     return Math.min(100, Math.round((produto.quantidadeAtual / (produto.quantidadeMinima * 2)) * 100));
+  }
+
+  getStockCells(produto: Produto): { filled: boolean; critical: boolean }[] {
+    const total = Math.max(produto.quantidadeMinima || 10, 10);
+    const filled = Math.min(Math.round((produto.quantidadeAtual / total) * total), total);
+    const critical = produto.quantidadeAtual < produto.quantidadeMinima;
+    return Array.from({ length: total }, (_, i) => ({
+      filled: i < filled,
+      critical,
+    }));
   }
 
   setFiltroCategoria(categoria: string): void { this.filtroCategoriaAtivo.set(categoria); }
@@ -286,6 +301,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
   registrarSaidaProduto(produto: Produto): void { this.snackBar.open(`Saída de "${produto.nome}"`, 'Ok', { duration: 2000 }); }
   logout(): void { this.authService.logout(); }
+  voltarGrupos(): void { this.router.navigate(['/grupos']); }
 
   private safeLocalStorage(action: 'get' | 'set', key: string, value?: string): string | null {
     try {

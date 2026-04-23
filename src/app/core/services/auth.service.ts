@@ -48,7 +48,11 @@ export class AuthService {
   }
 
   getGrupoId(): string | null {
-   return this.isBrowser ? localStorage.getItem(this.GRUPO_KEY) : null;
+    return this.isBrowser ? localStorage.getItem(this.GRUPO_KEY) : null;
+  }
+
+  getGrupoNome(): string | null {
+    return this.isBrowser ? localStorage.getItem(this.GRUPO_NOME_KEY) : null;
   }
 
   logout(): void {

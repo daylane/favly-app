@@ -8,6 +8,11 @@ export const routes: Routes = [
     loadChildren: () => import('./features/auth/auth.routes').then(r => r.AUTH_ROUTES)
   },
    {
+    path: 'grupos',
+    loadComponent: () => import('./features/grupos/grupos.component').then(c => c.GruposComponent),
+    canActivate: [authGuard]
+  },
+  {
     path: 'home',
     loadComponent: () => import('./features/home/tela-inicial.component').then(c => c.HomeComponent),
     canActivate: [authGuard]

@@ -84,6 +84,7 @@ export class SaidaDialogComponent implements OnInit {
     const qtd = parseDecimal(quantidade);
 
     if (!produtoId || qtd <= 0) return;
+    if (this.estoqueInsuficiente) return; // bloqueia no cliente também
 
     this.isLoading.set(true);
     this.errorMessage.set('');

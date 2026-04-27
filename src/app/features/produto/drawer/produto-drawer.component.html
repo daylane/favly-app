@@ -23,7 +23,7 @@
         <div class="field-input">
           <input formControlName="nome" placeholder="ex: arroz, leite, sabonete..." autocomplete="off" />
         </div>
-        <span class="field-error" *ngIf="nomeError">{{ nomeError }}</span>
+        @if (nomeError) { <span class="field-error">{{ nomeError }}</span> }
       </label>
 
       <label class="field">
@@ -38,12 +38,12 @@
         <div class="field-input field-select">
           <select formControlName="categoriaId">
             <option value="" disabled>selecione...</option>
-            <option *ngFor="let cat of categorias" [value]="cat.id">
-              {{ cat.icone }} {{ cat.nome }}
-            </option>
+            @for (cat of categorias; track cat.id) {
+              <option [value]="cat.id">{{ cat.icone }} {{ cat.nome }}</option>
+            }
           </select>
         </div>
-        <span class="field-error" *ngIf="categoriaError">{{ categoriaError }}</span>
+        @if (categoriaError) { <span class="field-error">{{ categoriaError }}</span> }
       </label>
 
       <div class="row-2">
@@ -51,7 +51,9 @@
           <span class="field-label">unidade</span>
           <div class="field-input field-select">
             <select formControlName="unidade">
-              <option *ngFor="let u of unidades" [value]="u.valor">{{ u.label }} ({{ u.sigla }})</option>
+              @for (u of unidades; track u.valor) {
+                <option [value]="u.valor">{{ u.label }} ({{ u.sigla }})</option>
+              }
             </select>
           </div>
         </label>
@@ -62,14 +64,16 @@
             <input type="number" formControlName="quantidadeMinima" placeholder="0" min="0" />
           </div>
           <span class="field-hint">alerta de estoque baixo</span>
-          <span class="field-error" *ngIf="quantidadeMinimaError">{{ quantidadeMinimaError }}</span>
+          @if (quantidadeMinimaError) { <span class="field-error">{{ quantidadeMinimaError }}</span> }
         </label>
       </div>
 
-      <div class="error-alert" *ngIf="errorMessage()">
-        <mat-icon>error_outline</mat-icon>
-        <span>{{ errorMessage() }}</span>
-      </div>
+      @if (errorMessage()) {
+        <div class="error-alert">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
 
     </form>
   </div>

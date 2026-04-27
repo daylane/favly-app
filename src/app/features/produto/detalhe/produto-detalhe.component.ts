@@ -6,14 +6,6 @@ import { Produto, UNIDADES }     from '../produto.model';
 import { Categoria }             from '../../categoria/categoria.model';
 import { MovimentacaoItem, isEntrada } from '../../movimentacao/movimentacao.model';
 
-const AVATAR_COLORS = [
-  '#4ade80', '#f97316', '#a78bfa', '#38bdf8',
-  '#fb7185', '#facc15', '#34d399', '#60a5fa',
-];
-function avatarColor(nome: string): string {
-  return AVATAR_COLORS[(nome?.charCodeAt(0) ?? 0) % AVATAR_COLORS.length];
-}
-
 @Component({
   selector: 'app-produto-detalhe',
   standalone: true,
@@ -46,8 +38,6 @@ export class ProdutoDetalheComponent {
   getCategoriaIcone(): string {
     return this.categorias().find(c => c.id === this.produto().categoriaId)?.icone ?? '▣';
   }
-
-  avatarColor(nome: string): string { return avatarColor(nome); }
 
   // ── Movimentações do produto ─────────────────────────────────────────────────
   movsProduto = computed(() =>

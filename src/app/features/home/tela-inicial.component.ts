@@ -469,13 +469,6 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   getAvatarColor(nome: string): string { return avatarColor(nome); }
 
-  getStockCells(produto: Produto): { filled: boolean; critical: boolean }[] {
-    const total  = Math.max(produto.quantidadeMinima || 10, 10);
-    const filled = Math.min(Math.round((produto.quantidadeAtual / total) * total), total);
-    const crit   = produto.quantidadeAtual < produto.quantidadeMinima;
-    return Array.from({ length: total }, (_, i) => ({ filled: i < filled, critical: crit }));
-  }
-
   getCategoriaIcone(categoriaId: string): string {
     return this.categorias().find(c => c.id === categoriaId)?.icone ?? '▣';
   }
@@ -531,8 +524,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       }
     });
   }
-  registrarCompra(): void { this.snackBar.open('Em breve!', 'Ok', { duration: 2000 }); }
-
   private safeLocalStorage(action: 'get' | 'set', key: string, value?: string): string | null {
     try {
       if (action === 'get') return localStorage.getItem(key);

@@ -1,5 +1,4 @@
 <div class="grupos-page">
-
   <div class="grupos-wrap">
 
     <!-- Logo -->
@@ -17,53 +16,122 @@
     <!-- Saudação -->
     <div class="greeting">
       <span class="greeting-hi">olá, <strong>{{ usuario?.nome ?? 'você' }}</strong></span>
-      <span class="greeting-sub">selecione ou entre em um grupo</span>
+      <span class="greeting-sub">
+        @if (painel() === 'lista') { selecione um grupo para entrar }
+        @else if (painel() === 'entrar') { entrar em um grupo }
+        @else { criar um novo grupo }
+      </span>
     </div>
 
-    <!-- Grupo atual -->
-    <div *ngIf="grupoAtual()" class="section-label">meu grupo</div>
-    <div *ngIf="grupoAtual()" class="grupo-card" (click)="selecionarGrupo(grupoAtual()!)">
-      <div class="grupo-icon">◈</div>
-      <div class="grupo-info">
-        <span class="grupo-nome">{{ grupoAtual()!.nome }}</span>
-        <span class="grupo-hint">toque para entrar</span>
-      </div>
-      <div class="grupo-arrow">→</div>
-    </div>
+    <!-- ═══════ PAINEL: LISTA DE GRUPOS ════════════════════════════════════════ -->
+    @if (painel() === 'lista') {
 
-    <!-- Divisor -->
-    <div class="divider">
-      <span>ou</span>
-    </div>
-
-    <!-- Entrar com código -->
-    <div class="section-label">entrar em outro grupo</div>
-    <div class="code-card">
-      <div class="field">
-        <span class="field-label">código de convite</span>
-        <div class="field-input">
-          <input
-            type="text"
-            [ngModel]="codigoConvite()"
-            (ngModelChange)="codigoConvite.set($event)"
-            placeholder="ex: ABC-123"
-            autocomplete="off"
-            style="text-transform: uppercase"
-          />
+      @if (isLoadingGrupos()) {
+        <div class="loading-wrap">
+          <mat-spinner diameter="32"></mat-spinner>
+          <span>carregando grupos…</span>
         </div>
-      </div>
-      <button
-        type="button"
-        class="btn btn-block"
-        [disabled]="!codigoConvite().trim() || isLoadingEntrar()"
-        (click)="entrarNoGrupo()"
-      >
-        <mat-spinner *ngIf="isLoadingEntrar()" diameter="16"></mat-spinner>
-        <span *ngIf="!isLoadingEntrar()">entrar no grupo</span>
-      </button>
-    </div>
+      } @else if (grupos().length > 0) {
 
-    <!-- Logout -->
+        <div class="section-label">meus grupos</div>
+
+        @for (grupo of grupos(); track grupo.id) {
+          <div class="grupo-card" (click)="selecionarGrupo(grupo)">
+            <div class="grupo-icon">◈</div>
+            <div class="grupo-info">
+              <span class="grupo-nome">{{ grupo.nome }}</span>
+              @if (grupo.totalMembros) {
+                <span class="grupo-hint">{{ grupo.totalMembros }} membro(s)</span>
+              } @else {
+                <span class="grupo-hint">toque para entrar</span>
+              }
+            </div>
+            <div class="grupo-arrow">→</div>
+          </div>
+        }
+
+      } @else {
+        <div class="empty-groups">
+          <div class="empty-emoji">◈</div>
+          <div class="empty-text">você ainda não pertence a nenhum grupo</div>
+        </div>
+      }
+
+      <div class="divider"><span>ou</span></div>
+
+      <!-- Ações -->
+      <div class="actions-row">
+        <button class="btn btn-block" (click)="painel.set('criar')">
+          ＋ criar um grupo
+        </button>
+        <button class="btn-secondary btn-block" (click)="painel.set('entrar')">
+          ◎ entrar por código
+        </button>
+      </div>
+
+    }
+
+    <!-- ═══════ PAINEL: ENTRAR POR CÓDIGO ══════════════════════════════════════ -->
+    @if (painel() === 'entrar') {
+
+      <button class="back-btn" (click)="painel.set('lista')">← voltar</button>
+
+      <div class="form-card">
+        <div class="field">
+          <span class="field-label">código de convite</span>
+          <div class="field-input">
+            <input type="text" [ngModel]="codigoConvite()"
+              (ngModelChange)="codigoConvite.set($event.toUpperCase())"
+              placeholder="ex: A1B2C3D4" autocomplete="off"
+              style="text-transform:uppercase;font-family:var(--font-mono);letter-spacing:.1em" />
+          </div>
+        </div>
+        <div class="field">
+          <span class="field-label">seu apelido no grupo</span>
+          <div class="field-input">
+            <input type="text" [ngModel]="apelido()" (ngModelChange)="apelido.set($event)"
+              placeholder="como quer ser chamado(a)" autocomplete="off" />
+          </div>
+        </div>
+        <button class="btn btn-block" [disabled]="!codigoConvite().trim() || !apelido().trim() || isLoadingEntrar()"
+          (click)="entrarNoGrupo()">
+          <mat-spinner *ngIf="isLoadingEntrar()" diameter="16"></mat-spinner>
+          <span *ngIf="!isLoadingEntrar()">entrar no grupo</span>
+        </button>
+      </div>
+
+    }
+
+    <!-- ═══════ PAINEL: CRIAR GRUPO ════════════════════════════════════════════ -->
+    @if (painel() === 'criar') {
+
+      <button class="back-btn" (click)="painel.set('lista')">← voltar</button>
+
+      <div class="form-card">
+        <div class="field">
+          <span class="field-label">nome do grupo</span>
+          <div class="field-input">
+            <input type="text" [ngModel]="nomeGrupo()" (ngModelChange)="nomeGrupo.set($event)"
+              placeholder="ex: Família Silva" autocomplete="off" />
+          </div>
+        </div>
+        <div class="field">
+          <span class="field-label">seu apelido no grupo</span>
+          <div class="field-input">
+            <input type="text" [ngModel]="apelidoCriador()" (ngModelChange)="apelidoCriador.set($event)"
+              placeholder="como quer ser chamado(a)" autocomplete="off" />
+          </div>
+        </div>
+        <button class="btn btn-block" [disabled]="!nomeGrupo().trim() || !apelidoCriador().trim() || isLoadingCriar()"
+          (click)="criarGrupo()">
+          <mat-spinner *ngIf="isLoadingCriar()" diameter="16"></mat-spinner>
+          <span *ngIf="!isLoadingCriar()">criar grupo</span>
+        </button>
+      </div>
+
+    }
+
+    <!-- Footer -->
     <div class="grupos-foot">
       <button type="button" class="link-btn" (click)="logout()">sair da conta</button>
     </div>

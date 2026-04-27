@@ -1,0 +1,107 @@
+<div class="dialog-wrap">
+
+  <h2 class="dialog-title">registrar entrada</h2>
+
+  <form [formGroup]="form" novalidate class="dialog-form">
+
+    <!-- Produto -->
+    <label class="field">
+      <span class="field-label">produto</span>
+      <div class="field-input field-select" [class.field-input--error]="produtoError">
+        <select formControlName="produtoId">
+          <option value="" disabled>selecione o produto...</option>
+          @for (p of data.produtos; track p.id) {
+            <option [value]="p.id">{{ p.nome }}</option>
+          }
+        </select>
+      </div>
+      @if (produtoError) { <span class="field-error">{{ produtoError }}</span> }
+    </label>
+
+    <!-- Estoque atual -->
+    @if (produtoSelecionado) {
+      <div class="stock-badge">
+        <mat-icon class="stock-icon">inventory_2</mat-icon>
+        tem em casa:
+        <strong>{{ produtoSelecionado.quantidadeAtual }} {{ unidade }}</strong>
+      </div>
+    }
+
+    <!-- Quantidade + Preço -->
+    <div class="row-2">
+      <label class="field">
+        <span class="field-label">quantidade</span>
+        <div class="field-input" [class.field-input--error]="quantidadeError">
+          <input type="text" inputmode="decimal" formControlName="quantidade" placeholder="ex: 1,5" />
+          @if (unidade) { <span class="field-suffix">{{ unidade }}</span> }
+        </div>
+        @if (quantidadeError) { <span class="field-error">{{ quantidadeError }}</span> }
+      </label>
+
+      <label class="field">
+        <span class="field-label">preço unit. <span class="optional">(opcional)</span></span>
+        <div class="field-input">
+          <span class="field-prefix">R$</span>
+          <input type="text" inputmode="decimal" formControlName="preco" placeholder="0,00" />
+        </div>
+      </label>
+    </div>
+
+    <!-- Mercado -->
+    <label class="field">
+      <span class="field-label">mercado <span class="optional">(opcional)</span></span>
+      <div class="field-input field-select">
+        <select formControlName="mercadoId">
+          <option value="">— nenhum —</option>
+          @for (m of data.mercados; track m.id) {
+            <option [value]="m.id">{{ m.nome }}</option>
+          }
+        </select>
+      </div>
+    </label>
+
+    <!-- Observação -->
+    <label class="field">
+      <span class="field-label">observação <span class="optional">(opcional)</span></span>
+      <div class="field-input field-textarea">
+        <textarea formControlName="observacao"
+                  placeholder="ex: comprado na promoção..."
+                  rows="2"
+                  maxlength="200"></textarea>
+      </div>
+      <span class="field-hint">{{ form.get('observacao')?.value?.length ?? 0 }}/200</span>
+    </label>
+
+  </form>
+
+  <!-- Resumo -->
+  @if (produtoSelecionado && (quantidadeCtrl.value ?? 0) > 0) {
+    <div class="resumo-card">
+      <span class="resumo-icon">◉</span>
+      <span>
+        entrada de
+        <strong>{{ quantidadeCtrl.value }} {{ unidade }}</strong>
+        de <strong>{{ produtoSelecionado.nome }}</strong>
+      </span>
+    </div>
+  }
+
+  <!-- Erro -->
+  @if (errorMessage()) {
+    <div class="error-alert">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  }
+
+  <!-- Ações -->
+  <div class="dialog-actions">
+    <button type="button" class="btn-cancelar"
+            (click)="onCancelar()" [disabled]="isLoading()">cancelar</button>
+    <button type="button" class="btn"
+            (click)="onSalvar()" [disabled]="isLoading()">
+      @if (isLoading()) { <mat-spinner diameter="18" /> } @else { confirmar entrada }
+    </button>
+  </div>
+
+</div>

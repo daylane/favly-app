@@ -1,0 +1,64 @@
+<div class="dialog-wrap">
+
+  <!-- Título + botão fechar -->
+  <div class="dialog-header">
+    <h2 class="dialog-title">registrar uso</h2>
+    <button class="btn-close" type="button" (click)="onCancelar()">×</button>
+  </div>
+
+  <form [formGroup]="form" novalidate class="dialog-form">
+
+    <!-- Produto -->
+    <label class="field">
+      <span class="field-label">produto</span>
+      <div class="field-input field-select" [class.field-input--error]="produtoError">
+        <select formControlName="produtoId">
+          <option value="" disabled>escolha um produto</option>
+          @for (p of data.produtos; track p.id) {
+            <option [value]="p.id">{{ p.nome }}</option>
+          }
+        </select>
+      </div>
+      @if (produtoError) { <span class="field-error">{{ produtoError }}</span> }
+    </label>
+
+    <!-- Estoque atual -->
+    @if (produtoSelecionado) {
+      <div class="stock-badge">
+        <mat-icon class="stock-icon">inventory_2</mat-icon>
+        tem em casa:
+        <strong>{{ produtoSelecionado.quantidadeAtual }} {{ unidade }}</strong>
+      </div>
+    }
+
+    <!-- Quantidade -->
+    <label class="field">
+      <span class="field-label">quantidade</span>
+      <div class="field-input" [class.field-input--error]="quantidadeError || estoqueInsuficiente">
+        <input type="text" inputmode="decimal" formControlName="quantidade" placeholder="ex: 1,5" />
+        @if (unidade) { <span class="field-suffix">{{ unidade }}</span> }
+      </div>
+      @if (quantidadeError) {
+        <span class="field-error">{{ quantidadeError }}</span>
+      } @else if (estoqueInsuficiente) {
+        <span class="field-error">quantidade maior que o estoque atual.</span>
+      }
+    </label>
+
+  </form>
+
+  <!-- Erro geral -->
+  @if (errorMessage()) {
+    <div class="error-alert">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  }
+
+  <!-- Botão principal -->
+  <button type="button" class="btn-dar-baixa"
+          (click)="onSalvar()" [disabled]="isLoading()">
+    @if (isLoading()) { <mat-spinner diameter="18" /> } @else { dar baixa }
+  </button>
+
+</div>

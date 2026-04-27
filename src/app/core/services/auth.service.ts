@@ -54,7 +54,24 @@ export class AuthService {
   }
 
   getUserId(): string | null {
-    return this.isBrowser ? localStorage.getItem(this.USER_ID_KEY) : null;
+    if (!this.isBrowser) return null;
+    // Tenta o storage primeiro
+    const stored = localStorage.getItem(this.USER_ID_KEY);
+    if (stored) return stored;
+    // Fallback: lê o claim "sub" do JWT
+    return this.getUserIdFromToken();
+  }
+
+  private getUserIdFromToken(): string | null {
+    try {
+      const token = this.getToken();
+      if (!token) return null;
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const id = payload.sub ?? payload.userId ?? payload.nameid ?? null;
+      // Salva para as próximas chamadas
+      if (id) localStorage.setItem(this.USER_ID_KEY, id);
+      return id;
+    } catch { return null; }
   }
 
   getGrupoNome(): string | null {

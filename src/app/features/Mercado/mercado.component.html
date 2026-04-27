@@ -1,0 +1,61 @@
+<div class="dialog-wrap">
+
+  <h2 class="dialog-title">{{ isEdicao ? 'editar mercado' : 'novo mercado' }}</h2>
+
+  <form [formGroup]="form" novalidate class="dialog-form">
+
+    <!-- Nome -->
+    <label class="field">
+      <span class="field-label">nome do mercado</span>
+      <div class="field-input" [class.field-input--error]="nomeError">
+        <input formControlName="nome"
+               placeholder="ex: Mercadão do Bairro"
+               autocomplete="off" />
+        <span class="field-suffix">{{ nomeControl.value?.length ?? 0 }}/60</span>
+      </div>
+      @if (nomeError) {
+        <span class="field-error">{{ nomeError }}</span>
+      }
+    </label>
+
+    <!-- Endereço -->
+    <label class="field">
+      <span class="field-label">endereço</span>
+      <div class="field-input" [class.field-input--error]="enderecoError">
+        <input formControlName="endereco"
+               placeholder="ex: Rua das Flores, 123"
+               autocomplete="off" />
+        <span class="field-suffix">{{ enderecoControl.value?.length ?? 0 }}/120</span>
+      </div>
+      @if (enderecoError) {
+        <span class="field-error">{{ enderecoError }}</span>
+      }
+    </label>
+
+  </form>
+
+  <!-- Erro geral -->
+  @if (errorMessage()) {
+    <div class="error-alert">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  }
+
+  <!-- Ações -->
+  <div class="dialog-actions">
+    <button type="button" class="btn-cancelar"
+            (click)="onCancelar()"
+            [disabled]="isLoading()">cancelar</button>
+    <button type="button" class="btn btn-salvar"
+            (click)="onSalvar()"
+            [disabled]="isLoading()">
+      @if (isLoading()) {
+        <mat-spinner diameter="18" />
+      } @else {
+        {{ isEdicao ? 'salvar' : 'criar mercado' }}
+      }
+    </button>
+  </div>
+
+</div>

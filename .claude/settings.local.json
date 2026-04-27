@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/daylane/Documents/GitHub/Favly/**)",
+      "Bash(pandoc \"Favly_Login_Grupos.docx\" -t plain)",
+      "Bash(npx ng *)",
+      "Bash(npx tsc *)",
+      "WebFetch(domain:claude.ai)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "mcp__Claude_Preview__preview_start"
+    ]
+  }
+}

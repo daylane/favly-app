@@ -19,11 +19,6 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
-    path: 'gerenciar-grupos',
-    loadComponent: () => import('./features/gerenciar-grupo/gerenciar-grupo.component').then(c => c.GerenciarGrupoComponent),
-    canActivate: [authGuard]
-  },
-  {
     path: 'home',
     loadComponent: () => import('./features/home/tela-inicial.component').then(c => c.HomeComponent),
     canActivate: [authGuard]

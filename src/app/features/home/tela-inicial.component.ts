@@ -237,7 +237,18 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    this.snackBar.dismiss(); // fecha qualquer toast aberto ao sair da página
     if (isPlatformBrowser(this.platformId)) document.body.classList.remove('favly-dark');
+  }
+
+  /**
+   * Exibe um snackbar de erro apenas se NÃO for 401.
+   * Erros 401 já são tratados pelo interceptor (→ logout automático),
+   * e o toast ficaria visível na tela de login caso contrário.
+   */
+  private showApiError(mensagem: string, err?: { status?: number }): void {
+    if (err?.status === 401) return;
+    this.snackBar.open(mensagem, 'Fechar', { duration: 3000 });
   }
 
   // ── Navegação ─────────────────────────────────────────────────────────────
@@ -258,7 +269,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.isLoadingCategorias.set(true);
     this.categoriaService.listar().pipe(takeUntil(this.destroy$)).subscribe({
       next: cats => { this.categorias.set(cats); this.isLoadingCategorias.set(false); },
-      error: ()  => { this.isLoadingCategorias.set(false); this.snackBar.open('Erro ao carregar categorias.', 'Fechar', { duration: 3000 }); },
+      error: err => { this.isLoadingCategorias.set(false); this.showApiError('Erro ao carregar categorias.', err); },
     });
   }
 
@@ -292,7 +303,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.isLoadingMercado.set(true);
     this.mercadoService.listar().pipe(takeUntil(this.destroy$)).subscribe({
       next: lista => { this.mercados.set(lista); this.isLoadingMercado.set(false); },
-      error: ()   => { this.isLoadingMercado.set(false); this.snackBar.open('Erro ao carregar mercados.', 'Fechar', { duration: 3000 }); },
+      error: err  => { this.isLoadingMercado.set(false); this.showApiError('Erro ao carregar mercados.', err); },
     });
   }
 
@@ -331,7 +342,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.isLoadingProdutos.set(true);
     this.produtoService.listar().pipe(takeUntil(this.destroy$)).subscribe({
       next: lista => { this.produtos.set(lista); this.isLoadingProdutos.set(false); },
-      error: ()   => { this.isLoadingProdutos.set(false); this.snackBar.open('Erro ao carregar produtos.', 'Fechar', { duration: 3000 }); },
+      error: err  => { this.isLoadingProdutos.set(false); this.showApiError('Erro ao carregar produtos.', err); },
     });
   }
 

@@ -226,3 +226,111 @@ input, select, textarea { font-family: var(--font-pixel); font-size: inherit; }
 
 // Utility
 .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+
+// ── Dark Mode ─────────────────────────────────────────────────────────────────
+body.favly-dark {
+  color-scheme: dark;
+
+  // ── Base ──────────────────────────────────────────────────────────────────
+  --bg:        #1c1814;
+  --bg-2:      #252019;
+  --surface:   #2b2520;
+  --surface-2: #342c24;
+
+  // ── Texto e bordas ────────────────────────────────────────────────────────
+  --ink:      #f0e6d2;
+  --ink-2:    #d0bfa0;
+  --ink-soft: #8a7b65;
+  --line:     #f0e6d2;
+  --line-soft:#3d3428;
+
+  // ── Acentos — ligeiramente mais vivos para contraste no fundo escuro ──────
+  --accent-verde:   oklch(0.78 0.20 130);
+  --accent-coral:   oklch(0.70 0.19 35);
+  --accent-azul:    oklch(0.75 0.15 230);
+  --accent-roxo:    oklch(0.73 0.15 300);
+  --accent-amarelo: oklch(0.83 0.18 90);
+  --accent-rosa:    oklch(0.77 0.15 350);
+  --accent-marrom:  oklch(0.58 0.09 60);
+
+  // ── Sombras (adaptam via --line que agora é creme) ────────────────────────
+  --shadow:    4px 4px 0 var(--line);
+  --shadow-sm: 2px 2px 0 var(--line);
+
+  // ── Compat aliases ────────────────────────────────────────────────────────
+  --bg-page:      var(--bg);
+  --bg-surface:   var(--surface);
+  --bg-surface-2: var(--surface-2);
+  --border-color: var(--line-soft);
+  --border-soft:  var(--line-soft);
+  --text-dark:    var(--ink);
+  --text-mid:     var(--ink-2);
+  --text-light:   var(--ink-soft);
+  --shadow-card:  var(--shadow);
+
+  // ── Angular Material overrides ────────────────────────────────────────────
+
+  // Ripple escuro → claro
+  .mat-ripple-element { background: rgba(240, 230, 210, 0.12) !important; }
+
+  // Backdrop do drawer
+  .mat-drawer-backdrop.mat-drawer-shown {
+    background-color: rgba(0, 0, 0, 0.70) !important;
+  }
+
+  // Spinner
+  .mat-mdc-progress-spinner circle { stroke: var(--ink) !important; }
+
+  // Snackbar — fica creme/escuro (invertido) por causa do swap --ink / --bg
+  .mat-mdc-snack-bar-container {
+    background: var(--ink) !important;
+    color: var(--bg) !important;
+  }
+
+  // Select nativo — adapta pelo color-scheme: dark
+  .mat-mdc-select-panel,
+  .mat-mdc-menu-panel {
+    background: var(--surface) !important;
+    border-color: var(--line) !important;
+  }
+  .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
+    background: var(--bg-2) !important;
+  }
+  .mat-mdc-option.mdc-list-item--selected {
+    background: var(--accent-amarelo) !important;
+    color: var(--ink) !important;
+  }
+
+  // Chip selecionado
+  .mat-mdc-chip-option.mdc-evolution-chip--selected {
+    background: var(--ink) !important;
+    color: var(--bg) !important;
+  }
+
+  // Fundo do alerta de erro (hardcoded como oklch claro nos dialogs)
+  .error-alert {
+    background: oklch(0.22 0.07 35) !important;
+    border-color: var(--accent-coral) !important;
+    color: var(--ink) !important;
+  }
+
+  // Badge
+  .mat-badge-content {
+    background: var(--accent-coral) !important;
+    color: var(--ink) !important;
+  }
+
+  // Dialog surface
+  .mat-mdc-dialog-surface {
+    background: var(--surface) !important;
+    border-color: var(--line) !important;
+  }
+
+  // Scrollbar – dark flavor
+  * {
+    scrollbar-color: var(--line-soft) transparent;
+    scrollbar-width: thin;
+  }
+  ::-webkit-scrollbar-thumb { background: var(--line-soft) !important; }
+  ::-webkit-scrollbar-track { background: transparent !important; }
+}

@@ -60,9 +60,9 @@ export class GruposComponent implements OnInit {
         this.grupos.set(lista);
         this.isLoadingGrupos.set(false);
         // Se só tem 1 grupo, entra direto
-        if (lista.length === 1) {
-          this.selecionarGrupo(lista[0]);
-        }
+        // if (lista.length === 1) {
+        //   this.selecionarGrupo(lista[0]);
+        // }
       },
       error: () => {
         this.isLoadingGrupos.set(false);

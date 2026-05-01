@@ -1,0 +1,49 @@
+<div class="dialog-wrap">
+
+  <div class="dialog-icon-top">
+    <span class="emoji-preview">{{ emojiSelecionado() }}</span>
+  </div>
+
+  <h2 mat-dialog-title>{{ isEdicao ? 'editar categoria' : 'nova categoria' }}</h2>
+
+  <mat-dialog-content>
+
+    <form [formGroup]="form" novalidate class="dialog-form">
+      <label class="field">
+        <span class="field-label">nome da categoria</span>
+        <div class="field-input">
+          <input formControlName="nome" placeholder="ex: alimentos, limpeza..." autocomplete="off" />
+          <span class="field-suffix">{{ nomeControl.value?.length ?? 0 }}/40</span>
+        </div>
+        <span class="field-error" *ngIf="nomeError">{{ nomeError }}</span>
+      </label>
+    </form>
+
+    <!-- Seletor de emoji -->
+    <div class="emoji-section">
+      <p class="emoji-label">ícone</p>
+      <div class="emoji-grid">
+        <button *ngFor="let emoji of emojis" type="button" class="emoji-btn"
+          [class.selected]="emojiSelecionado() === emoji"
+          (click)="selecionarEmoji(emoji)">
+          {{ emoji }}
+        </button>
+      </div>
+    </div>
+
+    <div class="error-alert" *ngIf="errorMessage()">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ errorMessage() }}</span>
+    </div>
+
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button type="button" class="btn-cancelar" (click)="onCancelar()" [disabled]="isLoading()">cancelar</button>
+    <button type="button" class="btn btn-salvar" (click)="onSalvar()" [disabled]="isLoading()">
+      <mat-spinner *ngIf="isLoading()" diameter="18"></mat-spinner>
+      <span *ngIf="!isLoading()">{{ isEdicao ? 'salvar' : 'criar categoria' }}</span>
+    </button>
+  </mat-dialog-actions>
+
+</div>

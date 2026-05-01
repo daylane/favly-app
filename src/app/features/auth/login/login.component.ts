@@ -92,7 +92,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       this.authService.login({ email, senha: senha })
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: () => this.router.navigate(['/home']),
+        next: () => this.router.navigate(['/grupos']),
         error: (err) => {
           this.isLoading = false;
           const msg = err?.error?.message || '';

@@ -1,260 +1,213 @@
-@use '@angular/material' as mat;
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap');
-
-// ── Variáveis ────────────────────────────────────────────────────────────────
-$primary:    #FF6B6B;
-$secondary:  #FF8E53;
-$accent:     #FFC107;
-$text-dark:  #1a1a2e;
-$text-mid:   #4a4a6a;
-$text-light: #9090b0;
-$bg:         #f5f3ff;
-$white:      #ffffff;
-$danger:     #e53935;
-
-// ── Página ────────────────────────────────────────────────────────────────────
-.login-page {
+// ── Auth page base (compartilhado com criar-conta, esquecer-senha, etc.) ───────
+.auth-page {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: $bg;
-  font-family: 'DM Sans', sans-serif;
-  position: relative;
-  overflow: hidden;
-  padding: 1.5rem;
+  background: var(--bg);
+  padding: 24px 16px 40px;
 }
 
-// ── Blobs decorativos ────────────────────────────────────────────────────────
-.deco-blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.3;
-  animation: float 8s ease-in-out infinite;
-  pointer-events: none;
+.auth-wrap {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.blob-1 {
-  width: 400px; height: 400px;
-  background: radial-gradient(circle, #FF6B6B, #FF8E53);
-  top: -120px; right: -80px;
+// ── Logo ──────────────────────────────────────────────────────────────────────
+.auth-hero {
+  text-align: center;
+  padding-bottom: 4px;
 }
 
-.blob-2 {
-  width: 300px; height: 300px;
-  background: radial-gradient(circle, #7C4DFF, #FF6B6B);
-  bottom: -80px; left: -60px;
-  animation-delay: -3s;
+.auth-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
 }
 
-.blob-3 {
-  width: 200px; height: 200px;
-  background: radial-gradient(circle, #FFC107, #FF8E53);
-  top: 50%; left: 62%;
-  animation-delay: -5s;
+.logo-mark {
+  display: inline-grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px;
+  width: 32px;
+  height: 32px;
+  padding: 3px;
+  background: var(--ink);
+  border-radius: 8px;
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50%       { transform: translateY(-18px) scale(1.04); }
+.logo-brick {
+  background: var(--accent-verde);
+  border-radius: 2px;
+  &.b2 { background: var(--accent-coral); }
+  &.b3 { background: var(--accent-amarelo); }
+  &.b4 { background: var(--accent-azul); }
+}
+
+.logo-word {
+  font-family: var(--font-pixel);
+  font-weight: 700;
+  font-size: 30px;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.auth-tag {
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin: 0;
+  text-transform: lowercase;
 }
 
 // ── Card ──────────────────────────────────────────────────────────────────────
-.login-card {
-  background: $white;
-  border-radius: 24px !important;
-  padding: 2.5rem 2.25rem;
-  width: 100%;
-  max-width: 420px;
-  position: relative;
-  z-index: 1;
-  animation: slideUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+.auth-card {
+  background: var(--surface);
+  border: 2px solid var(--line);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 4px 4px 0 var(--line);
 }
 
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to   { opacity: 1; transform: translateY(0); }
+// ── Tabs ──────────────────────────────────────────────────────────────────────
+.auth-tabs {
+  display: flex;
+  background: var(--bg-2);
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  padding: 3px;
+  margin-bottom: 18px;
 }
 
-// ── Brand ─────────────────────────────────────────────────────────────────────
-.login-brand {
+.auth-tab {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  font-family: var(--font-pixel);
+  font-size: 14px;
+  color: var(--ink-soft);
+  border-radius: 8px;
+  font-weight: 600;
+  transition: background 0.15s, color 0.15s;
+
+  &.auth-tab-active {
+    background: var(--ink);
+    color: var(--bg);
+  }
+
+  &:hover:not(.auth-tab-active) {
+    background: var(--bg);
+    color: var(--ink);
+  }
+}
+
+// ── Form ──────────────────────────────────────────────────────────────────────
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.field {
+  display: block;
+}
+
+.field-label {
+  display: block;
+  font-size: 11px;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+
+.field-input {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 2rem;
-}
-
-.brand-icon {
-  width: 38px;
-  height: 38px;
+  background: var(--bg);
+  border: 2px solid var(--line);
   border-radius: 10px;
-  background: linear-gradient(135deg, $primary, $accent);
+  padding: 0 12px;
+  box-shadow: 2px 2px 0 var(--line);
+  transition: transform 0.1s, box-shadow 0.1s;
+
+  &:focus-within {
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0 var(--line);
+  }
+
+  input {
+    flex: 1;
+    border: none;
+    background: none;
+    padding: 12px 0;
+    outline: none;
+    color: var(--ink);
+    font-family: var(--font-pixel);
+    font-size: 15px;
+  }
+}
+
+.field-eye {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: var(--ink-soft);
   display: flex;
   align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 14px rgba(255, 107, 107, 0.35);
 
-  mat-icon {
-    color: $white;
-    font-size: 22px;
-    width: 22px;
-    height: 22px;
-  }
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  &:hover { color: var(--ink); }
 }
 
-.brand-name {
-  font-family: 'Syne', sans-serif;
-  font-size: 22px;
-  font-weight: 800;
-  color: $text-dark;
-  letter-spacing: -0.3px;
-}
-
-// ── Header ────────────────────────────────────────────────────────────────────
-.login-header {
-  margin-bottom: 1.75rem;
-
-  h2 {
-    font-family: 'Syne', sans-serif;
-    font-size: 26px;
-    font-weight: 700;
-    color: $text-dark;
-    letter-spacing: -0.5px;
-    margin: 0 0 4px;
-  }
-
-  p {
-    font-size: 14px;
-    color: $text-light;
-    margin: 0;
-  }
-}
-
-// ── Material Form Field overrides ─────────────────────────────────────────────
-.full-width {
-  width: 100%;
-}
-
-::ng-deep {
-  // Cor do outline e label
-  .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
-  .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
-  .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
-    border-color: $primary !important;
-  }
-
-  .mat-mdc-form-field.mat-focused .mat-mdc-floating-label {
-    color: $primary !important;
-  }
-
-  // Ícone prefix
-  .mat-mdc-form-field .mat-mdc-form-field-icon-prefix mat-icon {
-    color: $text-light;
-    padding-right: 8px;
-  }
-
-  // Cor do erro
-  .mat-mdc-form-field .mat-mdc-form-field-error {
-    font-size: 12px;
-  }
-
-  // Spinner branco no botão
-  .btn-submit .mat-mdc-progress-spinner circle {
-    stroke: $white !important;
-  }
+.field-error {
+  display: block;
+  font-size: 12px;
+  color: var(--accent-coral);
+  margin-top: 4px;
+  padding-left: 4px;
 }
 
 // ── Esqueci senha ─────────────────────────────────────────────────────────────
 .forgot-row {
   display: flex;
   justify-content: flex-end;
-  margin: -0.5rem 0 1rem;
+  margin-top: -4px;
 }
 
 .forgot-btn {
-  font-size: 13px !important;
-  color: $text-light !important;
-  padding: 0 4px !important;
-  min-width: unset !important;
+  background: none;
+  border: none;
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  padding: 4px;
+  text-transform: lowercase;
 
-  &:hover {
-    color: $primary !important;
-  }
+  &:hover { color: var(--ink); text-decoration: underline; text-decoration-thickness: 2px; }
 }
 
 // ── Erro geral ────────────────────────────────────────────────────────────────
 .error-alert {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
-  padding: 10px 14px;
-  background: rgba(229, 57, 53, 0.07);
-  border: 1px solid rgba(229, 57, 53, 0.22);
-  border-radius: 8px;
+  padding: 10px 12px;
+  background: oklch(0.96 0.04 35);
+  border: 2px solid var(--accent-coral);
+  border-radius: 10px;
   font-size: 13px;
-  color: $danger;
-  margin-bottom: 1.25rem;
+  color: var(--ink);
 
-  mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-  }
+  mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; color: var(--accent-coral); }
 }
-
-// ── Botão submit ──────────────────────────────────────────────────────────────
-.btn-submit {
-  height: 50px;
-  background: linear-gradient(135deg, $primary 0%, $secondary 100%) !important;
-  color: $white !important;
-  font-size: 15px !important;
-  font-weight: 500 !important;
-  font-family: 'DM Sans', sans-serif !important;
-  border-radius: 10px !important;
-  box-shadow: 0 4px 20px rgba(255, 107, 107, 0.35) !important;
-  letter-spacing: 0.2px;
-  transition: transform 0.15s, box-shadow 0.2s !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-
-  &:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 24px rgba(255, 107, 107, 0.45) !important;
-  }
-
-  &:disabled {
-    opacity: 0.7;
-  }
-}
-
-// ── Footer ────────────────────────────────────────────────────────────────────
-.login-footer {
-  margin-top: 1.5rem;
-  text-align: center;
-  font-size: 13px;
-  color: $text-light;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-}
-
-.activate-btn {
-  font-size: 13px !important;
-  font-weight: 500 !important;
-  color: $primary !important;
-  padding: 0 6px !important;
-  min-width: unset !important;
-
-  &:hover {
-    color: $secondary !important;
-  }
-}
-
-/* Adicione isso no login.component.scss */
 
 .error-content {
   display: flex;
@@ -263,31 +216,73 @@ $danger:     #e53935;
   flex: 1;
 }
 
+// ── Botão submit ──────────────────────────────────────────────────────────────
+.btn {
+  font-family: var(--font-pixel);
+  font-size: 16px;
+  padding: 13px 18px;
+  border-radius: 12px;
+  border: 2px solid var(--line);
+  background: var(--accent-verde);
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 3px 3px 0 var(--line);
+  transition: transform 0.1s, box-shadow 0.1s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  &:hover:not(:disabled) { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--line); }
+  &:active:not(:disabled) { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--line); }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.btn-block { width: 100%; }
+
 .btn-ativar-inline {
   align-self: flex-start;
-  font-size: 12px !important;
-  color: #e53935 !important;
-  border-color: rgba(229, 57, 53, 0.4) !important;
-  border-radius: 6px !important;
-  padding: 0 10px !important;
-  height: 30px !important;
-  line-height: 30px !important;
+  background: none;
+  border: 2px solid var(--accent-coral);
+  border-radius: 8px;
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  color: var(--ink);
+  cursor: pointer;
+  padding: 4px 10px;
+  box-shadow: 1px 1px 0 var(--line);
 
-  mat-icon {
-    font-size: 14px !important;
-    width: 14px !important;
-    height: 14px !important;
-    margin-right: 4px;
-  }
-
-  &:hover {
-    background: rgba(229, 57, 53, 0.06) !important;
-  }
+  &:hover { background: var(--accent-coral); }
 }
 
-// ── Responsivo ────────────────────────────────────────────────────────────────
-@media (max-width: 480px) {
-  .login-card {
-    padding: 2rem 1.5rem;
-  }
+// ── Footer ────────────────────────────────────────────────────────────────────
+.auth-foot {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--ink-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
+
+.link-btn {
+  background: none;
+  border: none;
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  color: var(--ink);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  padding: 0;
+
+  &:hover { color: var(--ink-soft); }
+}
+
+// ── Spinner override ──────────────────────────────────────────────────────────
+::ng-deep .btn .mat-mdc-progress-spinner circle { stroke: var(--ink) !important; }

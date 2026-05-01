@@ -1,0 +1,223 @@
+<!-- ── Título ─────────────────────────────────────────────────────────────── -->
+<div class="page-title">
+  <h1>gerenciar</h1>
+  <p>informações, membros e permissões</p>
+</div>
+
+<!-- ── IDENTIDADE DO GRUPO ─────────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-head"><span>identidade do grupo</span></div>
+  <div class="grupo-identity-card">
+    <div class="grupo-symbol"
+         [style.background]="isAvatarValido() ? 'transparent' : getAvatarColor(grupoNome || '')">
+      {{ getGrupoSymbol() }}
+    </div>
+    <div class="grupo-identity-info">
+      <div class="grupo-identity-nome">{{ grupoNome }}</div>
+      <div class="grupo-identity-meta">
+        {{ membros().length }} membro{{ membros().length !== 1 ? 's' : '' }}
+      </div>
+    </div>
+    @if (isAdmin()) {
+      <button class="btn-editar" (click)="abrirEdicaoGrupo()">editar</button>
+    }
+  </div>
+</div>
+
+<!-- ── PESSOAS ─────────────────────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-head">
+    <span>pessoas
+      @if (membros().length > 0) {
+        <span class="pessoas-count">· {{ membros().length }}</span>
+      }
+    </span>
+    <button class="section-link" (click)="abrirConvidarDialog()">+ convidar</button>
+  </div>
+
+  @if (isLoadingMembros()) {
+    <div class="loading-center"><mat-spinner diameter="28" /></div>
+  } @else {
+    <div class="ger-membros-list">
+      @for (m of membros(); track m.id) {
+        <div class="ger-membro-card" [class.ger-membro-card--eu]="isCurrentUser(m)">
+          <div class="ger-membro-avatar" [style.background]="getAvatarColor(m.nome)">
+            {{ (m.apelido || m.nome).charAt(0).toUpperCase() }}
+          </div>
+          <div class="ger-membro-info">
+            <div class="ger-membro-nome">
+              {{ m.apelido || m.nome }}
+              @if (isCurrentUser(m)) { <span class="tag-voce">você</span> }
+            </div>
+            <div class="ger-membro-role">
+              @if (isMembroAdmin(m)) { admin · pode editar tudo }
+              @else { membro · pode registrar compras }
+            </div>
+          </div>
+          <div class="ger-membro-actions">
+            @if (isMembroAdmin(m)) {
+              <div class="ger-btn-star active" title="administrador">★</div>
+            } @else if (isAdmin()) {
+              <button class="ger-btn-star" (click)="promoverAdmin(m)" title="promover a admin">★</button>
+              <button class="ger-btn-remove" (click)="removerMembro(m)" title="remover">×</button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<!-- ── CONVITES PENDENTES ──────────────────────────────────────────────────── -->
+@if (convitesPendentes().length > 0) {
+  <div class="section">
+    <div class="section-head">
+      <span>convites pendentes
+        <span class="pessoas-count">· {{ convitesPendentes().length }}</span>
+      </span>
+    </div>
+    <div class="convites-ger-list">
+      @for (conv of convitesPendentes(); track conv.id) {
+        <div class="convite-ger-row">
+          <div class="convite-ger-icon">✉</div>
+          <div class="convite-ger-info">
+            <div class="convite-ger-email">{{ conv.emailConvidado }}</div>
+            <div class="convite-ger-meta">
+              aguardando aceite · expira {{ conv.dataExpiracao | date:'dd/MM' }}
+            </div>
+          </div>
+          <span class="convite-ger-badge">pendente</span>
+          <button class="ger-btn-action"
+                  [disabled]="conviteReenviando() === conv.id"
+                  (click)="reenviarConvite(conv)"
+                  title="reenviar convite">
+            @if (conviteReenviando() === conv.id) {
+              <mat-spinner diameter="14" />
+            } @else { ↻ }
+          </button>
+          <button class="ger-btn-remove"
+                  (click)="cancelarConvite(conv)"
+                  title="cancelar convite">×</button>
+        </div>
+      }
+    </div>
+  </div>
+}
+
+<!-- ── CÓDIGO DE CONVITE ───────────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-head"><span>código de convite</span></div>
+  <div class="ger-codigo-card">
+    @if (isLoadingGrupo()) {
+      <mat-spinner diameter="20" />
+    } @else {
+      <span class="ger-codigo-val">{{ grupoCodigo() || '—' }}</span>
+      <button class="ger-btn-copiar" (click)="copiarCodigo()">copiar</button>
+    }
+  </div>
+  <p class="helper-text">qualquer um com esse código pode entrar no grupo</p>
+</div>
+
+<!-- ── ZONA DE PERIGO ─────────────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-head danger-head"><span>zona de perigo</span></div>
+  <div class="ger-danger-zone">
+    <div class="ger-danger-info">
+      <div class="ger-danger-title">sair do grupo</div>
+      <div class="ger-danger-sub">você não verá mais o estoque deste grupo</div>
+    </div>
+    <button class="ger-btn-sair" (click)="showLeaveConfirm.set(true)">sair</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ MODAIS ══════════════════════════ -->
+
+<!-- Modal: Editar Grupo -->
+@if (showEditGrupoModal()) {
+  <div class="modal-backdrop" (click)="cancelarEdicaoGrupo()"></div>
+  <div class="modal-box">
+    <button class="modal-close" (click)="cancelarEdicaoGrupo()">×</button>
+    <div class="modal-title">editar grupo</div>
+
+    <div class="modal-field">
+      <label class="modal-label">nome do grupo</label>
+      <input class="modal-input"
+             type="text"
+             [value]="editNomeGrupo()"
+             (input)="editNomeGrupo.set($any($event.target).value)"
+             placeholder="ex: Casa dos Almeida"
+             autocomplete="off">
+    </div>
+
+    <div class="modal-field">
+      <label class="modal-label">símbolo / avatar</label>
+      <div class="symbol-grid">
+        @for (s of ['▲','◉','◆','▣','✦','◇','•','▼','♦','◐','✧','○']; track s) {
+          <button class="symbol-btn"
+                  [class.selected]="editAvatarGrupo() === s"
+                  (click)="editAvatarGrupo.set(s)"
+                  type="button">{{ s }}</button>
+        }
+      </div>
+      <p class="modal-hint">a mudança aparece para todos os membros instantaneamente</p>
+    </div>
+
+    <button class="modal-save-btn"
+            (click)="salvarGrupo()"
+            [disabled]="isSavingGrupo() || !editNomeGrupo().trim()">
+      @if (isSavingGrupo()) { <mat-spinner diameter="16" /> }
+      @else { salvar alterações }
+    </button>
+  </div>
+}
+
+<!-- Modal: Confirmar Saída -->
+@if (showLeaveConfirm()) {
+  <div class="modal-backdrop" (click)="showLeaveConfirm.set(false)"></div>
+  <div class="modal-box">
+    <button class="modal-close" (click)="showLeaveConfirm.set(false)">×</button>
+    <div class="modal-title">sair do grupo</div>
+    <p class="modal-body">
+      você vai sair do grupo <strong>{{ grupoNome }}</strong>.
+      seu histórico de compras fica registrado.
+    </p>
+    <div class="modal-actions">
+      <button class="modal-btn-cancel" (click)="showLeaveConfirm.set(false)">cancelar</button>
+      <button class="modal-btn-danger" (click)="sairDoGrupo()">sair</button>
+    </div>
+  </div>
+}
+
+<!-- Modal: Confirmar Remoção -->
+@if (membroParaRemover()) {
+  <div class="modal-backdrop" (click)="membroParaRemover.set(null)"></div>
+  <div class="modal-box">
+    <button class="modal-close" (click)="membroParaRemover.set(null)">×</button>
+    <div class="modal-title">remover membro</div>
+    <p class="modal-body">
+      <strong>{{ membroParaRemover()!.apelido || membroParaRemover()!.nome }}</strong>
+      será removido do grupo e perderá o acesso ao estoque.
+    </p>
+    <div class="modal-actions">
+      <button class="modal-btn-cancel" (click)="membroParaRemover.set(null)">cancelar</button>
+      <button class="modal-btn-danger" (click)="confirmarRemocao()">remover</button>
+    </div>
+  </div>
+}
+
+<!-- Modal: Confirmar Promoção -->
+@if (membroParaPromover()) {
+  <div class="modal-backdrop" (click)="membroParaPromover.set(null)"></div>
+  <div class="modal-box">
+    <button class="modal-close" (click)="membroParaPromover.set(null)">×</button>
+    <div class="modal-title">tornar administrador</div>
+    <p class="modal-body">
+      <strong>{{ membroParaPromover()!.apelido || membroParaPromover()!.nome }}</strong>
+      poderá editar o grupo, convidar membros e gerenciar o estoque.
+    </p>
+    <div class="modal-actions">
+      <button class="modal-btn-cancel" (click)="membroParaPromover.set(null)">cancelar</button>
+      <button class="modal-btn-confirm" (click)="confirmarPromocao()">confirmar</button>
+    </div>
+  </div>
+}

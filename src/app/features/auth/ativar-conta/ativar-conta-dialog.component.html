@@ -1,79 +1,50 @@
-<div class="dialog-container">
+<div class="dialog-wrap">
 
-  <div class="dialog-icon">
-    <mat-icon>mark_email_unread</mat-icon>
-  </div>
-
-  <h2 mat-dialog-title>Ativar conta</h2>
+  <div class="dialog-icon">✉</div>
+  <h2 mat-dialog-title>ativar conta</h2>
 
   <mat-dialog-content>
 
     <p class="dialog-subtitle">
-      Enviamos um código de ativação para<br>
+      enviamos um código de ativação para<br>
       <strong>{{ data.email }}</strong>
     </p>
 
-    <form [formGroup]="form" (ngSubmit)="onConfirmar()" novalidate>
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Código de ativação</mat-label>
-        <mat-icon matPrefix>vpn_key</mat-icon>
-        <input
-          matInput
-          formControlName="codigo"
-          placeholder="Ex: 123456"
-          autocomplete="one-time-code"
-          inputmode="numeric"
-        />
-        <mat-error *ngIf="codigoError">{{ codigoError }}</mat-error>
-      </mat-form-field>
+    <form [formGroup]="form" (ngSubmit)="onConfirmar()" novalidate class="dialog-form">
+      <label class="field">
+        <span class="field-label">código de ativação</span>
+        <div class="field-input">
+          <input formControlName="codigo" placeholder="123456" autocomplete="one-time-code" inputmode="numeric" />
+        </div>
+        <span class="field-error" *ngIf="codigoError">{{ codigoError }}</span>
+      </label>
     </form>
 
-    <!-- Erro geral -->
-    <div class="error-alert" *ngIf="errorMessage()">
+    <div class="error-alert" *ngIf="errorMessage()" role="alert">
       <mat-icon>error_outline</mat-icon>
       <span>{{ errorMessage() }}</span>
     </div>
 
-    <!-- Reenviar código -->
     <div class="reenvio-section">
-      <span class="reenvio-label">Não recebeu o código?</span>
-
-      <!-- Aguardando countdown -->
+      <span class="reenvio-label">não recebeu o código?</span>
       <span *ngIf="reenvioCountdown() > 0" class="reenvio-countdown">
         <mat-icon>timer</mat-icon>
-        Reenviar em {{ reenvioCountdown() }}s
+        reenviar em {{ reenvioCountdown() }}s
       </span>
-
-      <!-- Botão de reenvio -->
-      <button
-        *ngIf="reenvioCountdown() === 0"
-        mat-button
-        type="button"
-        class="btn-reenviar"
-        (click)="onReenviar()"
-        [disabled]="isResending()"
-      >
+      <button *ngIf="reenvioCountdown() === 0" type="button" class="btn-reenviar"
+        (click)="onReenviar()" [disabled]="isResending()">
         <mat-spinner *ngIf="isResending()" diameter="14"></mat-spinner>
-        <mat-icon *ngIf="!isResending()">send</mat-icon>
-        <span>{{ isResending() ? 'Enviando...' : 'Reenviar código' }}</span>
+        <span>{{ isResending() ? 'enviando...' : 'reenviar código' }}</span>
       </button>
     </div>
 
   </mat-dialog-content>
 
   <mat-dialog-actions align="end">
-    <button mat-button type="button" (click)="onCancelar()" [disabled]="isLoading()">
-      Cancelar
-    </button>
-    <button
-      mat-raised-button
-      class="btn-ativar"
-      type="button"
-      (click)="onConfirmar()"
-      [disabled]="isLoading()"
-    >
+    <button type="button" class="btn-cancelar" (click)="onCancelar()" [disabled]="isLoading()">cancelar</button>
+    <button type="button" class="btn btn-ativar" (click)="onConfirmar()" [disabled]="isLoading()">
       <mat-spinner *ngIf="isLoading()" diameter="18"></mat-spinner>
-      <span *ngIf="!isLoading()">Ativar conta</span>
+      <span *ngIf="!isLoading()">ativar conta</span>
     </button>
   </mat-dialog-actions>
 

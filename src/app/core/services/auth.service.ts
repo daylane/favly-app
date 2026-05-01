@@ -11,12 +11,15 @@ import { environment } from '../../../environments/environment';
 })
 export class AuthService {
 
-  private readonly TOKEN_KEY = 'auth_token';
-  private readonly NOME_KEY  = 'user_nome';
-  private readonly EMAIL_KEY = 'user_email';
+  private readonly TOKEN_KEY      = 'auth_token';
+  private readonly NOME_KEY       = 'user_nome';
+  private readonly EMAIL_KEY      = 'user_email';
+  private readonly GRUPO_NOME_KEY = 'grupo_nome';
+  private readonly GRUPO_KEY      = 'grupo_key';
+  private readonly USER_ID_KEY    = 'user_id';
 
-  private http       = inject(HttpClient);
-  private router     = inject(Router);
+  private http = inject(HttpClient);
+  private router = inject(Router);
   private platformId = inject(PLATFORM_ID);
 
   private get isBrowser(): boolean {
@@ -28,19 +31,51 @@ export class AuthService {
       tap(response => {
         if (this.isBrowser) {
           localStorage.setItem(this.TOKEN_KEY, response.token);
-          localStorage.setItem(this.NOME_KEY,  response.nome);
+          localStorage.setItem(this.NOME_KEY, response.nome);
           localStorage.setItem(this.EMAIL_KEY, response.email);
+          localStorage.setItem(this.GRUPO_KEY, response.grupoId);
+          localStorage.setItem(this.GRUPO_NOME_KEY, response.grupoNome);
+          if (response.userId) localStorage.setItem(this.USER_ID_KEY, response.userId);
         }
       })
     );
   }
 
-    getUsuario(): { nome: string; email: string } | null {
+  getUsuario(): { nome: string; email: string } | null {
     if (!this.isBrowser) return null;
-    const nome  = localStorage.getItem('user_nome');
+    const nome = localStorage.getItem('user_nome');
     const email = localStorage.getItem('user_email');
     if (!nome || !email) return null;
     return { nome, email };
+  }
+
+  getGrupoId(): string | null {
+    return this.isBrowser ? localStorage.getItem(this.GRUPO_KEY) : null;
+  }
+
+  getUserId(): string | null {
+    if (!this.isBrowser) return null;
+    // Tenta o storage primeiro
+    const stored = localStorage.getItem(this.USER_ID_KEY);
+    if (stored) return stored;
+    // Fallback: lê o claim "sub" do JWT
+    return this.getUserIdFromToken();
+  }
+
+  private getUserIdFromToken(): string | null {
+    try {
+      const token = this.getToken();
+      if (!token) return null;
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const id = payload.sub ?? payload.userId ?? payload.nameid ?? null;
+      // Salva para as próximas chamadas
+      if (id) localStorage.setItem(this.USER_ID_KEY, id);
+      return id;
+    } catch { return null; }
+  }
+
+  getGrupoNome(): string | null {
+    return this.isBrowser ? localStorage.getItem(this.GRUPO_NOME_KEY) : null;
   }
 
   logout(): void {
@@ -48,8 +83,22 @@ export class AuthService {
       localStorage.removeItem(this.TOKEN_KEY);
       localStorage.removeItem(this.NOME_KEY);
       localStorage.removeItem(this.EMAIL_KEY);
+      localStorage.removeItem(this.GRUPO_KEY);
+      localStorage.removeItem(this.GRUPO_NOME_KEY);
+      localStorage.removeItem(this.USER_ID_KEY);
     }
     this.router.navigate(['/auth/login']);
+  }
+
+  /** Persiste uma sessão já obtida (ex: retorno de registrar-e-aceitar) */
+  salvarSessao(response: AuthResponse): void {
+    if (!this.isBrowser) return;
+    localStorage.setItem(this.TOKEN_KEY,      response.token);
+    localStorage.setItem(this.NOME_KEY,       response.nome);
+    localStorage.setItem(this.EMAIL_KEY,      response.email);
+    localStorage.setItem(this.GRUPO_KEY,      response.grupoId);
+    localStorage.setItem(this.GRUPO_NOME_KEY, response.grupoNome);
+    if (response.userId) localStorage.setItem(this.USER_ID_KEY, response.userId);
   }
 
   getToken(): string | null {

@@ -1,0 +1,125 @@
+<div class="det-wrap">
+
+  <!-- ── Topbar ──────────────────────────────────────────────────────────── -->
+  <header class="det-topbar">
+    <button class="det-icon-btn" (click)="voltar.emit()">
+      <mat-icon>arrow_back_ios_new</mat-icon>
+    </button>
+    <span class="det-topbar-title">produto</span>
+    <button class="det-icon-btn" (click)="editarClick.emit()">
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+  </header>
+
+  <!-- ── Cartão do produto ────────────────────────────────────────────────── -->
+  <div class="det-product-card">
+    <div class="det-product-icon">{{ getCategoriaIcone() }}</div>
+    <div class="det-product-info">
+      <div class="det-product-nome">{{ produto().nome }}</div>
+      @if (produto().marca) { <div class="det-product-marca">{{ produto().marca }}</div> }
+    </div>
+    <span class="det-cat-badge">{{ getCategoriaNome() }}</span>
+  </div>
+
+  <!-- ── Estoque atual ─────────────────────────────────────────────────────── -->
+  <div class="det-section">
+    <div class="det-section-label">tem em casa</div>
+    <div class="det-stock-qty">
+      {{ produto().quantidadeAtual }} <span class="det-stock-unit">{{ getUnidade() }}</span>
+    </div>
+
+    <div class="det-stockbar">
+      @for (cell of stockCells(); track $index) {
+        <span class="det-stockbar-cell"
+              [class.filled]="cell.filled"
+              [class.critical]="cell.critical && cell.filled"></span>
+      }
+    </div>
+
+    <div class="det-stock-footer">
+      <span>mínimo: {{ produto().quantidadeMinima }} {{ getUnidade() }}</span>
+      @if (produto().estoqueAbaixoDoMinimo) {
+        <span class="det-stock-warn">⚠ abaixo do mínimo</span>
+      }
+    </div>
+  </div>
+
+  <!-- ── Stats de preço ────────────────────────────────────────────────────── -->
+  @if (precoMedio() !== null) {
+    <div class="det-stats-row">
+      <div class="det-stat">
+        <div class="det-stat-label">preço médio</div>
+        <div class="det-stat-val">{{ precoMedio() | currency:'BRL' }}</div>
+        <div class="det-stat-sub">por {{ getUnidade() }}</div>
+      </div>
+      <div class="det-stat det-stat--highlight">
+        <div class="det-stat-label">menor preço</div>
+        <div class="det-stat-val">{{ menorPreco()!.preco | currency:'BRL' }}</div>
+        <div class="det-stat-sub">no {{ menorPreco()!.mercado }}</div>
+      </div>
+      <div class="det-stat">
+        <div class="det-stat-label">última compra</div>
+        <div class="det-stat-val">{{ ultimaCompra()!.preco | currency:'BRL' }}</div>
+        <div class="det-stat-sub">{{ ultimaCompra()!.data | date:'dd/MM' }} · {{ ultimaCompra()!.mercado }}</div>
+      </div>
+    </div>
+  }
+
+  <!-- ── Preço por mercado ──────────────────────────────────────────────────── -->
+  @if (precoPorMercado().length > 0) {
+    <div class="det-section">
+      <div class="det-section-label">preço por mercado</div>
+      @for (m of precoPorMercado(); track m.nome) {
+        <div class="det-mercado-item">
+          <div class="det-mercado-header">
+            <span class="det-mercado-nome">{{ m.nome }}</span>
+            <span class="det-mercado-preco">{{ m.media | currency:'BRL' }}</span>
+          </div>
+          <div class="det-mercado-bar">
+            <div class="det-mercado-fill"
+                 [class.det-mercado-fill--best]="m.cheapest"
+                 [style.width.%]="m.pct"></div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ── Histórico ──────────────────────────────────────────────────────────── -->
+  <div class="det-section det-section--last">
+    <div class="det-section-label">histórico</div>
+
+    @if (movsProduto().length === 0) {
+      <div class="det-empty">nenhuma movimentação registrada</div>
+    } @else {
+      <div class="det-hist-list">
+        @for (mov of movsProduto(); track mov.id) {
+          <div class="det-hist-row">
+            <div class="det-hist-date">{{ mov.dataCriacao | date:'dd/MM' }}</div>
+            <div class="det-hist-body">
+              <div class="det-hist-text">
+                {{ isEntrada(mov.tipo) ? 'comprou' : 'consumiu' }}
+                <strong>{{ mov.quantidade }} {{ getUnidade() }}</strong>
+                @if (mov.nomeMercado) { no {{ mov.nomeMercado }} }
+                · por {{ mov.nomeMembro }}
+                @if (isEntrada(mov.tipo) && mov.preco > 0) {
+                  · <span class="det-hist-preco">{{ mov.preco | currency:'BRL' }}/{{ getUnidade() }}</span>
+                }
+              </div>
+            </div>
+            <div class="det-hist-tag" [class.entrada]="isEntrada(mov.tipo)" [class.saida]="!isEntrada(mov.tipo)">
+              {{ isEntrada(mov.tipo) ? '+' : '−' }}
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+</div>
+
+<!-- ── Botões fixos no rodapé ────────────────────────────────────────────────── -->
+<div class="det-actions">
+  <button class="det-btn det-btn--saida" (click)="saidaClick.emit()">− usei</button>
+  <button class="det-btn det-btn--entrada" (click)="entradaClick.emit()">+ comprei</button>
+</div>

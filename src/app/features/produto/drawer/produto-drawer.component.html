@@ -1,0 +1,90 @@
+<div class="drawer-container">
+
+  <!-- Header -->
+  <div class="drawer-header">
+    <div class="drawer-title">
+      <div class="drawer-icon">▣</div>
+      <div>
+        <h2>{{ produto ? 'editar produto' : 'novo produto' }}</h2>
+        <p>{{ produto ? 'atualize as informações' : 'preencha os dados para cadastrar' }}</p>
+      </div>
+    </div>
+    <button class="btn-fechar" (click)="onFechar()">✕</button>
+  </div>
+
+  <div class="drawer-divider"></div>
+
+  <!-- Formulário -->
+  <div class="drawer-body">
+    <form [formGroup]="form" (ngSubmit)="onSalvar()" novalidate class="drawer-form">
+
+      <label class="field">
+        <span class="field-label">nome do produto</span>
+        <div class="field-input">
+          <input formControlName="nome" placeholder="ex: arroz, leite, sabonete..." autocomplete="off" />
+        </div>
+        @if (nomeError) { <span class="field-error">{{ nomeError }}</span> }
+      </label>
+
+      <label class="field">
+        <span class="field-label">marca <span class="optional">(opcional)</span></span>
+        <div class="field-input">
+          <input formControlName="marca" placeholder="ex: Tio João, Ypê..." autocomplete="off" />
+        </div>
+      </label>
+
+      <label class="field">
+        <span class="field-label">categoria</span>
+        <div class="field-input field-select">
+          <select formControlName="categoriaId">
+            <option value="" disabled>selecione...</option>
+            @for (cat of categorias; track cat.id) {
+              <option [value]="cat.id">{{ cat.icone }} {{ cat.nome }}</option>
+            }
+          </select>
+        </div>
+        @if (categoriaError) { <span class="field-error">{{ categoriaError }}</span> }
+      </label>
+
+      <div class="row-2">
+        <label class="field">
+          <span class="field-label">unidade</span>
+          <div class="field-input field-select">
+            <select formControlName="unidade">
+              @for (u of unidades; track u.valor) {
+                <option [value]="u.valor">{{ u.label }} ({{ u.sigla }})</option>
+              }
+            </select>
+          </div>
+        </label>
+
+        <label class="field">
+          <span class="field-label">qtd. mínima</span>
+          <div class="field-input">
+            <input type="number" formControlName="quantidadeMinima" placeholder="0" min="0" />
+          </div>
+          <span class="field-hint">alerta de estoque baixo</span>
+          @if (quantidadeMinimaError) { <span class="field-error">{{ quantidadeMinimaError }}</span> }
+        </label>
+      </div>
+
+      @if (errorMessage()) {
+        <div class="error-alert">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
+
+    </form>
+  </div>
+
+  <!-- Footer -->
+  <div class="drawer-footer">
+    <button type="button" class="btn-cancelar" (click)="onFechar()" [disabled]="isLoading()">cancelar</button>
+    <button type="button" class="btn btn-salvar" (click)="onSalvar()" [disabled]="isLoading()">
+      <mat-spinner *ngIf="isLoading()" diameter="18"></mat-spinner>
+      <span *ngIf="!isLoading()">{{ produto ? 'salvar alterações' : 'cadastrar produto' }}</span>
+    </button>
+  </div>
+
+</div>

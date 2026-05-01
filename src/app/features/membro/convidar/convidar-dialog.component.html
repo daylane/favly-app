@@ -1,0 +1,50 @@
+<div class="convidar-dialog">
+
+  <!-- Header -->
+  <div class="dialog-header">
+    <span class="dialog-title">convidar pessoa</span>
+    <button mat-icon-button class="close-btn" (click)="onCancelar()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Body -->
+  <div class="dialog-body" [formGroup]="form">
+
+    <label class="field-label">E-MAIL</label>
+    <mat-form-field appearance="outline" class="email-field">
+      <input
+        matInput
+        formControlName="email"
+        type="email"
+        placeholder="amigo@email.com"
+        (keyup.enter)="onEnviar()"
+      />
+      @if (emailError) {
+        <mat-error>{{ emailError }}</mat-error>
+      }
+    </mat-form-field>
+
+    @if (errorMessage()) {
+      <p class="error-msg">{{ errorMessage() }}</p>
+    }
+
+    <p class="hint-text">
+      vamos mandar um link. ao aceitar, ela vê tudo do estoque.
+    </p>
+
+    <button
+      mat-raised-button
+      class="btn-enviar"
+      [disabled]="isLoading()"
+      (click)="onEnviar()"
+    >
+      @if (isLoading()) {
+        <mat-spinner diameter="20" class="btn-spinner" />
+      } @else {
+        enviar convite
+      }
+    </button>
+
+  </div>
+</div>

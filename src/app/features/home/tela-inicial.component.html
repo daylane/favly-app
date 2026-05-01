@@ -1,186 +1,557 @@
-<!-- Navbar -->
-<mat-toolbar class="navbar">
-  <div class="nav-brand">
-    <div class="brand-icon"><mat-icon>bolt</mat-icon></div>
-    <span class="brand-name">Favly</span>
-  </div>
+<mat-sidenav-container class="sidenav-container" autosize>
 
-  <span class="spacer"></span>
+  <!-- ── Produto Drawer ───────────────────────────────────────────────────── -->
+  <mat-sidenav class="produto-drawer-panel" mode="over" position="end"
+               [opened]="drawerAberto()" (closedStart)="fecharDrawer()">
+    @if (drawerAberto()) {
+      <app-produto-drawer
+        [categorias]="categorias()"
+        [produto]="produtoEditando() ?? undefined"
+        (salvo)="onProdutoSalvo($event)"
+        (fechado)="fecharDrawer()" />
+    }
+  </mat-sidenav>
 
-  <button mat-icon-button matTooltip="Notificações" [matBadge]="totalPendentes()" matBadgeColor="warn" matBadgeSize="small">
-    <mat-icon>notifications_none</mat-icon>
-  </button>
+  <mat-sidenav-content>
+    <div class="app-shell">
 
-<button mat-button class="user-btn" [matMenuTriggerFor]="userMenu">
-  <mat-icon>expand_more</mat-icon>
-  <span class="user-name-toolbar">{{ usuario?.nome?.split(' ')?.[0] ?? 'Usuário' }}</span>
-  <div class="user-avatar-sm">{{ usuario?.nome?.charAt(0)?.toUpperCase() }}</div>
-</button>
+      <!-- ══ SIDEBAR ══════════════════════════════════════════════════════ -->
+      <app-sidebar
+        [tab]="tab()"
+        [maisTela]="maisTela()"
+        [grupoNome]="grupoNome()"
+        [usuario]="usuario"
+        [darkMode]="darkMode()"
+        (tabChange)="setTab($event)"
+        (subtelaChange)="abrirSubtela($event)"
+        (navegarGrupos)="voltarGrupos()"
+        (novoProduto)="cadastrarProduto()"
+        (toggleDark)="toggleDarkMode()"
+        (doLogout)="logout()" />
 
-  <mat-menu #userMenu="matMenu">
-    <button mat-menu-item>
-      <mat-icon>person_outline</mat-icon> Meu perfil
-    </button>
-    <button mat-menu-item>
-      <mat-icon>settings</mat-icon> Configurações
-    </button>
-    <mat-divider></mat-divider>
-    <button mat-menu-item class="logout-item" (click)="logout()">
-      <mat-icon>logout</mat-icon> Sair
-    </button>
-  </mat-menu>
-</mat-toolbar>
+      <!-- ══ MAIN ═════════════════════════════════════════════════════════ -->
+      <main class="desktop-main">
+        <div class="phone-frame">
 
-<div class="page-content">
-
-  <!-- Boas vindas + ação rápida -->
-  <div class="welcome-row">
-    <div class="welcome-text">
-     <h1>Olá, {{ usuario?.nome?.split(' ')?.[0] ?? 'Usuário' }} 👋</h1>
-      <p>Você tem <strong>{{ totalPendentes() }} tarefas pendentes</strong> hoje.</p>
-    </div>
-    <button mat-raised-button class="btn-nova-tarefa" (click)="novaTarefa()">
-      <mat-icon>add</mat-icon> Nova tarefa
-    </button>
-  </div>
-
-  <!-- Cards de resumo -->
-  <div class="summary-grid">
-
-    <mat-card class="summary-card card-total" matRipple>
-      <mat-card-content>
-        <div class="summary-icon"><mat-icon>list_alt</mat-icon></div>
-        <div class="summary-info">
-          <span class="summary-value">{{ totalTarefas() }}</span>
-          <span class="summary-label">Total</span>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="summary-card card-pendente" matRipple>
-      <mat-card-content>
-        <div class="summary-icon"><mat-icon>radio_button_unchecked</mat-icon></div>
-        <div class="summary-info">
-          <span class="summary-value">{{ totalPendentes() }}</span>
-          <span class="summary-label">Pendentes</span>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="summary-card card-andamento" matRipple>
-      <mat-card-content>
-        <div class="summary-icon"><mat-icon>timelapse</mat-icon></div>
-        <div class="summary-info">
-          <span class="summary-value">{{ totalAndamento() }}</span>
-          <span class="summary-label">Em andamento</span>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="summary-card card-concluida" matRipple>
-      <mat-card-content>
-        <div class="summary-icon"><mat-icon>check_circle_outline</mat-icon></div>
-        <div class="summary-info">
-          <span class="summary-value">{{ totalConcluidas() }}</span>
-          <span class="summary-label">Concluídas</span>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-  </div>
-
-  <!-- Progresso geral -->
-  <mat-card class="progress-card">
-    <mat-card-content>
-      <div class="progress-header">
-        <span class="progress-title">Progresso geral</span>
-        <span class="progress-pct">{{ progressoGeral() }}%</span>
-      </div>
-      <mat-progress-bar mode="determinate" [value]="progressoGeral()" class="progress-bar"></mat-progress-bar>
-    </mat-card-content>
-  </mat-card>
-
-  <!-- Ações rápidas -->
-  <div class="quick-actions">
-    <button mat-stroked-button class="quick-btn" (click)="novaTarefa()">
-      <mat-icon>add_task</mat-icon> Nova tarefa
-    </button>
-    <button mat-stroked-button class="quick-btn">
-      <mat-icon>folder_open</mat-icon> Projetos
-    </button>
-    <button mat-stroked-button class="quick-btn">
-      <mat-icon>bar_chart</mat-icon> Relatórios
-    </button>
-    <button mat-stroked-button class="quick-btn">
-      <mat-icon>group</mat-icon> Time
-    </button>
-  </div>
-
-  <!-- Lista de tarefas -->
-  <div class="tasks-section">
-    <div class="tasks-header">
-      <h2>Minhas tarefas</h2>
-      <mat-chip-listbox class="filter-chips" [value]="filtroAtivo()">
-        <mat-chip-option value="todas"       (click)="setFiltro('todas')">Todas</mat-chip-option>
-        <mat-chip-option value="pendente"    (click)="setFiltro('pendente')">Pendentes</mat-chip-option>
-        <mat-chip-option value="em_andamento"(click)="setFiltro('em_andamento')">Em andamento</mat-chip-option>
-        <mat-chip-option value="concluida"   (click)="setFiltro('concluida')">Concluídas</mat-chip-option>
-      </mat-chip-listbox>
-    </div>
-
-    <div class="task-list">
-      <mat-card
-        *ngFor="let tarefa of tarefasFiltradas()"
-        class="task-card"
-        [class.task-concluida]="tarefa.status === 'concluida'"
-        matRipple
-      >
-        <mat-card-content>
-          <div class="task-row">
-
-            <button
-              mat-icon-button
-              class="status-btn"
-              [matTooltip]="tarefa.status === 'concluida' ? 'Concluída' : 'Marcar como concluída'"
-              (click)="concluirTarefa(tarefa)"
-              [disabled]="tarefa.status === 'concluida'"
-            >
-              <mat-icon [class]="'status-icon status-' + tarefa.status">
-                {{ getStatusIcon(tarefa.status) }}
-              </mat-icon>
-            </button>
-
-            <div class="task-info">
-              <div class="task-titulo">{{ tarefa.titulo }}</div>
-              <div class="task-meta">
-                <mat-chip class="chip-categoria">{{ tarefa.categoria }}</mat-chip>
-                <mat-chip class="chip-prioridade chip-{{ tarefa.prioridade }}">{{ tarefa.prioridade }}</mat-chip>
-                <span class="task-prazo" [class.prazo-proximo]="isPrazoProximo(tarefa.dataPrazo)" [class.prazo-vencido]="isPrazoVencido(tarefa.dataPrazo)">
-                  <mat-icon style="font-size:13px;width:13px;height:13px;vertical-align:middle">schedule</mat-icon>
-                  {{ tarefa.dataPrazo | date:'dd/MM' }}
-                </span>
+          <!-- Topbar mobile -->
+          <header class="topbar mobile-only">
+            <div class="topbar-brand">
+              <div class="logo-mark sm">
+                <span class="logo-brick b1"></span><span class="logo-brick b2"></span>
+                <span class="logo-brick b3"></span><span class="logo-brick b4"></span>
               </div>
+              <span class="logo-word sm">favly</span>
+              @if (grupoNome()) { <span class="grupo-badge">{{ grupoNome() }}</span> }
             </div>
-
-            <button mat-icon-button [matMenuTriggerFor]="taskMenu" (click)="$event.stopPropagation()">
-              <mat-icon>more_vert</mat-icon>
+            <span class="spacer"></span>
+            <button class="icon-btn" (click)="toggleDarkMode()">
+              <mat-icon>{{ darkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
             </button>
-
-            <mat-menu #taskMenu="matMenu">
-              <button mat-menu-item><mat-icon>edit</mat-icon> Editar</button>
-              <button mat-menu-item (click)="concluirTarefa(tarefa)"><mat-icon>check</mat-icon> Concluir</button>
-              <button mat-menu-item class="delete-item"><mat-icon>delete_outline</mat-icon> Excluir</button>
+            <button class="icon-btn" [matMenuTriggerFor]="mobileMenu">
+              <div class="topbar-avatar">{{ (usuario?.nome ?? 'U').charAt(0).toUpperCase() }}</div>
+            </button>
+            <mat-menu #mobileMenu="matMenu">
+              <button mat-menu-item (click)="voltarGrupos()"><mat-icon>swap_horiz</mat-icon> trocar grupo</button>
+              <mat-divider />
+              <button mat-menu-item (click)="logout()"><mat-icon>logout</mat-icon> sair</button>
             </mat-menu>
+          </header>
 
-          </div>
-        </mat-card-content>
-      </mat-card>
+          <!-- ── PHONE BODY ────────────────────────────────────────────── -->
+          <div class="phone-body">
 
-      <div *ngIf="tarefasFiltradas().length === 0" class="empty-state">
-        <mat-icon>inbox</mat-icon>
-        <p>Nenhuma tarefa encontrada</p>
-      </div>
-    </div>
-  </div>
+            <!-- ══════════════════════════ DETALHE DO PRODUTO ══════════ -->
+            @if (produtoSelecionado(); as produtoAtual) {
+              <app-produto-detalhe
+                [produto]="produtoAtual"
+                [categorias]="categorias()"
+                [movimentacoes]="movimentacoes()"
+                (voltar)="fecharDetalhe()"
+                (entradaClick)="registrarEntradaProduto(produtoAtual)"
+                (saidaClick)="registrarSaidaProduto(produtoAtual)"
+                (editarClick)="abrirDrawerEditarProdutoDetalhe(produtoAtual)" />
 
-</div>
+            } @else {
+
+            <!-- ══════════════════════════ SUBTELA: CATEGORIAS ══════════ -->
+            @if (maisTela() === 'categorias') {
+
+              <header class="topbar">
+                <button class="icon-btn" (click)="voltarSubtela()"><mat-icon>arrow_back</mat-icon></button>
+                <div class="topbar-title">categorias</div>
+                <button class="icon-btn" (click)="abrirDialogCategoria()"><mat-icon>add</mat-icon></button>
+              </header>
+
+              @if (isLoadingCategorias()) {
+                <div class="loading-center"><mat-spinner diameter="32" /></div>
+              } @else if (categorias().length === 0) {
+                <div class="empty">
+                  <div class="empty-emoji">◈</div>
+                  <div class="empty-title">nenhuma categoria</div>
+                  <div class="empty-sub">crie uma para organizar seus produtos</div>
+                  <button class="btn" style="margin-top:14px" (click)="abrirDialogCategoria()">+ nova categoria</button>
+                </div>
+              } @else {
+                <div class="cat-list">
+                  @for (cat of categorias(); track cat.id) {
+                    <div class="cat-row">
+                      <div class="cat-avatar">{{ cat.icone }}</div>
+                      <div class="cat-main">
+                        <div class="cat-nome">{{ cat.nome }}</div>
+                        <div class="cat-count">{{ cat.totalProdutos }} produto(s)</div>
+                      </div>
+                      <button class="icon-btn small" (click)="abrirDialogCategoria(cat)"><mat-icon>edit</mat-icon></button>
+                      <button class="icon-btn small delete-btn" (click)="excluirCategoria(cat, $event)"><mat-icon>delete_outline</mat-icon></button>
+                    </div>
+                  }
+                </div>
+              }
+
+            } @else {
+
+              <!-- ══════════════════════════════════ TAB: INÍCIO ════════ -->
+              @if (tab() === 'inicio') {
+
+                <!-- Saudação -->
+                <div class="page-title">
+                  <h1>{{ saudacao }}, {{ (usuario?.nome ?? 'usuário').split(' ')[0].toLowerCase() }}</h1>
+                  <p>sua despensa em um relance</p>
+                </div>
+
+                <!-- Stat cards -->
+                <div class="stat-row">
+                  <div class="stat-card">
+                    <div class="stat-val">{{ totalProdutos() }}</div>
+                    <div class="stat-lbl">itens no estoque</div>
+                  </div>
+                  <div class="stat-card">
+                    <div class="stat-val coral">{{ totalCriticos() }}</div>
+                    <div class="stat-lbl">precisam repor</div>
+                  </div>
+                  <div class="stat-card">
+                    <div class="stat-val mono">{{ valorTotalEstoque() | currency:'BRL':'symbol':'1.0-0' }}</div>
+                    <div class="stat-lbl">valor em casa</div>
+                  </div>
+                </div>
+
+                <!-- Botões de ação rápida -->
+                <div class="action-row">
+                  <button class="action-btn action-btn--saida" (click)="registrarSaida()">
+                    <span class="action-btn-icon">−</span>
+                    <span class="action-btn-body">
+                      <span class="action-btn-label">usei</span>
+                      <span class="action-btn-sub">registrar saída</span>
+                    </span>
+                  </button>
+                  <button class="action-btn action-btn--entrada" (click)="registrarEntrada()">
+                    <span class="action-btn-icon">+</span>
+                    <span class="action-btn-body">
+                      <span class="action-btn-label">comprei</span>
+                      <span class="action-btn-sub">registrar entrada</span>
+                    </span>
+                  </button>
+                </div>
+
+                <!-- Dica do Favly -->
+                @if (dicaFavly()) {
+                  <div class="dica-card">
+                    <span class="dica-badge">dica do favly</span>
+                    <div class="dica-title">
+                      ir no <strong>{{ dicaFavly()!.mercado.nome }}</strong> hoje rende
+                    </div>
+                    <div class="dica-sub">
+                      {{ dicaFavly()!.itens.length }}
+                      {{ dicaFavly()!.itens.length === 1 ? 'item em falta está' : 'itens em falta estão' }}
+                      no menor preço lá
+                    </div>
+                    <div class="dica-items">
+                      @for (item of dicaFavly()!.itens; track item.id) {
+                        <span class="dica-item">
+                          {{ item.nome }}
+                          @if (item.ultimoPreco) { · {{ item.ultimoPreco | currency:'BRL' }} }
+                        </span>
+                      }
+                    </div>
+                  </div>
+                }
+
+                <!-- Estoque baixo -->
+                @if (isLoadingBaixoEstoque()) {
+                  <div class="loading-center"><mat-spinner diameter="28" /></div>
+                } @else if (produtosBaixoEstoque().length > 0) {
+                  <div class="section">
+                    <div class="section-head">
+                      <span>⚠ estoque baixo <span class="section-badge">{{ produtosBaixoEstoque().length }}</span></span>
+                      <button class="section-link" (click)="setTab('despensa')">ver tudo →</button>
+                    </div>
+                    <div class="baixo-list">
+                      @for (p of produtosBaixoEstoque(); track p.id) {
+                        <div class="baixo-item" (click)="abrirDetalhe(p)">
+
+                          <!-- Cabeçalho: ícone + nome/categoria + botão -->
+                          <div class="baixo-header">
+                            <div class="baixo-cat">{{ getCategoriaIcone(p.categoriaId) }}</div>
+                            <div class="baixo-info">
+                              <div class="baixo-nome">{{ p.nome }}</div>
+                              <div class="baixo-categoria">{{ getNomeCategoria(p.categoriaId) }}</div>
+                            </div>
+                            <button class="baixo-add-btn" title="registrar entrada"
+                                    (click)="registrarEntradaProduto(p); $event.stopPropagation()">
+                              <mat-icon>add</mat-icon>
+                            </button>
+                          </div>
+
+                          <div class="baixo-divider"></div>
+
+                          <!-- Quantidade atual vs mínima -->
+                          <div class="baixo-qty">
+                            <span class="baixo-qty-atual">{{ p.quantidadeAtual }} {{ getUnidadeLabel(p.unidade) }}</span>
+                            <span class="baixo-qty-sep">de</span>
+                            <span class="baixo-qty-max">{{ p.quantidadeMinima * 2 }} {{ getUnidadeLabel(p.unidade) }}</span>
+                          </div>
+
+                          <!-- Barra de progresso contínua -->
+                          <div class="baixo-bar">
+                            <div class="baixo-bar-fill"
+                                 [class.baixo-bar-fill--critical]="p.quantidadeAtual < p.quantidadeMinima * 0.4"
+                                 [style.width.%]="getNivelEstoque(p)"></div>
+                          </div>
+
+                          <!-- Melhor preço -->
+                          @if (p.ultimoPreco && getMercadoNome(p.ultimoMercadoId)) {
+                            <div class="baixo-preco">
+                              <span class="baixo-preco-dot"></span>
+                              melhor preço ·
+                              <strong>{{ p.ultimoPreco | currency:'BRL' }}</strong>
+                              no <strong>{{ getMercadoNome(p.ultimoMercadoId) }}</strong>
+                            </div>
+                          }
+
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+
+                <!-- Atividade recente -->
+                <div class="section">
+                  <div class="section-head">
+                    <span>atividade recente</span>
+                    <button class="section-link" (click)="setTab('relatorio')">relatórios →</button>
+                  </div>
+
+                  @if (isLoadingMovimentacoes()) {
+                    <div class="loading-center"><mat-spinner diameter="24" /></div>
+
+                  } @else if (movimentacoesRecentes().length === 0) {
+                    <div class="activity-empty">
+                      <mat-icon>history</mat-icon>
+                      <span>nenhuma movimentação ainda</span>
+                    </div>
+
+                  } @else {
+                    <div class="activity-list">
+                      @for (mov of movimentacoesRecentes(); track mov.id) {
+                        <div class="activity-row">
+                          <!-- Avatar do membro -->
+                          <div class="activity-avatar"
+                               [style.background]="getAvatarColor(mov.nomeMembro)">
+                            {{ mov.nomeMembro.charAt(0).toUpperCase() }}
+                          </div>
+                          <!-- Texto -->
+                          <div class="activity-main">
+                            <div class="activity-text">
+                              <strong>{{ mov.nomeMembro.split(' ')[0] }}</strong>
+                              {{ isEntrada(mov.tipo) ? 'adicionou' : 'usou' }}
+                              <strong>{{ mov.quantidade }}</strong>
+                              de {{ mov.nomeProduto }}
+                              @if (mov.nomeMercado) { · {{ mov.nomeMercado }} }
+                            </div>
+                            <div class="activity-meta">{{ mov.dataCriacao | date:'dd/MM · HH:mm' }}</div>
+                          </div>
+                          <!-- Tag tipo -->
+                          <div class="activity-tag"
+                               [class.entrada]="isEntrada(mov.tipo)"
+                               [class.saida]="!isEntrada(mov.tipo)">
+                            {{ isEntrada(mov.tipo) ? '+' : '−' }}
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+
+              }
+
+              <!-- ══════════════════════════════════ TAB: DESPENSA ═════ -->
+              @if (tab() === 'despensa') {
+
+                <!-- Cabeçalho -->
+                <div class="section" style="padding-bottom:0">
+                  <div class="section-head">
+                    <span>produtos <span class="section-badge">{{ produtosFiltrados().length }}</span></span>
+                    <button class="section-link" (click)="cadastrarProduto()">+ novo</button>
+                  </div>
+                </div>
+
+                <!-- Barra de busca + ordenação -->
+                <div class="filter-bar">
+                  <div class="filter-search">
+                    <mat-icon class="filter-search-icon">search</mat-icon>
+                    <input class="filter-search-input"
+                           placeholder="buscar por nome..."
+                           [value]="searchQuery()"
+                           (input)="searchQuery.set($any($event.target).value)" />
+                    @if (searchQuery()) {
+                      <button class="filter-clear-btn" (click)="searchQuery.set('')">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                    }
+                  </div>
+
+                  <button class="filter-sort-btn"
+                          [class.filter-sort-btn--active]="sortBy() !== 'nome'"
+                          [matMenuTriggerFor]="sortMenu"
+                          title="ordenar">
+                    <mat-icon>swap_vert</mat-icon>
+                  </button>
+                  <mat-menu #sortMenu="matMenu">
+                    <button mat-menu-item (click)="setSortBy('nome')">
+                      <mat-icon>sort_by_alpha</mat-icon>
+                      <span>nome {{ sortBy() === 'nome' ? '✓' : '' }}</span>
+                    </button>
+                    <button mat-menu-item (click)="setSortBy('quantidade')">
+                      <mat-icon>inventory_2</mat-icon>
+                      <span>quantidade {{ sortBy() === 'quantidade' ? '✓' : '' }}</span>
+                    </button>
+                    <button mat-menu-item (click)="setSortBy('preco')">
+                      <mat-icon>attach_money</mat-icon>
+                      <span>preço {{ sortBy() === 'preco' ? '✓' : '' }}</span>
+                    </button>
+                  </mat-menu>
+                </div>
+
+                <!-- Linha de filtros dropdown -->
+                <div class="filter-row">
+
+                  <!-- Dropdown: categoria -->
+                  <button class="filter-select"
+                          [class.filter-select--active]="filtroCategoriaAtivo() !== 'todos'"
+                          [matMenuTriggerFor]="catMenu">
+                    <span class="filter-select-label">
+                      {{ filtroCategoriaAtivo() === 'todos' ? 'categoria' : getCategoriaLabel(filtroCategoriaAtivo()) }}
+                    </span>
+                    <mat-icon class="filter-select-arrow">expand_more</mat-icon>
+                  </button>
+                  <mat-menu #catMenu="matMenu">
+                    <button mat-menu-item (click)="setFiltroCategoria('todos')">
+                      <mat-icon>apps</mat-icon> todas
+                    </button>
+                    @for (cat of categorias(); track cat.id) {
+                      <button mat-menu-item (click)="setFiltroCategoria(cat.nome)">
+                        <span>{{ cat.icone }}</span> {{ cat.nome }}
+                      </button>
+                    }
+                  </mat-menu>
+
+                  <!-- Dropdown: marca (só aparece se houver marcas) -->
+                  @if (marcasDisponiveis().length > 0) {
+                    <button class="filter-select"
+                            [class.filter-select--active]="filtroMarca() !== ''"
+                            [matMenuTriggerFor]="marcaMenu">
+                      <span class="filter-select-label">{{ filtroMarca() || 'marca' }}</span>
+                      <mat-icon class="filter-select-arrow">expand_more</mat-icon>
+                    </button>
+                    <mat-menu #marcaMenu="matMenu">
+                      <button mat-menu-item (click)="setFiltroMarca('')">
+                        <mat-icon>label_off</mat-icon> todas
+                      </button>
+                      @for (marca of marcasDisponiveis(); track marca) {
+                        <button mat-menu-item (click)="setFiltroMarca(marca)">
+                          <mat-icon>label</mat-icon> {{ marca }}
+                        </button>
+                      }
+                    </mat-menu>
+                  }
+
+                  <!-- Limpar filtros -->
+                  @if (temFiltrosAtivos()) {
+                    <button class="filter-limpar" (click)="limparFiltros()">
+                      <mat-icon>close</mat-icon> limpar
+                    </button>
+                  }
+
+                </div>
+
+                @if (isLoadingProdutos()) {
+                  <div class="loading-center"><mat-spinner diameter="28" /></div>
+                } @else if (produtosFiltrados().length === 0) {
+                  <div class="empty">
+                    <div class="empty-emoji">▣</div>
+                    <div class="empty-title">nenhum produto</div>
+                    <div class="empty-sub">cadastre o primeiro item da despensa</div>
+                    <button class="btn btn-ghost" style="margin-top:14px" (click)="cadastrarProduto()">+ cadastrar produto</button>
+                  </div>
+                } @else {
+                  <div class="produto-list">
+                    @for (produto of produtosFiltrados(); track produto.id) {
+                      <div class="produto-row" [class.is-baixo]="produto.estoqueAbaixoDoMinimo"
+                           (click)="abrirDetalhe(produto)">
+                        <div class="produto-cat">{{ getCategoriaIcone(produto.categoriaId) }}</div>
+                        <div class="produto-main">
+                          <div class="produto-head">
+                            <span class="produto-nome">{{ produto.nome }}</span>
+                            <span class="produto-qtd" [class.qtd-warn]="produto.estoqueAbaixoDoMinimo">
+                              {{ produto.quantidadeAtual }} {{ getUnidadeLabel(produto.unidade) }}
+                            </span>
+                          </div>
+                          <div class="produto-foot">
+                            <span>{{ getNomeCategoria(produto.categoriaId) }}</span>
+                            @if (produto.marca) { <span>{{ produto.marca }}</span> }
+                            @if (produto.ultimoPreco) { <span>{{ produto.ultimoPreco | currency:'BRL' }}</span> }
+                          </div>
+                        </div>
+                        <button class="produto-menu-btn" [matMenuTriggerFor]="productMenu" (click)="$event.stopPropagation()">
+                          <mat-icon>more_vert</mat-icon>
+                        </button>
+                        <mat-menu #productMenu="matMenu">
+                          <button mat-menu-item (click)="registrarEntradaProduto(produto)">
+                            <mat-icon>add_circle_outline</mat-icon> entrada
+                          </button>
+                          <button mat-menu-item (click)="abrirDrawerEditarProduto(produto, $event)">
+                            <mat-icon>edit</mat-icon> editar
+                          </button>
+                          <mat-divider />
+                          <button mat-menu-item class="delete-item" (click)="excluirProduto(produto, $event)">
+                            <mat-icon>delete_outline</mat-icon> excluir
+                          </button>
+                        </mat-menu>
+                      </div>
+                    }
+                  </div>
+                }
+
+              }
+
+              <!-- ══════════════════════════════════ TAB: RELATÓRIOS ══ -->
+              @if (tab() === 'relatorio') {
+
+                <div class="page-title">
+                  <h1>relatórios</h1>
+                  <p>resumo do seu estoque</p>
+                </div>
+
+                <div class="rel-total">
+                  <div class="rel-total-label">valor total em estoque</div>
+                  <div class="rel-total-val">{{ valorTotalEstoque() | currency:'BRL' }}</div>
+                  <div class="rel-sub-info">{{ totalProdutos() }} produto(s) · {{ totalCategorias() }} categoria(s)</div>
+                </div>
+
+                @if (relatorioCategoria().length > 0) {
+                  <div class="section">
+                    <div class="section-head"><span>por categoria</span></div>
+                    <div class="rel-cats">
+                      @for (cat of relatorioCategoria(); track cat.id) {
+                        <div class="rel-cat">
+                          <div class="rel-cat-head">
+                            <span>{{ cat.icone }} {{ cat.nome }}</span>
+                            <span>{{ cat.valor | currency:'BRL' }}</span>
+                          </div>
+                          <div class="rel-cat-track">
+                            <div class="rel-cat-fill" [style.width.%]="cat.pct"></div>
+                          </div>
+                          <span class="rel-cat-pct">{{ cat.pct }}%</span>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                } @else {
+                  <div class="empty">
+                    <div class="empty-emoji">▤</div>
+                    <div class="empty-title">sem dados</div>
+                    <div class="empty-sub">cadastre produtos com preço para ver o relatório</div>
+                  </div>
+                }
+
+              }
+
+              <!-- ══════════════════════════════════ TAB: GRUPO ════════ -->
+              @if (tab() === 'membros') {
+                <app-grupo-gerenciar (grupoAtualizado)="grupoNome.set($event)" />
+              }
+
+              <!-- ══════════════════════════════════ TAB: MERCADO ══════ -->
+              @if (tab() === 'mercado') {
+
+                <div class="page-title">
+                  <h1>mercados</h1>
+                  <p>locais onde você faz suas compras</p>
+                </div>
+
+                <div class="section" style="padding-bottom: 0">
+                  <div class="section-head">
+                    <span>
+                      locais
+                      @if (mercados().length > 0) {
+                        <span class="section-badge">{{ mercados().length }}</span>
+                      }
+                    </span>
+                    <button class="section-link" (click)="abrirMercadoDialog()">+ novo</button>
+                  </div>
+                </div>
+
+                @if (isLoadingMercado()) {
+                  <div class="loading-center"><mat-spinner diameter="28" /></div>
+
+                } @else if (mercados().length === 0) {
+                  <div class="empty">
+                    <div class="empty-emoji">🛒</div>
+                    <div class="empty-title">nenhum mercado cadastrado</div>
+                    <div class="empty-sub">adicione os locais onde você costuma comprar</div>
+                    <button class="btn" style="margin-top:16px" (click)="abrirMercadoDialog()">
+                      + adicionar mercado
+                    </button>
+                  </div>
+
+                } @else {
+                  <div class="mercado-list">
+                    @for (mercado of mercados(); track mercado.id) {
+                      <div class="mercado-card">
+                        <div class="mercado-icon">🛒</div>
+                        <div class="mercado-info">
+                          <div class="mercado-nome">{{ mercado.nome }}</div>
+                          <div class="mercado-endereco">
+                            <mat-icon class="pin-icon">location_on</mat-icon>
+                            {{ mercado.endereco }}
+                          </div>
+                        </div>
+                        <div class="mercado-actions">
+                          <button class="icon-btn small"
+                                  title="editar"
+                                  (click)="abrirMercadoDialog(mercado)">
+                            <mat-icon>edit</mat-icon>
+                          </button>
+                          <button class="icon-btn small delete-btn"
+                                  title="excluir"
+                                  (click)="excluirMercado(mercado, $event)">
+                            <mat-icon>delete_outline</mat-icon>
+                          </button>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
+
+              }
+
+            }
+
+            } <!-- /else detalhe -->
+          </div><!-- /phone-body -->
+
+        </div><!-- /phone-frame -->
+      </main>
+
+    </div><!-- /app-shell -->
+  </mat-sidenav-content>
+</mat-sidenav-container>

@@ -1,0 +1,146 @@
+<div class="convite-shell">
+  <div class="convite-card">
+
+    <!-- ── Logo ──────────────────────────────────────────────────────────────── -->
+    <div class="convite-logo">
+      <div class="logo-mark">
+        <span class="logo-brick b1"></span><span class="logo-brick b2"></span>
+        <span class="logo-brick b3"></span><span class="logo-brick b4"></span>
+      </div>
+      <span class="logo-word">favly</span>
+    </div>
+
+    <!-- ── CARREGANDO ─────────────────────────────────────────────────────────── -->
+    @if (estado() === 'carregando') {
+      <div class="convite-loading">
+        <mat-spinner diameter="36" />
+        <p>verificando convite…</p>
+      </div>
+    }
+
+    <!-- ── ERRO ───────────────────────────────────────────────────────────────── -->
+    @if (estado() === 'erro') {
+      <div class="convite-state">
+        <div class="state-emoji">✗</div>
+        <h2>convite inválido</h2>
+        <p class="state-sub">{{ erroMsg() || 'Este link expirou ou já foi utilizado.' }}</p>
+        <a class="btn btn-ghost btn-block" routerLink="/auth/login">ir para o login</a>
+      </div>
+    }
+
+    <!-- ── SUCESSO ────────────────────────────────────────────────────────────── -->
+    @if (estado() === 'sucesso') {
+      <div class="convite-state">
+        <div class="state-emoji success">✓</div>
+        <h2>bem-vindo ao grupo!</h2>
+        @if (conviteInfo()) {
+          <p class="state-sub">você entrou em <strong>{{ conviteInfo()!.grupoNome }}</strong>.</p>
+        }
+        <p class="state-sub muted">redirecionando…</p>
+      </div>
+    }
+
+    <!-- ── INFO DO GRUPO (cabeçalho comum) ───────────────────────────────────── -->
+    @if (estado() === 'entrar' || estado() === 'logado') {
+      @if (conviteInfo()) {
+        <div class="convite-grupo-info">
+          <div class="grupo-badge-icon">▲</div>
+          <div>
+            <div class="grupo-nome">{{ conviteInfo()!.grupoNome }}</div>
+            <div class="grupo-meta">convite para {{ conviteInfo()!.emailConvidado }}</div>
+          </div>
+        </div>
+      }
+    }
+
+    <!-- ── CASO 1: NÃO LOGADO (novo ou existente) ────────────────────────────── -->
+    @if (estado() === 'entrar') {
+      <div class="convite-section">
+        @if (!conviteInfo()?.usuarioJaCadastrado) {
+          <h2 class="convite-title">criar sua conta</h2>
+          <p class="convite-sub">sua conta já sairá ativada — o e-mail foi verificado ao clicar no link.</p>
+        } @else {
+          <h2 class="convite-title">entrar com sua conta</h2>
+          <p class="convite-sub">você já tem uma conta. informe sua senha para entrar no grupo.</p>
+        }
+      </div>
+
+      <form [formGroup]="formEntrar" (ngSubmit)="onEntrar()" class="convite-form">
+
+        <!-- Nome — apenas para novos usuários -->
+        @if (!conviteInfo()?.usuarioJaCadastrado) {
+          <div class="field">
+            <label class="field-label">nome completo</label>
+            <div class="field-input" [class.has-error]="erroNome">
+              <input formControlName="nome" placeholder="ex: Ana Lima" autocomplete="name">
+            </div>
+            @if (erroNome) { <span class="field-error">{{ erroNome }}</span> }
+          </div>
+        }
+
+        <div class="field">
+          <label class="field-label">apelido no grupo</label>
+          <div class="field-input" [class.has-error]="erroApelido">
+            <input formControlName="apelido" placeholder="como quer ser chamado(a)" autocomplete="off">
+          </div>
+          @if (erroApelido) { <span class="field-error">{{ erroApelido }}</span> }
+          <span class="field-hint">como você aparece para os outros membros</span>
+        </div>
+
+        <div class="field">
+          <label class="field-label">senha</label>
+          <div class="field-input" [class.has-error]="erroSenha">
+            <input [type]="showSenha() ? 'text' : 'password'" formControlName="senha"
+              [placeholder]="conviteInfo()?.usuarioJaCadastrado ? 'sua senha' : 'mínimo 6 caracteres'"
+              [autocomplete]="conviteInfo()?.usuarioJaCadastrado ? 'current-password' : 'new-password'">
+            <button type="button" class="field-icon-btn" (click)="showSenha.update(v => !v)">
+              <mat-icon>{{ showSenha() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </div>
+          @if (erroSenha) { <span class="field-error">{{ erroSenha }}</span> }
+        </div>
+
+        @if (erroMsg()) {
+          <div class="convite-erro">{{ erroMsg() }}</div>
+        }
+
+        <button type="submit" class="btn btn-block" [disabled]="isLoading()">
+          @if (isLoading()) { <mat-spinner diameter="18" /> }
+          @else if (!conviteInfo()?.usuarioJaCadastrado) { criar conta e entrar no grupo }
+          @else { entrar e aceitar convite }
+        </button>
+
+      </form>
+    }
+
+    <!-- ── CASO 2: JÁ LOGADO ──────────────────────────────────────────────────── -->
+    @if (estado() === 'logado') {
+      <div class="convite-section">
+        <h2 class="convite-title">você foi convidado!</h2>
+        <p class="convite-sub">informe como quer ser chamado no grupo.</p>
+      </div>
+
+      <div class="convite-form">
+        <div class="field">
+          <label class="field-label">apelido no grupo</label>
+          <div class="field-input">
+            <input type="text" [value]="apelidoLogado()"
+              (input)="apelidoLogado.set($any($event.target).value)"
+              placeholder="como quer ser chamado(a)" autocomplete="off">
+          </div>
+          <span class="field-hint">como você aparece para os outros membros</span>
+        </div>
+
+        @if (erroMsg()) {
+          <div class="convite-erro">{{ erroMsg() }}</div>
+        }
+
+        <button class="btn btn-block" [disabled]="isLoading() || !apelidoLogado().trim()" (click)="onAceitar()">
+          @if (isLoading()) { <mat-spinner diameter="18" /> }
+          @else { entrar no grupo }
+        </button>
+      </div>
+    }
+
+  </div>
+</div>

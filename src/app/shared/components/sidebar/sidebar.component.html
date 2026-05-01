@@ -1,0 +1,86 @@
+<aside class="desktop-sidebar">
+
+  <!-- Brand -->
+  <div class="sb-brand">
+    <div class="logo-mark sm">
+      <span class="logo-brick b1"></span><span class="logo-brick b2"></span>
+      <span class="logo-brick b3"></span><span class="logo-brick b4"></span>
+    </div>
+    <span class="logo-word sm">favly</span>
+  </div>
+
+  <!-- Grupo -->
+  <div class="sb-grupo-wrap">
+    <button class="sb-grupo" (click)="navegarGrupos.emit()">
+      <div class="sb-grupo-emoji">◈</div>
+      <div class="sb-grupo-main">
+        <span class="sb-grupo-nome">{{ grupoNome() ?? 'meu grupo' }}</span>
+        <span class="sb-grupo-meta">trocar grupo ›</span>
+      </div>
+    </button>
+  </div>
+
+  <!-- Nav -->
+  <nav class="sb-nav">
+    <button class="sb-nav-btn"
+            [class.active]="tab() === 'inicio' && !maisTela()"
+            (click)="tabChange.emit('inicio')">
+      <span class="sb-nav-icon">◉</span><span>início</span>
+    </button>
+
+    <button class="sb-nav-btn"
+            [class.active]="tab() === 'despensa' && !maisTela()"
+            (click)="tabChange.emit('despensa')">
+      <span class="sb-nav-icon">▣</span><span>despensa</span>
+    </button>
+
+    <button class="sb-nav-btn"
+            [class.active]="tab() === 'relatorio' && !maisTela()"
+            (click)="tabChange.emit('relatorio')">
+      <span class="sb-nav-icon">▤</span><span>relatórios</span>
+    </button>
+
+    <button class="sb-nav-btn"
+            [class.active]="tab() === 'membros' && !maisTela()"
+            (click)="tabChange.emit('membros')">
+      <span class="sb-nav-icon">✦</span><span>grupo</span>
+    </button>
+
+    <div class="sb-nav-sep"></div>
+
+    <button class="sb-nav-btn"
+            [class.active]="maisTela() === 'categorias'"
+            (click)="subtelaChange.emit('categorias')">
+      <span class="sb-nav-icon">◈</span><span>categorias</span>
+    </button>
+
+    <button class="sb-nav-btn"
+            [class.active]="tab() === 'mercado' && !maisTela()"
+            (click)="tabChange.emit('mercado')">
+      <span class="sb-nav-icon">🛒</span><span>mercados</span>
+    </button>
+
+    <button class="sb-nav-btn" (click)="novoProduto.emit()">
+      <span class="sb-nav-icon">＋</span><span>novo produto</span>
+    </button>
+  </nav>
+
+  <!-- User -->
+  <div class="sb-user">
+    <div class="sb-avatar"
+         [style.background]="getAvatarColor(usuario()?.nome ?? 'U')">
+      {{ (usuario()?.nome ?? 'U').charAt(0).toUpperCase() }}
+    </div>
+    <div class="sb-user-main">
+      <div class="sb-user-nome">{{ (usuario()?.nome ?? 'Usuário').split(' ')[0] }}</div>
+      <div class="sb-user-meta">{{ usuario()?.email }}</div>
+    </div>
+    <button class="sb-icon-btn" title="tema" (click)="toggleDark.emit()">
+      <mat-icon>{{ darkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+    </button>
+    <button class="sb-icon-btn" title="sair" (click)="doLogout.emit()">
+      <mat-icon>logout</mat-icon>
+    </button>
+  </div>
+
+</aside>

@@ -1,9 +1,11 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder, FormGroup, Validators, AbstractControl,
+  ReactiveFormsModule, ValidationErrors,
+} from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -13,7 +15,16 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
-import { environment } from '../../../../environments/environment';
+import { UsuarioService } from '../../../core/services/usuario.service';
+import { senhaForteValidator } from '../../../shared/validators/senha.validator';
+
+function senhasIguaisValidator(group: AbstractControl): ValidationErrors | null {
+  const senha       = group.get('senha')?.value;
+  const confirmacao = group.get('confirmacaoSenha')?.value;
+  return senha && confirmacao && senha !== confirmacao
+    ? { senhasDivergentes: true }
+    : null;
+}
 
 @Component({
   selector: 'app-criar-conta',
@@ -37,31 +48,30 @@ export class CriarContaComponent implements OnInit, OnDestroy {
   form!: FormGroup;
   isLoading = false;
   showPassword = false;
+  showConfirmacao = false;
   errorMessage = '';
   avatarPreview: string | null = null;
   avatarBase64: string | null = null;
 
-  private fb      = inject(FormBuilder);
-  private router  = inject(Router);
-  private http    = inject(HttpClient);
-  private snackBar = inject(MatSnackBar);
-  private destroy$ = new Subject<void>();
+  private fb             = inject(FormBuilder);
+  private router         = inject(Router);
+  private usuarioService = inject(UsuarioService);
+  private snackBar       = inject(MatSnackBar);
+  private destroy$       = new Subject<void>();
 
   ngOnInit(): void {
-    this.buildForm();
-  }
-
-  private buildForm(): void {
     this.form = this.fb.group({
-      nome:  ['', [Validators.required, Validators.minLength(3)]],
-      email: ['', [Validators.required, Validators.email]],
-      senha: ['', [Validators.required, Validators.minLength(6)]],
-    });
+      nome:             ['', [Validators.required, Validators.minLength(3)]],
+      email:            ['', [Validators.required, Validators.email]],
+      senha:            ['', [Validators.required, Validators.minLength(8), senhaForteValidator]],
+      confirmacaoSenha: ['', [Validators.required]],
+    }, { validators: senhasIguaisValidator });
   }
 
-  get nomeControl():  AbstractControl { return this.form.get('nome')!; }
-  get emailControl(): AbstractControl { return this.form.get('email')!; }
-  get senhaControl(): AbstractControl { return this.form.get('senha')!; }
+  get nomeControl():        AbstractControl { return this.form.get('nome')!; }
+  get emailControl():       AbstractControl { return this.form.get('email')!; }
+  get senhaControl():       AbstractControl { return this.form.get('senha')!; }
+  get confirmacaoControl(): AbstractControl { return this.form.get('confirmacaoSenha')!; }
 
   get nomeError(): string {
     const c = this.nomeControl;
@@ -84,15 +94,24 @@ export class CriarContaComponent implements OnInit, OnDestroy {
   get senhaError(): string {
     const c = this.senhaControl;
     if (c.invalid && c.touched) {
-      if (c.hasError('required'))  return 'Senha é obrigatória.';
-      if (c.hasError('minlength')) return 'Mínimo de 6 caracteres.';
+      if (c.hasError('required'))   return 'Senha é obrigatória.';
+      if (c.hasError('minlength'))  return 'Mínimo de 8 caracteres.';
+      if (c.hasError('senhaFraca')) return 'A senha precisa ter ao menos 1 letra maiúscula e 1 número.';
     }
     return '';
   }
 
-  togglePasswordVisibility(): void {
-    this.showPassword = !this.showPassword;
+  get confirmacaoError(): string {
+    const c = this.confirmacaoControl;
+    if (c.touched) {
+      if (c.hasError('required'))                  return 'Confirmação é obrigatória.';
+      if (this.form.hasError('senhasDivergentes')) return 'As senhas não coincidem.';
+    }
+    return '';
   }
+
+  togglePasswordVisibility(): void    { this.showPassword    = !this.showPassword; }
+  toggleConfirmacaoVisibility(): void { this.showConfirmacao = !this.showConfirmacao; }
 
   onAvatarSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -126,14 +145,12 @@ export class CriarContaComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.errorMessage = '';
 
-    const payload = {
+    this.usuarioService.criar({
       nome:   this.form.value.nome,
       email:  this.form.value.email,
       senha:  this.form.value.senha,
-      avatar: this.avatarBase64 ?? ''
-    };
-
-    this.http.post(`${environment.apiUrl}/usuarios`, payload)
+      avatar: this.avatarBase64 ?? '',
+    })
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
@@ -147,9 +164,7 @@ export class CriarContaComponent implements OnInit, OnDestroy {
       });
   }
 
-  onLogin(): void {
-    this.router.navigate(['/auth/login']);
-  }
+  onLogin(): void { this.router.navigate(['/auth/login']); }
 
   ngOnDestroy(): void {
     this.destroy$.next();

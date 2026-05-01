@@ -16,5 +16,15 @@ export interface AuthResponse {
   expiracao: string;
   grupoId: string;
   grupoNome: string;
-  userId?: string; // retornado pelo backend, usado como membroId em movimentações
+  userId?: string;
+}
+
+/** Subconjunto usado por salvarSessao — permite fontes parciais (ex: convite) */
+export interface SessaoPayload {
+  token: string;
+  nome?: string;
+  email?: string;
+  grupoId?: string;
+  grupoNome?: string;
+  userId?: string;
 }

@@ -3,7 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
-import { AuthResponse, LoginPayload } from '../../shared/models/user.model';
+import { AuthResponse, LoginPayload, SessaoPayload } from '../../shared/models/user.model';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -18,8 +18,8 @@ export class AuthService {
   private readonly GRUPO_KEY      = 'grupo_key';
   private readonly USER_ID_KEY    = 'user_id';
 
-  private http = inject(HttpClient);
-  private router = inject(Router);
+  private http       = inject(HttpClient);
+  private router     = inject(Router);
   private platformId = inject(PLATFORM_ID);
 
   private get isBrowser(): boolean {
@@ -30,10 +30,10 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/login`, payload).pipe(
       tap(response => {
         if (this.isBrowser) {
-          localStorage.setItem(this.TOKEN_KEY, response.token);
-          localStorage.setItem(this.NOME_KEY, response.nome);
-          localStorage.setItem(this.EMAIL_KEY, response.email);
-          localStorage.setItem(this.GRUPO_KEY, response.grupoId);
+          localStorage.setItem(this.TOKEN_KEY,      response.token);
+          localStorage.setItem(this.NOME_KEY,       response.nome);
+          localStorage.setItem(this.EMAIL_KEY,      response.email);
+          localStorage.setItem(this.GRUPO_KEY,      response.grupoId);
           localStorage.setItem(this.GRUPO_NOME_KEY, response.grupoNome);
           if (response.userId) localStorage.setItem(this.USER_ID_KEY, response.userId);
         }
@@ -41,10 +41,22 @@ export class AuthService {
     );
   }
 
+  esqueceuSenha(email: string): Observable<void> {
+    return this.http.post<void>(`${environment.apiUrl}/auth/esqueci-senha`, { email });
+  }
+
+  redefinirSenha(token: string, novaSenha: string, confirmacaoSenha: string): Observable<void> {
+    return this.http.post<void>(`${environment.apiUrl}/auth/redefinir-senha`, {
+      token,
+      novaSenha,
+      confirmacaoSenha,
+    });
+  }
+
   getUsuario(): { nome: string; email: string } | null {
     if (!this.isBrowser) return null;
-    const nome = localStorage.getItem('user_nome');
-    const email = localStorage.getItem('user_email');
+    const nome  = localStorage.getItem(this.NOME_KEY);
+    const email = localStorage.getItem(this.EMAIL_KEY);
     if (!nome || !email) return null;
     return { nome, email };
   }
@@ -55,10 +67,8 @@ export class AuthService {
 
   getUserId(): string | null {
     if (!this.isBrowser) return null;
-    // Tenta o storage primeiro
     const stored = localStorage.getItem(this.USER_ID_KEY);
     if (stored) return stored;
-    // Fallback: lê o claim "sub" do JWT
     return this.getUserIdFromToken();
   }
 
@@ -68,7 +78,6 @@ export class AuthService {
       if (!token) return null;
       const payload = JSON.parse(atob(token.split('.')[1]));
       const id = payload.sub ?? payload.userId ?? payload.nameid ?? null;
-      // Salva para as próximas chamadas
       if (id) localStorage.setItem(this.USER_ID_KEY, id);
       return id;
     } catch { return null; }
@@ -90,15 +99,15 @@ export class AuthService {
     this.router.navigate(['/auth/login']);
   }
 
-  /** Persiste uma sessão já obtida (ex: retorno de registrar-e-aceitar) */
-  salvarSessao(response: AuthResponse): void {
+  /** Persiste sessão obtida externamente (ex: aceite de convite). */
+  salvarSessao(data: SessaoPayload): void {
     if (!this.isBrowser) return;
-    localStorage.setItem(this.TOKEN_KEY,      response.token);
-    localStorage.setItem(this.NOME_KEY,       response.nome);
-    localStorage.setItem(this.EMAIL_KEY,      response.email);
-    localStorage.setItem(this.GRUPO_KEY,      response.grupoId);
-    localStorage.setItem(this.GRUPO_NOME_KEY, response.grupoNome);
-    if (response.userId) localStorage.setItem(this.USER_ID_KEY, response.userId);
+    localStorage.setItem(this.TOKEN_KEY, data.token);
+    if (data.nome)      localStorage.setItem(this.NOME_KEY,       data.nome);
+    if (data.email)     localStorage.setItem(this.EMAIL_KEY,      data.email);
+    if (data.grupoId)   localStorage.setItem(this.GRUPO_KEY,      data.grupoId);
+    if (data.grupoNome) localStorage.setItem(this.GRUPO_NOME_KEY, data.grupoNome);
+    if (data.userId)    localStorage.setItem(this.USER_ID_KEY,    data.userId);
   }
 
   getToken(): string | null {
@@ -106,6 +115,11 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return !!this.getToken();
+    const token = this.getToken();
+    if (!token) return false;
+    try {
+      const { exp } = JSON.parse(atob(token.split('.')[1]));
+      return exp * 1000 > Date.now();
+    } catch { return false; }
   }
 }

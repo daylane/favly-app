@@ -209,11 +209,68 @@
   mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; color: var(--accent-coral); }
 }
 
-.error-content {
+// ── Bloco de ativação inline ──────────────────────────────────────────────────
+.ativacao-block {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  flex: 1;
+  padding: 12px;
+  background: var(--bg);
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 2px 2px 0 var(--line);
+}
+
+.reenvio-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+
+.reenvio-label {
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+.reenvio-countdown {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+
+  mat-icon { font-size: 13px; width: 13px; height: 13px; }
+}
+
+.btn-reenviar {
+  background: var(--bg);
+  border: 2px solid var(--line);
+  border-radius: 8px;
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  color: var(--ink);
+  cursor: pointer;
+  padding: 4px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 2px 2px 0 var(--line);
+  transition: transform 0.1s, box-shadow 0.1s;
+
+  &:hover:not(:disabled) {
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0 var(--line);
+  }
+
+  &:active:not(:disabled) {
+    transform: translate(1px, 1px);
+    box-shadow: none;
+  }
+
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
 }
 
 // ── Botão submit ──────────────────────────────────────────────────────────────
@@ -241,20 +298,6 @@
 
 .btn-block { width: 100%; }
 
-.btn-ativar-inline {
-  align-self: flex-start;
-  background: none;
-  border: 2px solid var(--accent-coral);
-  border-radius: 8px;
-  font-family: var(--font-pixel);
-  font-size: 12px;
-  color: var(--ink);
-  cursor: pointer;
-  padding: 4px 10px;
-  box-shadow: 1px 1px 0 var(--line);
-
-  &:hover { background: var(--accent-coral); }
-}
 
 // ── Footer ────────────────────────────────────────────────────────────────────
 .auth-foot {
@@ -285,4 +328,5 @@
 }
 
 // ── Spinner override ──────────────────────────────────────────────────────────
-::ng-deep .btn .mat-mdc-progress-spinner circle { stroke: var(--ink) !important; }
+::ng-deep .btn .mat-mdc-progress-spinner circle,
+::ng-deep .btn-reenviar .mat-mdc-progress-spinner circle { stroke: var(--ink-soft) !important; }

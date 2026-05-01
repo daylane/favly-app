@@ -1,8 +1,6 @@
 <div class="auth-page">
-
   <div class="auth-wrap">
 
-    <!-- Logo -->
     <div class="auth-hero">
       <div class="auth-logo">
         <div class="logo-mark">
@@ -14,10 +12,8 @@
       <p class="auth-tag">despensa compartilhada</p>
     </div>
 
-    <!-- Card -->
     <div class="auth-card">
 
-      <!-- Tabs login / cadastro -->
       <div class="auth-tabs">
         <button class="auth-tab auth-tab-active" type="button">entrar</button>
         <button class="auth-tab" type="button" (click)="onCreateAccount()">cadastrar</button>
@@ -42,7 +38,7 @@
               <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
             </button>
           </div>
-          <span class="field-error" *ngIf="passwordError">{{ passwordError }}</span>
+          <span class="field-error" *ngIf="senhaError">{{ senhaError }}</span>
         </label>
 
         <div class="forgot-row">
@@ -52,17 +48,42 @@
         <!-- Erro geral -->
         <div class="error-alert" *ngIf="errorMessage" role="alert">
           <mat-icon>error_outline</mat-icon>
-          <div class="error-content">
-            <span>{{ errorMessage }}</span>
-            <button *ngIf="contaNaoAtivada" type="button" class="btn-ativar-inline" (click)="abrirDialogAtivacao()">
-              inserir código de ativação
-            </button>
-          </div>
+          <span>{{ errorMessage }}</span>
         </div>
 
-        <button type="submit" class="btn btn-block" [disabled]="isLoading">
-          <mat-spinner *ngIf="isLoading" diameter="18"></mat-spinner>
-          <span *ngIf="!isLoading">entrar</span>
+        <!-- Bloco de ativação — aparece quando conta não ativada -->
+        <div *ngIf="contaNaoAtivada" class="ativacao-block">
+
+          <label class="field">
+            <span class="field-label">código de ativação</span>
+            <div class="field-input">
+              <input type="text" inputmode="numeric" [formControl]="codigoControl"
+                placeholder="123456" autocomplete="one-time-code" maxlength="8" />
+            </div>
+            <span class="field-error" *ngIf="codigoError">{{ codigoError }}</span>
+            <span class="field-error" *ngIf="ativacaoError && !codigoError">{{ ativacaoError }}</span>
+          </label>
+
+          <div class="reenvio-row">
+            <span class="reenvio-label">não recebeu o código?</span>
+            <span *ngIf="reenvioCountdown > 0" class="reenvio-countdown">
+              <mat-icon>timer</mat-icon>{{ reenvioCountdown }}s
+            </span>
+            <button *ngIf="reenvioCountdown === 0" type="button"
+              class="btn-reenviar" (click)="onReenviar()" [disabled]="isResending">
+              <mat-spinner *ngIf="isResending" diameter="12"></mat-spinner>
+              <span>{{ isResending ? 'enviando...' : 'reenviar código' }}</span>
+            </button>
+          </div>
+
+        </div>
+
+        <button type="submit" class="btn btn-block"
+          [disabled]="isLoading || isActivating">
+          <mat-spinner *ngIf="isLoading || isActivating" diameter="18"></mat-spinner>
+          <span *ngIf="!isLoading && !isActivating">
+            {{ contaNaoAtivada ? 'ativar conta' : 'entrar' }}
+          </span>
         </button>
 
       </form>
@@ -73,6 +94,5 @@
       </div>
 
     </div>
-
   </div>
 </div>

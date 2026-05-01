@@ -1,20 +1,20 @@
-import { Component, OnInit, OnDestroy, inject, signal, PLATFORM_ID } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 
-import { MatIconModule }             from '@angular/material/icon';
-import { MatProgressSpinnerModule }  from '@angular/material/progress-spinner';
+import { MatIconModule }            from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-import { AuthService }   from '../../core/services/auth.service';
+import { AuthService }    from '../../core/services/auth.service';
 import { ConviteService } from '../convite/convite.service';
-import { ConviteInfo }   from '../convite/convite.model';
+import { ConviteInfo }    from '../convite/convite.model';
 
 export type ConviteEstado =
-  | 'carregando'   // buscando dados do convite
-  | 'entrar'       // não logado → formulário adaptável (usuário novo ou existente)
-  | 'logado'       // já autenticado → só pede apelido
+  | 'carregando'
+  | 'entrar'
+  | 'logado'
   | 'sucesso'
   | 'erro';
 
@@ -38,7 +38,6 @@ export class ConviteAceiteComponent implements OnInit, OnDestroy {
   private fb             = inject(FormBuilder);
   private authService    = inject(AuthService);
   private conviteService = inject(ConviteService);
-  private platformId     = inject(PLATFORM_ID);
   private destroy$       = new Subject<void>();
 
   codigo      = '';
@@ -48,20 +47,16 @@ export class ConviteAceiteComponent implements OnInit, OnDestroy {
   isLoading   = signal(false);
   showSenha   = signal(false);
 
-  // ── Formulário único para o caso "entrar" (não logado) ───────────────────
-  // Campos: nome (apenas novos), senha, apelido
   formEntrar = this.fb.group({
-    nome:    [''],   // validado dinamicamente
+    nome:    [''],
     senha:   ['', [Validators.required, Validators.minLength(6)]],
     apelido: ['', [Validators.required, Validators.minLength(2)]],
   });
 
-  // ── Apelido para o caso "já logado" ──────────────────────────────────────
   apelidoLogado = signal('');
 
-  // Helpers de erro
-  get erroNome():   string { return this.fieldError('nome'); }
-  get erroSenha():  string { return this.fieldError('senha'); }
+  get erroNome():    string { return this.fieldError('nome'); }
+  get erroSenha():   string { return this.fieldError('senha'); }
   get erroApelido(): string { return this.fieldError('apelido'); }
 
   private fieldError(field: string): string {
@@ -72,7 +67,6 @@ export class ConviteAceiteComponent implements OnInit, OnDestroy {
     return '';
   }
 
-  // ─────────────────────────────────────────────────────────────────────────
   ngOnInit(): void {
     this.codigo = this.route.snapshot.paramMap.get('codigo') ?? '';
 
@@ -89,10 +83,8 @@ export class ConviteAceiteComponent implements OnInit, OnDestroy {
           this.conviteInfo.set(info);
 
           if (this.authService.isAuthenticated()) {
-            // Usuário logado → só precisa do apelido
             this.estado.set('logado');
           } else {
-            // Aplica validação de nome apenas para usuários novos
             if (!info.usuarioJaCadastrado) {
               this.formEntrar.get('nome')!.setValidators([Validators.required, Validators.minLength(2)]);
               this.formEntrar.get('nome')!.updateValueAndValidity();
@@ -112,7 +104,6 @@ export class ConviteAceiteComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  // ── Caso "entrar" (usuário não logado, novo ou existente) ────────────────
   onEntrar(): void {
     if (this.formEntrar.invalid) { this.formEntrar.markAllAsTouched(); return; }
 
@@ -129,13 +120,12 @@ export class ConviteAceiteComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: res => {
-          // Salva sessão manualmente com os campos do response
-          if (isPlatformBrowser(this.platformId)) {
-            localStorage.setItem('auth_token',  res.token);
-            localStorage.setItem('user_nome',   res.usuarioNome);
-            localStorage.setItem('grupo_key',   res.grupoId);
-            localStorage.setItem('grupo_nome',  res.grupoNome);
-          }
+          this.authService.salvarSessao({
+            token:     res.token,
+            nome:      res.usuarioNome,
+            grupoId:   res.grupoId,
+            grupoNome: res.grupoNome,
+          });
           this.estado.set('sucesso');
           setTimeout(() => this.router.navigate(['/home']), 1800);
         },
@@ -146,7 +136,6 @@ export class ConviteAceiteComponent implements OnInit, OnDestroy {
       });
   }
 
-  // ── Caso "logado" (já tem JWT) ────────────────────────────────────────────
   onAceitar(): void {
     const apelido = this.apelidoLogado().trim();
     if (!apelido) { this.erroMsg.set('Informe um apelido para entrar no grupo.'); return; }

@@ -2,7 +2,6 @@ import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -10,7 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-import { environment } from '../../../../environments/environment';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-esquecer-senha',
@@ -29,13 +28,13 @@ import { environment } from '../../../../environments/environment';
 })
 export class EsquecerSenhaComponent {
 
-  private fb     = inject(FormBuilder);
-  private router = inject(Router);
-  private http   = inject(HttpClient);
+  private fb          = inject(FormBuilder);
+  private router      = inject(Router);
+  private authService = inject(AuthService);
 
   isLoading    = signal(false);
   errorMessage = signal('');
-  enviado      = signal(false); // exibe tela de sucesso
+  enviado      = signal(false);
 
   form = this.fb.group({
     email: ['', [Validators.required, Validators.email]]
@@ -53,17 +52,12 @@ export class EsquecerSenhaComponent {
   }
 
   onSubmit(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
+    if (this.form.invalid) { this.form.markAllAsTouched(); return; }
 
     this.isLoading.set(true);
     this.errorMessage.set('');
 
-    const body = { email: this.form.value.email };
-
-    this.http.post(`${environment.apiUrl}/auth/esqueci-senha`, body)
+    this.authService.esqueceuSenha(this.form.value.email!)
       .subscribe({
         next: () => {
           this.isLoading.set(false);
@@ -76,11 +70,6 @@ export class EsquecerSenhaComponent {
       });
   }
 
-  irParaRedefinir(): void {
-    this.router.navigate(['/auth/redefinir-senha']);
-  }
-
-  onVoltar(): void {
-    this.router.navigate(['/auth/login']);
-  }
+  irParaRedefinir(): void { this.router.navigate(['/auth/redefinir-senha']); }
+  onVoltar(): void        { this.router.navigate(['/auth/login']); }
 }

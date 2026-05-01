@@ -63,8 +63,20 @@
               <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
             </button>
           </div>
-          <span class="field-hint">mínimo de 6 caracteres</span>
+          <span class="field-hint">mínimo 8 caracteres, 1 maiúscula e 1 número</span>
           <span class="field-error" *ngIf="senhaError">{{ senhaError }}</span>
+        </label>
+
+        <label class="field">
+          <span class="field-label">confirmar senha</span>
+          <div class="field-input">
+            <input [type]="showConfirmacao ? 'text' : 'password'" formControlName="confirmacaoSenha"
+              placeholder="••••••••" autocomplete="new-password" />
+            <button type="button" class="field-eye" (click)="toggleConfirmacaoVisibility()">
+              <mat-icon>{{ showConfirmacao ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </div>
+          <span class="field-error" *ngIf="confirmacaoError">{{ confirmacaoError }}</span>
         </label>
 
         <div class="error-alert" *ngIf="errorMessage" role="alert">

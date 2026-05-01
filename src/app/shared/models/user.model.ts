@@ -14,6 +14,7 @@ export interface AuthResponse {
   nome: string;
   email: string;
   expiracao: string;
+  avatar: string;
   grupoId: string;
   grupoNome: string;
   userId?: string;
@@ -27,4 +28,5 @@ export interface SessaoPayload {
   grupoId?: string;
   grupoNome?: string;
   userId?: string;
+  avatar?: string;
 }

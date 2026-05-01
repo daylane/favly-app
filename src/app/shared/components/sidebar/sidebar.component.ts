@@ -33,6 +33,7 @@ export class SidebarComponent {
   maisTela  = input<MaisTelaType>(null);
   grupoNome = input<string | null>(null);
   usuario   = input<UsuarioInfo | null>(null);
+  avatarUrl = input<string | null>(null);
   darkMode  = input<boolean>(false);
 
   // ── Outputs ───────────────────────────────────────────────────────────────

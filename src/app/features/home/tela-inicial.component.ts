@@ -96,6 +96,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   private platformId          = inject(PLATFORM_ID);
 
   usuario   = this.authService.getUsuario();
+  avatarUrl = this.authService.getAvatar();  
   grupoNome = signal<string | null>(this.authService.getGrupoNome());
 
   // ── Navegação ─────────────────────────────────────────────────────────────

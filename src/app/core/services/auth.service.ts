@@ -11,15 +11,16 @@ import { environment } from '../../../environments/environment';
 })
 export class AuthService {
 
-  private readonly TOKEN_KEY      = 'auth_token';
-  private readonly NOME_KEY       = 'user_nome';
-  private readonly EMAIL_KEY      = 'user_email';
+  private readonly TOKEN_KEY = 'auth_token';
+  private readonly NOME_KEY = 'user_nome';
+  private readonly EMAIL_KEY = 'user_email';
   private readonly GRUPO_NOME_KEY = 'grupo_nome';
-  private readonly GRUPO_KEY      = 'grupo_key';
-  private readonly USER_ID_KEY    = 'user_id';
+  private readonly GRUPO_KEY = 'grupo_key';
+  private readonly USER_ID_KEY = 'user_id';
+  private readonly AVATAR_KEY = 'user_avatar';
 
-  private http       = inject(HttpClient);
-  private router     = inject(Router);
+  private http = inject(HttpClient);
+  private router = inject(Router);
   private platformId = inject(PLATFORM_ID);
 
   private get isBrowser(): boolean {
@@ -30,12 +31,14 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/login`, payload).pipe(
       tap(response => {
         if (this.isBrowser) {
-          localStorage.setItem(this.TOKEN_KEY,      response.token);
-          localStorage.setItem(this.NOME_KEY,       response.nome);
-          localStorage.setItem(this.EMAIL_KEY,      response.email);
-          localStorage.setItem(this.GRUPO_KEY,      response.grupoId);
+          localStorage.setItem(this.TOKEN_KEY, response.token);
+          localStorage.setItem(this.NOME_KEY, response.nome);
+          localStorage.setItem(this.EMAIL_KEY, response.email);
+          localStorage.setItem(this.GRUPO_KEY, response.grupoId);
           localStorage.setItem(this.GRUPO_NOME_KEY, response.grupoNome);
           if (response.userId) localStorage.setItem(this.USER_ID_KEY, response.userId);
+          if (response.avatar) localStorage.setItem(this.AVATAR_KEY, response.avatar);
+
         }
       })
     );
@@ -55,7 +58,7 @@ export class AuthService {
 
   getUsuario(): { nome: string; email: string } | null {
     if (!this.isBrowser) return null;
-    const nome  = localStorage.getItem(this.NOME_KEY);
+    const nome = localStorage.getItem(this.NOME_KEY);
     const email = localStorage.getItem(this.EMAIL_KEY);
     if (!nome || !email) return null;
     return { nome, email };
@@ -95,6 +98,7 @@ export class AuthService {
       localStorage.removeItem(this.GRUPO_KEY);
       localStorage.removeItem(this.GRUPO_NOME_KEY);
       localStorage.removeItem(this.USER_ID_KEY);
+      localStorage.removeItem(this.AVATAR_KEY);
     }
     this.router.navigate(['/auth/login']);
   }
@@ -103,15 +107,20 @@ export class AuthService {
   salvarSessao(data: SessaoPayload): void {
     if (!this.isBrowser) return;
     localStorage.setItem(this.TOKEN_KEY, data.token);
-    if (data.nome)      localStorage.setItem(this.NOME_KEY,       data.nome);
-    if (data.email)     localStorage.setItem(this.EMAIL_KEY,      data.email);
-    if (data.grupoId)   localStorage.setItem(this.GRUPO_KEY,      data.grupoId);
+    if (data.nome) localStorage.setItem(this.NOME_KEY, data.nome);
+    if (data.email) localStorage.setItem(this.EMAIL_KEY, data.email);
+    if (data.grupoId) localStorage.setItem(this.GRUPO_KEY, data.grupoId);
     if (data.grupoNome) localStorage.setItem(this.GRUPO_NOME_KEY, data.grupoNome);
-    if (data.userId)    localStorage.setItem(this.USER_ID_KEY,    data.userId);
+    if (data.userId) localStorage.setItem(this.USER_ID_KEY, data.userId);
+    if (data.avatar) localStorage.setItem(this.AVATAR_KEY, data.avatar);
   }
 
   getToken(): string | null {
     return this.isBrowser ? localStorage.getItem(this.TOKEN_KEY) : null;
+  }
+
+  getAvatar(): string | null {
+    return this.isBrowser ? localStorage.getItem(this.AVATAR_KEY) : null;
   }
 
   isAuthenticated(): boolean {

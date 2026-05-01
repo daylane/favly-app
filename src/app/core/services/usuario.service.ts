@@ -15,6 +15,12 @@ export class UsuarioService {
 
   private http = inject(HttpClient);
 
+  uploadAvatar(file: File): Observable<{ url: string }> {
+    const form = new FormData();
+    form.append('arquivo', file);
+    return this.http.post<{ url: string }>(`${environment.apiUrl}/uploads/avatar`, form);
+  }
+
   criar(payload: CriarUsuarioPayload): Observable<void> {
     return this.http.post<void>(`${environment.apiUrl}/usuarios`, payload);
   }

@@ -5,10 +5,8 @@ import {
   ReactiveFormsModule, ValidationErrors,
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, switchMap, of, takeUntil } from 'rxjs';
 
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -32,8 +30,6 @@ function senhasIguaisValidator(group: AbstractControl): ValidationErrors | null 
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
@@ -46,12 +42,12 @@ function senhasIguaisValidator(group: AbstractControl): ValidationErrors | null 
 export class CriarContaComponent implements OnInit, OnDestroy {
 
   form!: FormGroup;
-  isLoading = false;
-  showPassword = false;
+  isLoading       = false;
+  showPassword    = false;
   showConfirmacao = false;
-  errorMessage = '';
+  errorMessage    = '';
   avatarPreview: string | null = null;
-  avatarBase64: string | null = null;
+  avatarFile:    File | null   = null;
 
   private fb             = inject(FormBuilder);
   private router         = inject(Router);
@@ -114,8 +110,7 @@ export class CriarContaComponent implements OnInit, OnDestroy {
   toggleConfirmacaoVisibility(): void { this.showConfirmacao = !this.showConfirmacao; }
 
   onAvatarSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
+    const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
 
     if (file.size > 2 * 1024 * 1024) {
@@ -123,35 +118,38 @@ export class CriarContaComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.avatarPreview = reader.result as string;
-      this.avatarBase64  = (reader.result as string).split(',')[1];
-    };
-    reader.readAsDataURL(file);
+    this.revokePreview();
+    this.avatarFile    = file;
+    this.avatarPreview = URL.createObjectURL(file);
   }
 
   removeAvatar(): void {
+    this.revokePreview();
+    this.avatarFile    = null;
     this.avatarPreview = null;
-    this.avatarBase64  = null;
   }
 
   onSubmit(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
+    if (this.form.invalid) { this.form.markAllAsTouched(); return; }
 
-    this.isLoading = true;
+    this.isLoading    = true;
     this.errorMessage = '';
 
-    this.usuarioService.criar({
-      nome:   this.form.value.nome,
-      email:  this.form.value.email,
-      senha:  this.form.value.senha,
-      avatar: this.avatarBase64 ?? '',
-    })
-      .pipe(takeUntil(this.destroy$))
+    // Se houver arquivo, faz upload primeiro; senão emite string vazia
+    const upload$ = this.avatarFile
+      ? this.usuarioService.uploadAvatar(this.avatarFile)
+      : of({ url: '' });
+
+    upload$
+      .pipe(
+        switchMap(({ url }) => this.usuarioService.criar({
+          nome:   this.form.value.nome,
+          email:  this.form.value.email,
+          senha:  this.form.value.senha,
+          avatar: url,
+        })),
+        takeUntil(this.destroy$),
+      )
       .subscribe({
         next: () => {
           this.snackBar.open('Conta criada com sucesso!', 'Fechar', { duration: 3000 });
@@ -160,13 +158,18 @@ export class CriarContaComponent implements OnInit, OnDestroy {
         error: (err) => {
           this.isLoading = false;
           this.errorMessage = err?.error?.message || 'Erro ao criar conta. Tente novamente.';
-        }
+        },
       });
+  }
+
+  private revokePreview(): void {
+    if (this.avatarPreview) URL.revokeObjectURL(this.avatarPreview);
   }
 
   onLogin(): void { this.router.navigate(['/auth/login']); }
 
   ngOnDestroy(): void {
+    this.revokePreview();
     this.destroy$.next();
     this.destroy$.complete();
   }

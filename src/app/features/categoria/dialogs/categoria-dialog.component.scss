@@ -54,6 +54,7 @@ h2[mat-dialog-title] {
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   gap: 4px;
+  overflow: clip; // impede que o scale(1.1) do hover gere scrollbar
 }
 
 .emoji-btn {
@@ -101,3 +102,13 @@ h2[mat-dialog-title] {
 }
 
 ::ng-deep .btn .mat-mdc-progress-spinner circle { stroke: var(--ink) !important; }
+
+::ng-deep .mat-mdc-dialog-content {
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+::ng-deep .mat-mdc-dialog-actions {
+  gap: 12px !important;
+  padding: 16px 24px !important;
+}

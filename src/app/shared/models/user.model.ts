@@ -22,7 +22,7 @@ export interface AuthResponse {
 
 /** Subconjunto usado por salvarSessao — permite fontes parciais (ex: convite) */
 export interface SessaoPayload {
-  token: string;
+  token?: string; // ignorado — token trafega via cookie httpOnly
   nome?: string;
   email?: string;
   grupoId?: string;

@@ -121,7 +121,6 @@ export class ConviteAceiteComponent implements OnInit, OnDestroy {
       .subscribe({
         next: res => {
           this.authService.salvarSessao({
-            token:     res.token,
             nome:      res.usuarioNome,
             grupoId:   res.grupoId,
             grupoNome: res.grupoNome,

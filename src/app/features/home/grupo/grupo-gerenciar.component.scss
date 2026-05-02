@@ -98,6 +98,11 @@
   font-family: var(--font-pixel); font-size: 17px; flex-shrink: 0;
 }
 
+.ger-membro-avatar--img {
+  object-fit: cover;
+  border-radius: 50%;
+}
+
 .ger-membro-info { flex: 1; min-width: 0; }
 .ger-membro-nome {
   font-weight: 700; font-size: 14px;

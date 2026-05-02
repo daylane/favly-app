@@ -5,16 +5,13 @@ import { AuthService } from '../services/auth.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
-  const token = authService.getToken();
 
-  // Anexa o token se existir
-  const cloned = token
-    ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
-    : req;
+  // Envia cookies httpOnly automaticamente em todas as requests
+  const cloned = req.clone({ withCredentials: true });
 
   return next(cloned).pipe(
     catchError((error: HttpErrorResponse) => {
-      // Token expirado ou inválido → limpa a sessão e manda para o login
+      // Cookie expirado ou inválido → limpa a sessão e manda para o login
       if (error.status === 401) {
         authService.logout();
       }

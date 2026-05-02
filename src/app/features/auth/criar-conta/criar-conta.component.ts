@@ -1,19 +1,28 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder, FormGroup, Validators, AbstractControl,
+  ReactiveFormsModule, ValidationErrors,
+} from '@angular/forms';
 import { Router } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { Subject, switchMap, of, takeUntil } from 'rxjs';
 
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
-import { environment } from '../../../../environments/environment';
+import { UsuarioService } from '../../../core/services/usuario.service';
+import { senhaForteValidator } from '../../../shared/validators/senha.validator';
+
+function senhasIguaisValidator(group: AbstractControl): ValidationErrors | null {
+  const senha       = group.get('senha')?.value;
+  const confirmacao = group.get('confirmacaoSenha')?.value;
+  return senha && confirmacao && senha !== confirmacao
+    ? { senhasDivergentes: true }
+    : null;
+}
 
 @Component({
   selector: 'app-criar-conta',
@@ -21,8 +30,6 @@ import { environment } from '../../../../environments/environment';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
@@ -35,33 +42,32 @@ import { environment } from '../../../../environments/environment';
 export class CriarContaComponent implements OnInit, OnDestroy {
 
   form!: FormGroup;
-  isLoading = false;
-  showPassword = false;
-  errorMessage = '';
+  isLoading       = false;
+  showPassword    = false;
+  showConfirmacao = false;
+  errorMessage    = '';
   avatarPreview: string | null = null;
-  avatarBase64: string | null = null;
+  avatarFile:    File | null   = null;
 
-  private fb      = inject(FormBuilder);
-  private router  = inject(Router);
-  private http    = inject(HttpClient);
-  private snackBar = inject(MatSnackBar);
-  private destroy$ = new Subject<void>();
+  private fb             = inject(FormBuilder);
+  private router         = inject(Router);
+  private usuarioService = inject(UsuarioService);
+  private snackBar       = inject(MatSnackBar);
+  private destroy$       = new Subject<void>();
 
   ngOnInit(): void {
-    this.buildForm();
-  }
-
-  private buildForm(): void {
     this.form = this.fb.group({
-      nome:  ['', [Validators.required, Validators.minLength(3)]],
-      email: ['', [Validators.required, Validators.email]],
-      senha: ['', [Validators.required, Validators.minLength(6)]],
-    });
+      nome:             ['', [Validators.required, Validators.minLength(3)]],
+      email:            ['', [Validators.required, Validators.email]],
+      senha:            ['', [Validators.required, Validators.minLength(8), senhaForteValidator]],
+      confirmacaoSenha: ['', [Validators.required]],
+    }, { validators: senhasIguaisValidator });
   }
 
-  get nomeControl():  AbstractControl { return this.form.get('nome')!; }
-  get emailControl(): AbstractControl { return this.form.get('email')!; }
-  get senhaControl(): AbstractControl { return this.form.get('senha')!; }
+  get nomeControl():        AbstractControl { return this.form.get('nome')!; }
+  get emailControl():       AbstractControl { return this.form.get('email')!; }
+  get senhaControl():       AbstractControl { return this.form.get('senha')!; }
+  get confirmacaoControl(): AbstractControl { return this.form.get('confirmacaoSenha')!; }
 
   get nomeError(): string {
     const c = this.nomeControl;
@@ -84,19 +90,27 @@ export class CriarContaComponent implements OnInit, OnDestroy {
   get senhaError(): string {
     const c = this.senhaControl;
     if (c.invalid && c.touched) {
-      if (c.hasError('required'))  return 'Senha é obrigatória.';
-      if (c.hasError('minlength')) return 'Mínimo de 6 caracteres.';
+      if (c.hasError('required'))   return 'Senha é obrigatória.';
+      if (c.hasError('minlength'))  return 'Mínimo de 8 caracteres.';
+      if (c.hasError('senhaFraca')) return 'A senha precisa ter ao menos 1 letra maiúscula e 1 número.';
     }
     return '';
   }
 
-  togglePasswordVisibility(): void {
-    this.showPassword = !this.showPassword;
+  get confirmacaoError(): string {
+    const c = this.confirmacaoControl;
+    if (c.touched) {
+      if (c.hasError('required'))                  return 'Confirmação é obrigatória.';
+      if (this.form.hasError('senhasDivergentes')) return 'As senhas não coincidem.';
+    }
+    return '';
   }
 
+  togglePasswordVisibility(): void    { this.showPassword    = !this.showPassword; }
+  toggleConfirmacaoVisibility(): void { this.showConfirmacao = !this.showConfirmacao; }
+
   onAvatarSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
+    const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
 
     if (file.size > 2 * 1024 * 1024) {
@@ -104,37 +118,38 @@ export class CriarContaComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.avatarPreview = reader.result as string;
-      this.avatarBase64  = (reader.result as string).split(',')[1];
-    };
-    reader.readAsDataURL(file);
+    this.revokePreview();
+    this.avatarFile    = file;
+    this.avatarPreview = URL.createObjectURL(file);
   }
 
   removeAvatar(): void {
+    this.revokePreview();
+    this.avatarFile    = null;
     this.avatarPreview = null;
-    this.avatarBase64  = null;
   }
 
   onSubmit(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
+    if (this.form.invalid) { this.form.markAllAsTouched(); return; }
 
-    this.isLoading = true;
+    this.isLoading    = true;
     this.errorMessage = '';
 
-    const payload = {
-      nome:   this.form.value.nome,
-      email:  this.form.value.email,
-      senha:  this.form.value.senha,
-      avatar: this.avatarBase64 ?? ''
-    };
+    // Se houver arquivo, faz upload primeiro; senão emite string vazia
+    const upload$ = this.avatarFile
+      ? this.usuarioService.uploadAvatar(this.avatarFile)
+      : of({ url: '' });
 
-    this.http.post(`${environment.apiUrl}/usuarios`, payload)
-      .pipe(takeUntil(this.destroy$))
+    upload$
+      .pipe(
+        switchMap(({ url }) => this.usuarioService.criar({
+          nome:   this.form.value.nome,
+          email:  this.form.value.email,
+          senha:  this.form.value.senha,
+          avatar: url,
+        })),
+        takeUntil(this.destroy$),
+      )
       .subscribe({
         next: () => {
           this.snackBar.open('Conta criada com sucesso!', 'Fechar', { duration: 3000 });
@@ -143,15 +158,18 @@ export class CriarContaComponent implements OnInit, OnDestroy {
         error: (err) => {
           this.isLoading = false;
           this.errorMessage = err?.error?.message || 'Erro ao criar conta. Tente novamente.';
-        }
+        },
       });
   }
 
-  onLogin(): void {
-    this.router.navigate(['/auth/login']);
+  private revokePreview(): void {
+    if (this.avatarPreview) URL.revokeObjectURL(this.avatarPreview);
   }
 
+  onLogin(): void { this.router.navigate(['/auth/login']); }
+
   ngOnDestroy(): void {
+    this.revokePreview();
     this.destroy$.next();
     this.destroy$.complete();
   }

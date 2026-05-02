@@ -1,23 +1,36 @@
 <div class="dialog-wrap">
 
-  <div class="dialog-icon">✉</div>
+  <div class="dialog-icon">
+    <mat-icon>mark_email_unread</mat-icon>
+  </div>
+
   <h2 mat-dialog-title>ativar conta</h2>
 
   <mat-dialog-content>
 
     <p class="dialog-subtitle">
-      enviamos um código de ativação para<br>
+      enviamos um código de 6 dígitos para<br>
       <strong>{{ data.email }}</strong>
     </p>
 
-    <form [formGroup]="form" (ngSubmit)="onConfirmar()" novalidate class="dialog-form">
-      <label class="field">
-        <span class="field-label">código de ativação</span>
-        <div class="field-input">
-          <input formControlName="codigo" placeholder="123456" autocomplete="one-time-code" inputmode="numeric" />
-        </div>
-        <span class="field-error" *ngIf="codigoError">{{ codigoError }}</span>
-      </label>
+    <form [formGroup]="form" (ngSubmit)="onConfirmar()" novalidate>
+
+      <div class="otp-inputs" (paste)="onPaste($event)">
+        <input #otpInput
+          *ngFor="let digit of digits; let i = index"
+          type="text"
+          inputmode="numeric"
+          maxlength="1"
+          autocomplete="one-time-code"
+          [class.otp-filled]="digit"
+          [class.otp-error]="codigoInvalido && !digit"
+          (input)="onInput(i, $event)"
+          (keydown)="onKeydown(i, $event)"
+        />
+      </div>
+
+      <p class="otp-hint" *ngIf="codigoInvalido">preencha todos os 6 dígitos.</p>
+
     </form>
 
     <div class="error-alert" *ngIf="errorMessage()" role="alert">

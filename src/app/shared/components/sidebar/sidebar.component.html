@@ -22,41 +22,31 @@
 
   <!-- Nav -->
   <nav class="sb-nav">
-    <button class="sb-nav-btn"
-            [class.active]="tab() === 'inicio' && !maisTela()"
-            (click)="tabChange.emit('inicio')">
+    <button class="sb-nav-btn" [class.active]="tab() === 'inicio' && !maisTela()" (click)="tabChange.emit('inicio')">
       <span class="sb-nav-icon">◉</span><span>início</span>
     </button>
 
-    <button class="sb-nav-btn"
-            [class.active]="tab() === 'despensa' && !maisTela()"
-            (click)="tabChange.emit('despensa')">
+    <button class="sb-nav-btn" [class.active]="tab() === 'despensa' && !maisTela()"
+      (click)="tabChange.emit('despensa')">
       <span class="sb-nav-icon">▣</span><span>despensa</span>
     </button>
 
-    <button class="sb-nav-btn"
-            [class.active]="tab() === 'relatorio' && !maisTela()"
-            (click)="tabChange.emit('relatorio')">
+    <button class="sb-nav-btn" [class.active]="tab() === 'relatorio' && !maisTela()"
+      (click)="tabChange.emit('relatorio')">
       <span class="sb-nav-icon">▤</span><span>relatórios</span>
     </button>
 
-    <button class="sb-nav-btn"
-            [class.active]="tab() === 'membros' && !maisTela()"
-            (click)="tabChange.emit('membros')">
+    <button class="sb-nav-btn" [class.active]="tab() === 'membros' && !maisTela()" (click)="tabChange.emit('membros')">
       <span class="sb-nav-icon">✦</span><span>grupo</span>
     </button>
 
     <div class="sb-nav-sep"></div>
 
-    <button class="sb-nav-btn"
-            [class.active]="maisTela() === 'categorias'"
-            (click)="subtelaChange.emit('categorias')">
+    <button class="sb-nav-btn" [class.active]="maisTela() === 'categorias'" (click)="subtelaChange.emit('categorias')">
       <span class="sb-nav-icon">◈</span><span>categorias</span>
     </button>
 
-    <button class="sb-nav-btn"
-            [class.active]="tab() === 'mercado' && !maisTela()"
-            (click)="tabChange.emit('mercado')">
+    <button class="sb-nav-btn" [class.active]="tab() === 'mercado' && !maisTela()" (click)="tabChange.emit('mercado')">
       <span class="sb-nav-icon">🛒</span><span>mercados</span>
     </button>
 
@@ -67,10 +57,13 @@
 
   <!-- User -->
   <div class="sb-user">
-    <div class="sb-avatar"
-         [style.background]="getAvatarColor(usuario()?.nome ?? 'U')">
+    @if (avatarUrl()) {
+    <img class="sb-avatar sb-avatar--img" [src]="avatarUrl()" [alt]="usuario()?.nome ?? 'avatar'" />
+    } @else {
+    <div class="sb-avatar" [style.background]="getAvatarColor(usuario()?.nome ?? 'U')">
       {{ (usuario()?.nome ?? 'U').charAt(0).toUpperCase() }}
     </div>
+    }
     <div class="sb-user-main">
       <div class="sb-user-nome">{{ (usuario()?.nome ?? 'Usuário').split(' ')[0] }}</div>
       <div class="sb-user-meta">{{ usuario()?.email }}</div>

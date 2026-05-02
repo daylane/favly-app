@@ -1,5 +1,5 @@
-import { Component, OnInit, inject, signal, PLATFORM_ID } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -14,6 +14,8 @@ interface GrupoItem {
   avatar?: string;
   codigoConvite?: string;
   totalMembros?: number;
+  /** PapelMembro: 1 = Administrador, 2 = Usuario */
+  minhaRole?: number;
 }
 
 @Component({
@@ -28,7 +30,6 @@ export class GruposComponent implements OnInit {
   private authService = inject(AuthService);
   private http = inject(HttpClient);
   private snackBar = inject(MatSnackBar);
-  private platformId = inject(PLATFORM_ID);
 
   usuario = this.authService.getUsuario();
 
@@ -60,9 +61,9 @@ export class GruposComponent implements OnInit {
         this.grupos.set(lista);
         this.isLoadingGrupos.set(false);
         // Se só tem 1 grupo, entra direto
-        if (lista.length === 1) {
-          this.selecionarGrupo(lista[0]);
-        }
+        // if (lista.length === 1) {
+        //   this.selecionarGrupo(lista[0]);
+        // }
       },
       error: () => {
         this.isLoadingGrupos.set(false);
@@ -77,10 +78,7 @@ export class GruposComponent implements OnInit {
   }
 
   selecionarGrupo(grupo: GrupoItem): void {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem('grupo_key', grupo.id);
-      localStorage.setItem('grupo_nome', grupo.nome);
-    }
+    this.authService.salvarSessao({ grupoId: grupo.id, grupoNome: grupo.nome, papel: grupo.minhaRole });
     this.router.navigate(['/home']);
   }
 

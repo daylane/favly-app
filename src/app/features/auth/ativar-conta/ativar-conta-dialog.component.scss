@@ -1,16 +1,22 @@
 .dialog-wrap {
   font-family: var(--font-pixel);
-  min-width: 320px;
-  max-width: 440px;
+  min-width: 340px;
+  max-width: 460px;
   padding: 4px 0;
 }
 
+// ── Ícone ─────────────────────────────────────────────────────────────────────
 .dialog-icon {
   text-align: center;
-  font-size: 44px;
-  line-height: 1;
+  padding-top: 12px;
   margin-bottom: 4px;
-  padding-top: 8px;
+
+  mat-icon {
+    font-size: 42px;
+    width: 42px;
+    height: 42px;
+    color: var(--accent-verde);
+  }
 }
 
 h2[mat-dialog-title] {
@@ -26,72 +32,156 @@ h2[mat-dialog-title] {
   text-align: center;
   font-size: 13px;
   color: var(--ink-soft);
-  margin: 0 0 16px;
-  line-height: 1.5;
+  margin: 0 0 24px;
+  line-height: 1.6;
+
   strong { color: var(--ink); font-weight: 600; }
 }
 
-.dialog-form { display: flex; flex-direction: column; gap: 12px; }
+// ── Caixas OTP ────────────────────────────────────────────────────────────────
+.otp-inputs {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 8px;
 
-.field { display: block; }
-.field-label {
-  display: block; font-size: 11px; color: var(--ink-soft);
-  text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px;
-}
-.field-input {
-  display: flex; align-items: center; background: var(--bg);
-  border: 2px solid var(--line); border-radius: 10px; padding: 0 12px;
-  box-shadow: 2px 2px 0 var(--line); transition: transform 0.1s, box-shadow 0.1s;
-  &:focus-within { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--line); }
   input {
-    flex: 1; border: none; background: none; padding: 12px 0; outline: none;
-    color: var(--ink); font-family: var(--font-mono); font-size: 18px; letter-spacing: 0.15em;
+    width: 46px;
+    height: 56px;
+    border: 2px solid var(--line);
+    border-radius: 10px;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 22px;
+    font-weight: 700;
+    text-align: center;
+    outline: none;
+    box-shadow: 2px 2px 0 var(--line);
+    transition: transform 0.1s, box-shadow 0.1s, border-color 0.15s;
+    caret-color: var(--accent-verde);
+
+    &:focus {
+      border-color: var(--accent-verde);
+      transform: translate(-1px, -1px);
+      box-shadow: 3px 3px 0 var(--line);
+    }
+
+    &.otp-filled {
+      border-color: var(--ink);
+    }
+
+    &.otp-error {
+      border-color: var(--accent-coral);
+      box-shadow: 2px 2px 0 var(--accent-coral);
+    }
   }
 }
-.field-error { display: block; font-size: 12px; color: var(--accent-coral); margin-top: 4px; padding-left: 4px; }
 
+.otp-hint {
+  text-align: center;
+  font-size: 12px;
+  color: var(--accent-coral);
+  margin: 4px 0 0;
+}
+
+// ── Alerta de erro da API ──────────────────────────────────────────────────────
 .error-alert {
-  display: flex; align-items: flex-start; gap: 8px; padding: 10px 12px;
-  background: oklch(0.96 0.04 35); border: 2px solid var(--accent-coral);
-  border-radius: 10px; font-size: 13px; color: var(--ink); margin-top: 8px;
-  mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; color: var(--accent-coral); }
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  background: oklch(0.96 0.04 35);
+  border: 2px solid var(--accent-coral);
+  border-radius: 10px;
+  font-size: 13px;
+  color: var(--ink);
+  margin-top: 12px;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    color: var(--accent-coral);
+  }
 }
 
+// ── Reenvio ───────────────────────────────────────────────────────────────────
 .reenvio-section {
-  display: flex; align-items: center; gap: 8px; margin-top: 12px; flex-wrap: wrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
+
 .reenvio-label { font-size: 12px; color: var(--ink-soft); }
+
 .reenvio-countdown {
-  display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--ink-soft);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--ink-soft);
   font-family: var(--font-mono);
+
   mat-icon { font-size: 14px; width: 14px; height: 14px; }
 }
 
 .btn-reenviar {
-  background: none; border: 2px solid var(--line-soft); border-radius: 8px;
-  font-family: var(--font-pixel); font-size: 12px; color: var(--ink-soft);
-  cursor: pointer; padding: 4px 10px; display: inline-flex; align-items: center; gap: 4px;
+  background: none;
+  border: 2px solid var(--line-soft);
+  border-radius: 8px;
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  padding: 4px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
   &:hover:not(:disabled) { border-color: var(--line); color: var(--ink); }
   &:disabled { opacity: 0.5; cursor: not-allowed; }
 }
 
-// Actions
+// ── Ações ─────────────────────────────────────────────────────────────────────
 .btn-cancelar {
-  background: none; border: 2px solid var(--line-soft); border-radius: 10px;
-  font-family: var(--font-pixel); font-size: 14px; color: var(--ink-soft);
-  cursor: pointer; padding: 10px 16px; box-shadow: 1px 1px 0 var(--line-soft);
+  background: none;
+  border: 2px solid var(--line-soft);
+  border-radius: 10px;
+  font-family: var(--font-pixel);
+  font-size: 14px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  padding: 10px 16px;
+  box-shadow: 1px 1px 0 var(--line-soft);
+
   &:hover:not(:disabled) { border-color: var(--line); color: var(--ink); }
   &:disabled { opacity: 0.5; }
 }
 
 .btn {
-  font-family: var(--font-pixel); font-size: 15px; padding: 10px 20px;
-  border-radius: 10px; border: 2px solid var(--line); background: var(--accent-verde);
-  color: var(--ink); cursor: pointer; font-weight: 600; box-shadow: 2px 2px 0 var(--line);
-  transition: transform 0.1s, box-shadow 0.1s; display: inline-flex; align-items: center;
-  justify-content: center; gap: 8px;
-  &:hover:not(:disabled) { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--line); }
-  &:active:not(:disabled) { transform: translate(1px, 1px); box-shadow: 0 0 0 var(--line); }
+  font-family: var(--font-pixel);
+  font-size: 15px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 2px solid var(--line);
+  background: var(--accent-verde);
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 2px 2px 0 var(--line);
+  transition: transform 0.1s, box-shadow 0.1s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  &:hover:not(:disabled)  { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--line); }
+  &:active:not(:disabled) { transform: translate(1px, 1px);   box-shadow: none; }
   &:disabled { opacity: 0.5; cursor: not-allowed; }
 }
 

@@ -86,10 +86,9 @@ export class GrupoGerenciarComponent implements OnInit, OnDestroy {
   editAvatarGrupo    = signal('');
   isSavingGrupo      = signal(false);
 
-  // ── Computed ──────────────────────────────────────────────────────────────
-  isAdmin = computed(() =>
-    this.membros().some(m => this.isCurrentUser(m) && m.isAdmin === true)
-  );
+  // ── Permissão ─────────────────────────────────────────────────────────────
+  // Lido do cache ao entrar no grupo — disponível imediatamente, sem aguardar API.
+  isAdmin = this.authService.isAdminDoGrupo();
 
   convitesPendentes = computed(() =>
     this.convites().filter(c => c.status?.toLowerCase() === 'pendente')
@@ -252,7 +251,7 @@ export class GrupoGerenciarComponent implements OnInit, OnDestroy {
         next: grupo => {
           this.grupoNome = grupo.nome;
           this.grupoAvatar.set(grupo.avatar ?? '');
-          localStorage.setItem('grupo_nome', grupo.nome);
+          this.authService.salvarSessao({ grupoNome: grupo.nome });
           this.showEditGrupoModal.set(false);
           this.isSavingGrupo.set(false);
           this.grupoAtualizado.emit(grupo.nome);
@@ -272,8 +271,7 @@ export class GrupoGerenciarComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.showLeaveConfirm.set(false);
-          localStorage.removeItem('grupo_key');
-          localStorage.removeItem('grupo_nome');
+          this.authService.limparGrupo();
           this.snackBar.open('Você saiu do grupo.', '', { duration: 2000 });
           this.router.navigate(['/grupos']);
         },

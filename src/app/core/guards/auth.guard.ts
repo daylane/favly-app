@@ -3,19 +3,16 @@ import { CanActivateFn, Router } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { AuthService } from '../services/auth.service';
 
-export const authGuard: CanActivateFn = () => {
-  const platformId   = inject(PLATFORM_ID);
-  const authService  = inject(AuthService);
-  const router       = inject(Router);
+export const authGuard: CanActivateFn = (_route, state) => {
+  const platformId  = inject(PLATFORM_ID);
+  const authService = inject(AuthService);
+  const router      = inject(Router);
 
-  // No servidor (SSR) deixa passar — o browser vai verificar depois
-  if (!isPlatformBrowser(platformId)) {
-    return true;
-  }
+  if (!isPlatformBrowser(platformId)) return true;
 
-  if (authService.isAuthenticated()) {
-    return true;
-  }
+  if (authService.isAuthenticated()) return true;
 
-  return router.createUrlTree(['/auth/login']);
+  return router.createUrlTree(['/auth/login'], {
+    queryParams: { returnUrl: state.url },
+  });
 };

@@ -110,6 +110,11 @@
   color: var(--ink); flex-shrink: 0;
 }
 
+.sb-avatar--img {
+  object-fit: cover;
+  border-radius: 50%;
+  // width e height já herdados do .sb-avatar
+}
 .sb-user-main { min-width: 0; flex: 1; }
 .sb-user-nome { font-size: 14px; font-weight: 600; color: var(--ink); }
 .sb-user-meta {

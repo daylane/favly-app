@@ -17,7 +17,7 @@
         {{ membros().length }} membro{{ membros().length !== 1 ? 's' : '' }}
       </div>
     </div>
-    @if (isAdmin()) {
+    @if (isAdmin) {
     <button class="btn-editar" (click)="abrirEdicaoGrupo()">editar</button>
     }
   </div>
@@ -60,7 +60,7 @@
       <div class="ger-membro-actions">
         @if (isMembroAdmin(m)) {
         <div class="ger-btn-star active" title="administrador">★</div>
-        } @else if (isAdmin()) {
+        } @else if (isAdmin) {
         <button class="ger-btn-star" (click)="promoverAdmin(m)" title="promover a admin">★</button>
         <button class="ger-btn-remove" (click)="removerMembro(m)" title="remover">×</button>
         }

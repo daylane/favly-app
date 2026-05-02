@@ -13,6 +13,8 @@ interface SessaoCache {
   userId:    string | null;
   grupoId:   string;
   grupoNome: string;
+  /** PapelMembro: 1 = Administrador, 2 = Usuario */
+  papel:     number | null;
 }
 
 @Injectable({
@@ -93,6 +95,7 @@ export class AuthService {
       ...(data.userId    && { userId:    data.userId }),
       ...(data.grupoId   && { grupoId:   data.grupoId }),
       ...(data.grupoNome && { grupoNome: data.grupoNome }),
+      ...(data.papel != null && { papel: data.papel }),
     });
   }
 
@@ -118,7 +121,13 @@ export class AuthService {
     if (!atual || !this.isBrowser) return;
     atual.grupoId   = '';
     atual.grupoNome = '';
+    atual.papel     = null;
     localStorage.setItem(this.SESSAO_KEY, JSON.stringify(atual));
+  }
+
+  /** Retorna true se o usuário é Administrador do grupo atual (papel === 1). */
+  isAdminDoGrupo(): boolean {
+    return this.lerCache()?.papel === 1;
   }
 
   /**

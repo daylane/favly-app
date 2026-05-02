@@ -86,10 +86,9 @@ export class GrupoGerenciarComponent implements OnInit, OnDestroy {
   editAvatarGrupo    = signal('');
   isSavingGrupo      = signal(false);
 
-  // ── Computed ──────────────────────────────────────────────────────────────
-  isAdmin = computed(() =>
-    this.membros().some(m => this.isCurrentUser(m) && m.isAdmin === true)
-  );
+  // ── Permissão ─────────────────────────────────────────────────────────────
+  // Lido do cache ao entrar no grupo — disponível imediatamente, sem aguardar API.
+  isAdmin = this.authService.isAdminDoGrupo();
 
   convitesPendentes = computed(() =>
     this.convites().filter(c => c.status?.toLowerCase() === 'pendente')

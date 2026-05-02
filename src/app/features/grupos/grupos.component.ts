@@ -14,6 +14,8 @@ interface GrupoItem {
   avatar?: string;
   codigoConvite?: string;
   totalMembros?: number;
+  /** PapelMembro: 1 = Administrador, 2 = Usuario */
+  minhaRole?: number;
 }
 
 @Component({
@@ -76,7 +78,7 @@ export class GruposComponent implements OnInit {
   }
 
   selecionarGrupo(grupo: GrupoItem): void {
-    this.authService.salvarSessao({ grupoId: grupo.id, grupoNome: grupo.nome });
+    this.authService.salvarSessao({ grupoId: grupo.id, grupoNome: grupo.nome, papel: grupo.minhaRole });
     this.router.navigate(['/home']);
   }
 

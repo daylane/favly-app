@@ -84,11 +84,15 @@ export class ConviteAceiteComponent implements OnInit, OnDestroy {
 
           if (this.authService.isAuthenticated()) {
             this.estado.set('logado');
+          } else if (info.usuarioJaCadastrado) {
+            // Tem conta mas não está logado — redireciona para o login e volta ao convite
+            this.router.navigate(['/auth/login'], {
+              queryParams: { returnUrl: `/convite/${this.codigo}` },
+            });
           } else {
-            if (!info.usuarioJaCadastrado) {
-              this.formEntrar.get('nome')!.setValidators([Validators.required, Validators.minLength(2)]);
-              this.formEntrar.get('nome')!.updateValueAndValidity();
-            }
+            // Novo usuário — exibe formulário de cadastro
+            this.formEntrar.get('nome')!.setValidators([Validators.required, Validators.minLength(2)]);
+            this.formEntrar.get('nome')!.updateValueAndValidity();
             this.estado.set('entrar');
           }
         },

@@ -29,4 +29,6 @@ export interface SessaoPayload {
   grupoNome?: string;
   userId?: string;
   avatar?: string;
+  /** PapelMembro: 1 = Administrador, 2 = Usuario */
+  papel?: number;
 }
